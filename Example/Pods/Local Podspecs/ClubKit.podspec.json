@@ -1,0 +1,22 @@
+{
+  "name": "ClubKit",
+  "version": "0.1.0",
+  "summary": "A short description of ClubKit.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/Chrishon/ClubKit",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "Chrishon": "chrishon@socketmobile.com"
+  },
+  "source": {
+    "git": "https://github.com/Chrishon/ClubKit.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source_files": "ClubKit/Classes/**/*"
+}

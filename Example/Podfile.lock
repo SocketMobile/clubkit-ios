@@ -1,0 +1,16 @@
+PODS:
+  - ClubKit (0.1.0)
+
+DEPENDENCIES:
+  - ClubKit (from `../`)
+
+EXTERNAL SOURCES:
+  ClubKit:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  ClubKit: 64cd301c4cc80e9e7348879895976c3a96da8eab
+
+PODFILE CHECKSUM: 0a997c051da210f5ba19f270007f6646e3f43d2c
+
+COCOAPODS: 1.8.4
