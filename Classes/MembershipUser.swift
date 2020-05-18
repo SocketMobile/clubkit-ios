@@ -15,11 +15,11 @@ class RealmMembershipUser: Object, IdentifiableUserProtocol {
     @objc dynamic var userId: String?
     @objc dynamic var username: String?
     
-//    required init() {
-//        super.init()
-//    }
-//
-//    override class func primaryKey() -> String? {
-//        return "userId"
-//    }
+    required init() {
+        super.init()
+    }
+
+    override class func primaryKey() -> String? {
+        return "userId"
+    }
 }
