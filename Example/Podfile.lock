@@ -1,16 +1,35 @@
 PODS:
-  - ClubKit (0.1.0)
+  - ClubKit (0.1.0):
+    - RealmSwift
+    - SKTCapture (~> 1.2)
+  - Realm (4.4.1):
+    - Realm/Headers (= 4.4.1)
+  - Realm/Headers (4.4.1)
+  - RealmSwift (4.4.1):
+    - Realm (= 4.4.1)
+  - SKTCapture (1.2.36)
 
 DEPENDENCIES:
   - ClubKit (from `../`)
+  - RealmSwift
+  - SKTCapture (~> 1.2)
+
+SPEC REPOS:
+  trunk:
+    - Realm
+    - RealmSwift
+    - SKTCapture
 
 EXTERNAL SOURCES:
   ClubKit:
     :path: "../"
 
 SPEC CHECKSUMS:
-  ClubKit: 64cd301c4cc80e9e7348879895976c3a96da8eab
+  ClubKit: c2733b7cbf38f5a158e1132abd9126071417cd54
+  Realm: 4eb04d7487bd43c0581256f40b424eafb711deff
+  RealmSwift: 3eb8924ff7100df5928c7602f71d0fec51e7c9c5
+  SKTCapture: 49e42fab5b272728a7b275831598af4a6fca379a
 
-PODFILE CHECKSUM: 0a997c051da210f5ba19f270007f6646e3f43d2c
+PODFILE CHECKSUM: 57f78c62f28f3aeb10a11beb66b6c42b02df7b87
 
 COCOAPODS: 1.8.4

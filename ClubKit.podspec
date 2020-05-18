@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { "Socket" => "developers@socketmobile.com" }
-  s.source           = { :git => 'ssh://git@git.socketmobile.com:scanning/clubkit-ios.git', :tag => s.version.to_s }
+  s.source           = { :git => 'git@git.socketmobile.com:scanning/clubkit-ios.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '8.0'
@@ -39,4 +39,5 @@ Pod::Spec.new do |s|
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   s.dependency 'SKTCapture', '~>1.2'
+  s.dependency 'RealmSwift'
 end
