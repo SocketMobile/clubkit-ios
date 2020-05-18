@@ -10,6 +10,7 @@ Pod::Spec.new do |s|
   s.name             = 'ClubKit'
   s.version          = '0.1.0'
   s.summary          = 'A framework for managing membership'
+  s.swift_versions    = ['4.0', '5.0']
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -25,10 +26,11 @@ Pod::Spec.new do |s|
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { "Socket" => "developers@socketmobile.com" }
-  s.source           = { :git => 'git@git.socketmobile.com:scanning/clubkit-ios.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://git.socketmobile.com/scanning/clubkit-ios.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '9.3'
+  s.platform = :ios, "9.3"
 
   s.source_files = 'Classes/*.{h,m,swift}'
   
