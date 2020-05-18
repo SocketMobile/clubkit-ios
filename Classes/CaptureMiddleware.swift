@@ -7,7 +7,7 @@
 
 import SKTCapture
 
-class CaptureMiddleware: NSObject, CaptureMiddlewareProtocol {
+public class CaptureMiddleware: NSObject, CaptureMiddlewareProtocol {
     
     func onDecodedData(decodedData: SKTCaptureDecodedData?, device: CaptureHelperDevice) {
          
@@ -15,11 +15,11 @@ class CaptureMiddleware: NSObject, CaptureMiddlewareProtocol {
     
     public private(set) var decodedDataFormat: DecodedDataParseFormat = .defaultRFID
     
-    func setDecodedDataParse(format: DecodedDataParseFormat) {
+    public func setDecodedDataParse(format: DecodedDataParseFormat) {
         self.decodedDataFormat = format
     }
     
-    enum DecodedDataParseFormat: Int {
+    public enum DecodedDataParseFormat: Int {
         case defaultRFID = 0
         case NDEF
     }

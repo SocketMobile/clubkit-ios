@@ -12,7 +12,7 @@ import RealmSwift
 // with new fields:
 // https://www.raywenderlich.com/7585-lightweight-migrations-in-core-data-tutorial
 
-final class Club: CaptureMiddleware, CaptureMembershipProtocol {
+public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     
     public private(set) static var shared = Club()
     
@@ -75,8 +75,8 @@ final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         let user = RealmMembershipUser()
 
         let parsedDecodedData = getFields(from: decodedDataString)
-        user.userId = parsedDecodedData["id"]
-        user.username = parsedDecodedData["name"]
+        user.userId = parsedDecodedData[ClubConstants.Keys.passUserIdKey]
+        user.username = parsedDecodedData[ClubConstants.Keys.passNameKey]
 
         user.numVisits = 1
         user.timeStampOfLastVisit = Date().timeIntervalSince1970
@@ -95,7 +95,7 @@ final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     func getUser(with decodedDataString: String) -> RealmMembershipUser? {
         
         let parsedDecodedData = getFields(from: decodedDataString)
-        guard let userId = parsedDecodedData["id"] else {
+        guard let userId = parsedDecodedData[ClubConstants.Keys.passUserIdKey] else {
             return nil
         }
         
@@ -152,10 +152,10 @@ final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         
         var values: [String: String] = [:]
         
-        values["num"] = components[0]
-        values["id"] = components[1]
-        values["payloaad"] = components[2]
-        values["name"] = components[3]
+        values[ClubConstants.Keys.passPayloadNumberKey] = components[0]
+        values[ClubConstants.Keys.passUserIdKey] = components[1]
+        values[ClubConstants.Keys.passPayloadKey] = components[2]
+        values[ClubConstants.Keys.passNameKey] = components[3]
         
         return values
     }
