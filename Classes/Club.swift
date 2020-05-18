@@ -8,10 +8,6 @@
 import SKTCapture
 import RealmSwift
 
-// Refer to this link for updating a CoreData model
-// with new fields:
-// https://www.raywenderlich.com/7585-lightweight-migrations-in-core-data-tutorial
-
 public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     
     public private(set) static var shared = Club()
