@@ -40,11 +40,11 @@
 		607FACE51AFB9204008FA782 /* ClubKit_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClubKit_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
-		67B3BEE20BF30D244E142717 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
-		6F5445043186425DC7B3C911 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		67B3BEE20BF30D244E142717 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		6F5445043186425DC7B3C911 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		8A2B2FCCFAA25D8B34E04EBD /* Pods-ClubKit_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ClubKit_Example.release.xcconfig"; path = "Target Support Files/Pods-ClubKit_Example/Pods-ClubKit_Example.release.xcconfig"; sourceTree = "<group>"; };
 		9B67CF3582E33B8F9E91EEBB /* Pods-ClubKit_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ClubKit_Tests.debug.xcconfig"; path = "Target Support Files/Pods-ClubKit_Tests/Pods-ClubKit_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		A1B98FC1DBB40545BFAEB13F /* ClubKit.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = ClubKit.podspec; path = ../ClubKit.podspec; sourceTree = "<group>"; };
+		A1B98FC1DBB40545BFAEB13F /* ClubKit.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = ClubKit.podspec; path = ../ClubKit.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		A2D0A0EA7CE53356C4CF3270 /* Pods_ClubKit_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ClubKit_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC03A65B4863114227159646 /* Pods_ClubKit_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ClubKit_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -156,7 +156,6 @@
 				9B67CF3582E33B8F9E91EEBB /* Pods-ClubKit_Tests.debug.xcconfig */,
 				58D81AD850559F068C43F42B /* Pods-ClubKit_Tests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -227,6 +226,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);

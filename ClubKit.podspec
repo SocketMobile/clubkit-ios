@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
   s.name             = 'ClubKit'
   s.version          = '0.1.0'
-  s.summary          = 'A short description of ClubKit.'
+  s.summary          = 'A framework for managing membership'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,19 +18,19 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+  Combines the SKTCapture framework with an API for managing users. Users are represented by Apple mobile passes and RFID cards
                        DESC
 
-  s.homepage         = 'https://github.com/Chrishon/ClubKit'
+  s.homepage         = 'http://www.socketmobile.com'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'Chrishon' => 'chrishon@socketmobile.com' }
-  s.source           = { :git => 'https://github.com/Chrishon/ClubKit.git', :tag => s.version.to_s }
+  s.author           = { "Socket" => "developers@socketmobile.com" }
+  s.source           = { :git => 'ssh://git@git.socketmobile.com:scanning/clubkit-ios.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '8.0'
 
-  s.source_files = 'ClubKit/Classes/**/*'
+  s.source_files = 'Classes/*.{h,m,swift}'
   
   # s.resource_bundles = {
   #   'ClubKit' => ['ClubKit/Assets/*.png']
@@ -38,5 +38,5 @@ TODO: Add long description of the pod here.
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  s.dependency 'SKTCapture', '~>1.2'
 end
