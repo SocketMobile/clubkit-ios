@@ -70,7 +70,7 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     func createUser(with decodedDataString: String) {
         let user = RealmMembershipUser()
 
-        let parsedDecodedData = getFields(from: decodedDataString)
+        let parsedDecodedData = parseDecodedData(decodedDataString)
         user.userId = parsedDecodedData[ClubConstants.Keys.passUserIdKey]
         user.username = parsedDecodedData[ClubConstants.Keys.passNameKey]
 
@@ -90,7 +90,7 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     
     func getUser(with decodedDataString: String) -> RealmMembershipUser? {
         
-        let parsedDecodedData = getFields(from: decodedDataString)
+        let parsedDecodedData = parseDecodedData(decodedDataString)
         guard let userId = parsedDecodedData[ClubConstants.Keys.passUserIdKey] else {
             return nil
         }
@@ -140,7 +140,7 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     }
     
     
-    public func getFields(from decodedDataString: String) -> [String: String] {
+    public func parseDecodedData(_ decodedDataString: String) -> [String: String] {
         let components = decodedDataString.components(separatedBy: "|")
         guard components.count == 4 else {
             fatalError("Unexpected decoded data format")
