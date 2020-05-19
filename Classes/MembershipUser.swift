@@ -7,7 +7,7 @@
 
 import RealmSwift
 
-class RealmMembershipUser: Object, IdentifiableUserProtocol {
+class MembershipUser: Object, IdentifiableUserProtocol {
     
     @objc dynamic var numVisits: Int = 0
     @objc dynamic var timeStampOfLastVisit: Double = 0.0

@@ -10,7 +10,7 @@ import RealmSwift
 
 public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     
-    public private(set) static var shared = Club()
+    public static let shared = Club()
     
     private override init() {
         super.init()
@@ -18,7 +18,7 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     
     
     
-    typealias userType = RealmMembershipUser
+    typealias userType = MembershipUser
     
     override func onDecodedData(decodedData: SKTCaptureDecodedData?, device: CaptureHelperDevice) {
         
@@ -68,7 +68,7 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     
     
     func createUser(with decodedDataString: String) {
-        let user = RealmMembershipUser()
+        let user = MembershipUser()
 
         let parsedDecodedData = parseDecodedData(decodedDataString)
         user.userId = parsedDecodedData[ClubConstants.Keys.passUserIdKey]
@@ -88,7 +88,7 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         }
     }
     
-    func getUser(with decodedDataString: String) -> RealmMembershipUser? {
+    func getUser(with decodedDataString: String) -> MembershipUser? {
         
         let parsedDecodedData = parseDecodedData(decodedDataString)
         guard let userId = parsedDecodedData[ClubConstants.Keys.passUserIdKey] else {
@@ -97,7 +97,7 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         
         do {
             let realm = try Realm()
-            return realm.object(ofType: RealmMembershipUser.self, forPrimaryKey: userId)
+            return realm.object(ofType: MembershipUser.self, forPrimaryKey: userId)
         } catch let error {
             print("Error getting user: \(error)")
         }
@@ -105,7 +105,7 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         return nil
     }
     
-    func updateUserInStorage(_ user: RealmMembershipUser) {
+    func updateUserInStorage(_ user: MembershipUser) {
         
         do {
             let realm = try Realm()
@@ -127,7 +127,7 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         }
     }
     
-    func deleteUser(_ user: RealmMembershipUser) {
+    func deleteUser(_ user: MembershipUser) {
         
         do {
             let realm = try Realm()

@@ -13,15 +13,14 @@ public class CaptureMiddleware: NSObject, CaptureMiddlewareProtocol {
          
     }
     
-    public private(set) var decodedDataFormat: DecodedDataParseFormat = .defaultRFID
-    
-    public func setDecodedDataParse(format: DecodedDataParseFormat) {
-        self.decodedDataFormat = format
-    }
-    
     public enum DecodedDataParseFormat: Int {
         case defaultRFID = 0
         case NDEF
     }
     
+    public private(set) var decodedDataFormat: DecodedDataParseFormat = .defaultRFID
+    
+    public func setDecodedDataParse(format: DecodedDataParseFormat) {
+        self.decodedDataFormat = format
+    }
 }

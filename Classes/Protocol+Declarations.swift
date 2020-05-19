@@ -5,18 +5,7 @@
 //  Created by Chrishon Wyllie on 5/18/20.
 //
 
-import Foundation
 import SKTCapture
-
-protocol CaptureMiddlewareProtocol: class {
-    
-    func onDecodedData(decodedData: SKTCaptureDecodedData?, device: CaptureHelperDevice)
-    
-    var decodedDataFormat: CaptureMiddleware.DecodedDataParseFormat { get }
-    
-    func setDecodedDataParse(format: CaptureMiddleware.DecodedDataParseFormat)
-    
-}
 
 protocol IdentifiableUserProtocol {
     // A unique String representing the user
@@ -30,6 +19,18 @@ protocol IdentifiableUserProtocol {
     // The date that this was user was created/added
     var timeStampAdded: Double { get }
 }
+
+protocol CaptureMiddlewareProtocol: class {
+    
+    func onDecodedData(decodedData: SKTCaptureDecodedData?, device: CaptureHelperDevice)
+    
+    var decodedDataFormat: CaptureMiddleware.DecodedDataParseFormat { get }
+    
+    func setDecodedDataParse(format: CaptureMiddleware.DecodedDataParseFormat)
+    
+}
+
+
 
 
 // Manages membership, check-in/out
