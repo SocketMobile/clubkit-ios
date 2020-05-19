@@ -16,11 +16,15 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         super.init()
     }
     
-    
-    
+    /// Associated type which will be used as arguments in the API
+    /// Custom User objects may be used only if they conform to this protocol
     typealias userType = MembershipUser
     
-    override func onDecodedData(decodedData: SKTCaptureDecodedData?, device: CaptureHelperDevice) {
+    
+    
+    /// Accepts decoded data from a BLE device which can be used to
+    /// manage users if the data is from a Mobile Pass
+    public override func onDecodedData(decodedData: SKTCaptureDecodedData?, device: CaptureHelperDevice) {
         
         guard
             let decodedData = decodedData,
@@ -66,8 +70,8 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     
     
     
-    
-    func createUser(with decodedDataString: String) {
+    /// Creates a new User object in storage from the data within the decodedDataString
+    public func createUser(with decodedDataString: String) {
         let user = MembershipUser()
 
         let parsedDecodedData = parseDecodedData(decodedDataString)
@@ -88,7 +92,8 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         }
     }
     
-    func getUser(with decodedDataString: String) -> MembershipUser? {
+    /// Queries and returns a User object from storage matching the properties within the decodedDataString
+    public func getUser(with decodedDataString: String) -> MembershipUser? {
         
         let parsedDecodedData = parseDecodedData(decodedDataString)
         guard let userId = parsedDecodedData[ClubConstants.Keys.passUserIdKey] else {
@@ -105,7 +110,8 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         return nil
     }
     
-    func updateUserInStorage(_ user: MembershipUser) {
+    /// Updates a User object with new properties and re-saves it in storage
+    public func updateUserInStorage(_ user: MembershipUser) {
         
         do {
             let realm = try Realm()
@@ -121,13 +127,15 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         }
     }
     
-    func deleteUser(with decodedDataString: String) {
+    /// Queries and deletes a User object from storage matching the properties within the decodedDataString
+    public func deleteUser(with decodedDataString: String) {
         if let user = getUser(with: decodedDataString) {
             deleteUser(user)
         }
     }
     
-    func deleteUser(_ user: MembershipUser) {
+    /// Deletes a User object from storage
+    public func deleteUser(_ user: MembershipUser) {
         
         do {
             let realm = try Realm()
@@ -139,7 +147,7 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         }
     }
     
-    
+    /// Parses a decodedDataString and returns a dictionary of the embedded values
     public func parseDecodedData(_ decodedDataString: String) -> [String: String] {
         let components = decodedDataString.components(separatedBy: "|")
         guard components.count == 4 else {

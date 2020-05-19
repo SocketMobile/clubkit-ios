@@ -7,6 +7,8 @@
 
 import Foundation
 
+// Constants such as strings, integer values, etc.
+// that are used throughout the framework
 internal struct ClubConstants {
     
     private init() {}
@@ -19,5 +21,12 @@ internal struct ClubConstants {
         static let passUserIdKey: String = "id"
         static let passPayloadKey: String = "payloaad"
         static let passNameKey: String = "name"
+    }
+    
+    struct RealmQueryConstants {
+        
+        private init() {}
+        
+        static let userId = "userId"
     }
 }
