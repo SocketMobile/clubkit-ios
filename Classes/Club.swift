@@ -169,6 +169,11 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     public func parseDecodedData(_ decodedDataString: String) -> [String: String] {
         let components = decodedDataString.components(separatedBy: "|")
         guard components.count == 4 else {
+            // TODO
+            // NOTE
+            // This is a temporary assumption (as of 05/19/2020)
+            // There are 4 fields expected in the decodedData string
+            // payload number, userId, payload, name
             fatalError("Unexpected decoded data format")
         }
         
