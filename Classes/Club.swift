@@ -147,7 +147,8 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
             return deleteUser(user)
         }
         
-        return nil
+        let error = CKError.nonexistentUser("No such user exists")
+        return error
     }
     
     /// Deletes a User object from storage
