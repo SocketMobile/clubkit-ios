@@ -2,7 +2,7 @@ use_frameworks!
 
 target 'ClubKit_Example' do
   pod 'SKTCapture', '~>1.2'
-  pod 'RealmSwift'
+  pod 'RealmSwift', '~>4.4'
   pod 'ClubKit', :path => '../'
 
   target 'ClubKit_Tests' do
