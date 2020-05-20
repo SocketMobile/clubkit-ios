@@ -34,12 +34,14 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
                 return error
         }
         
-        if let existingUser = getUser(with: decodedDataString) {
+        let userInformation = UserInformation(decodedDataString: decodedDataString)
+        
+        if let existingUser = getUser(with: userInformation.userId) {
             
             return updateUserInStorage(existingUser)
         } else {
             // This is a new user
-            return createUser(with: decodedDataString)
+            return createUser(with: userInformation)
         }
         
     }
@@ -70,9 +72,9 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     
     
     /// Creates a new User object in storage from the data within the decodedDataString
-    public func createUser(with decodedDataString: String) -> Error? {
+    public func createUser(with userInformation: UserInformation) -> Error? {
         
-        if let existingUser = getUser(with: decodedDataString) {
+        if let existingUser = getUser(with: userInformation.userId) {
             
             let error = CKError.userExistsAlready("Attempted to create a new user but one exists with this userId: \(String(describing: existingUser.userId)) and username: \(String(describing: existingUser.username))")
             return error
@@ -82,9 +84,8 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
             
             let user = MembershipUser()
 
-            let parsedDecodedData = parseDecodedData(decodedDataString)
-            user.userId = parsedDecodedData[ClubConstants.Keys.passUserIdKey]
-            user.username = parsedDecodedData[ClubConstants.Keys.passNameKey]
+            user.userId = userInformation.userId
+            user.username = userInformation.username
 
             user.numVisits = 1
             user.timeStampOfLastVisit = Date().timeIntervalSince1970
@@ -104,12 +105,7 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     }
     
     /// Queries and returns a User object from storage matching the properties within the decodedDataString
-    public func getUser(with decodedDataString: String) -> MembershipUser? {
-        
-        let parsedDecodedData = parseDecodedData(decodedDataString)
-        guard let userId = parsedDecodedData[ClubConstants.Keys.passUserIdKey] else {
-            return nil
-        }
+    public func getUser(with userId: String) -> MembershipUser? {
         
         do {
             let realm = try Realm()
@@ -142,8 +138,8 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     }
     
     /// Queries and deletes a User object from storage matching the properties within the decodedDataString
-    public func deleteUser(with decodedDataString: String) -> Error? {
-        if let user = getUser(with: decodedDataString) {
+    public func deleteUser(with userId: String) -> Error? {
+        if let user = getUser(with: userId) {
             return deleteUser(user)
         }
         
@@ -163,28 +159,6 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
             return error
         }
         return nil
-    }
-    
-    /// Parses a decodedDataString and returns a dictionary of the embedded values
-    public func parseDecodedData(_ decodedDataString: String) -> [String: String] {
-        let components = decodedDataString.components(separatedBy: "|")
-        guard components.count == 4 else {
-            // TODO
-            // NOTE
-            // This is a temporary assumption (as of 05/19/2020)
-            // There are 4 fields expected in the decodedData string
-            // payload number, userId, payload, name
-            fatalError("Unexpected decoded data format")
-        }
-        
-        var values: [String: String] = [:]
-        
-        values[ClubConstants.Keys.passPayloadNumberKey] = components[0]
-        values[ClubConstants.Keys.passUserIdKey] = components[1]
-        values[ClubConstants.Keys.passPayloadKey] = components[2]
-        values[ClubConstants.Keys.passNameKey] = components[3]
-        
-        return values
     }
     
 }

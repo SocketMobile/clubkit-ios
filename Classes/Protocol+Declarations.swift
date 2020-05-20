@@ -62,22 +62,20 @@ public protocol CaptureMembershipProtocol: CaptureMiddlewareProtocol {
     // CRUD
     
     /// Creates a new User object in storage from the data within the decodedDataString
-    func createUser(with decodedDataString: String) -> Error?
+    func createUser(with userInformation: UserInformation) -> Error?
     
     /// Queries and returns a User object from storage matching the properties within the decodedDataString
-    func getUser(with decodedDataString: String) -> userType?
+    func getUser(with userId: String) -> userType?
     
     /// Updates a User object with new properties and re-saves it in storage
     func updateUserInStorage(_ user: userType) -> Error?
     
     /// Queries and deletes a User object from storage matching the properties within the decodedDataString
-    func deleteUser(with decodedDataString: String) -> Error?
+    func deleteUser(with userId: String) -> Error?
     
     /// Deletes a User object from storage
     func deleteUser(_ user: userType) -> Error?
     
-    /// Parses a decodedDataString and returns a dictionary of the embedded values
-    func parseDecodedData(_ decodedDataString: String) -> [String: String]
 }
 
 
@@ -102,4 +100,42 @@ public enum CKError: Error {
     
     case malformedDecodedData(String)
     
+}
+
+
+
+
+
+
+
+
+
+
+
+
+public struct UserInformation {
+    
+    let userId: String
+    let username: String
+    let payloadNumber: String
+    let payload: String
+    
+    // Expects a string from scanning a Mobile Pass or otherwise that
+    // contains data
+    init(decodedDataString: String) {
+        let components = decodedDataString.components(separatedBy: "|")
+        guard components.count == 4 else {
+            // TODO
+            // NOTE
+            // This is a temporary assumption (as of 05/19/2020)
+            // There are 4 fields expected in the decodedData string
+            // payload number, userId, payload, name
+            fatalError("Unexpected decoded data format")
+        }
+        
+        payloadNumber = components[0]
+        userId = components[1]
+        payload = components[2]
+        username = components[3]
+    }
 }
