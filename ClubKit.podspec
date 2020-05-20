@@ -29,6 +29,7 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'https://git.socketmobile.com/scanning/clubkit-ios.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
+  # Minimum target of 9.3 is required for 'SKTCapture'
   s.ios.deployment_target = '9.3'
   s.platform = :ios, "9.3"
 
