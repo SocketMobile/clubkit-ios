@@ -147,7 +147,9 @@ class SKTCaptureDeviceViewModel: ObservableObject,
     
     func didReceiveDecodedData(_ decodedData: SKTCaptureDecodedData?, fromDevice device: CaptureHelperDevice, withResult result: SKTResult) {
         
-        Club.shared.onDecodedData(decodedData: decodedData, device: device)
+        if let error = Club.shared.onDecodedData(decodedData: decodedData, device: device) {
+            print("Error reading decoded data: \(error.localizedDescription)")
+        }
         decodedDataWrapper.update(decodedData: decodedData, device: device)
 
         if let decodedData = decodedData, let stringFromData = decodedData.stringFromDecodedData() {

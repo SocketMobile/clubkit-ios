@@ -12,6 +12,12 @@ struct Constants {
     
     private init() {}
     
+    struct UIFormat {
+        static let roundedCornerRadius: CGFloat = 10.0
+        static let shadowRadius: CGFloat = 15.0
+        static let roundedBorderWidth: CGFloat = 3
+    }
+    
     struct SwiftUIConstants {
         
         private init() {}
@@ -21,11 +27,7 @@ struct Constants {
             static let secondaryColor: Color = Color.secondary
         }
         
-        struct UIFormat {
-            static let roundedCornerRadius: CGFloat = 10.0
-            static let shadowRadius: CGFloat = 15.0
-            static let roundedBorderWidth: CGFloat = 3
-        }
+        
         
         static func getBackgroundColor(from colorScheme: ColorScheme) -> Color {
             return colorScheme == .light ? Color.white : Color.black
@@ -40,5 +42,9 @@ struct Constants {
         
         private init() {}
         
+        struct AppTheme {
+            static let primaryColor: UIColor = UIColor.green
+            static let secondaryColor: UIColor = UIColor.secondarySystemBackground
+        }
     }
 }

@@ -73,12 +73,12 @@ struct SwiftUICaptureDemoView: View {
 //                VerticalCaptureDevicesList(captureHelperDeviceWrappers: captureDeviceViewModel.captureHelperDeviceWrappers)
             
             DecodedDataView(decodedDataWrapper: captureDeviceViewModel.decodedDataWrapper)
-                .cornerRadius(Constants.SwiftUIConstants.UIFormat.roundedCornerRadius)
+                .cornerRadius(Constants.UIFormat.roundedCornerRadius)
                 .overlay(
-                    RoundedRectangle(cornerRadius: Constants.SwiftUIConstants.UIFormat.roundedCornerRadius)
-                        .stroke(Constants.SwiftUIConstants.AppTheme.primaryColor, lineWidth: Constants.SwiftUIConstants.UIFormat.roundedBorderWidth)
+                    RoundedRectangle(cornerRadius: Constants.UIFormat.roundedCornerRadius)
+                        .stroke(Constants.SwiftUIConstants.AppTheme.primaryColor, lineWidth: Constants.UIFormat.roundedBorderWidth)
                 )
-                .shadow(radius: Constants.SwiftUIConstants.UIFormat.shadowRadius)
+                .shadow(radius: Constants.UIFormat.shadowRadius)
         }
         .navigationBarTitle(Text("Membership Demo"))
     }
@@ -118,11 +118,11 @@ struct CaptureHelperDeviceDetailView: View {
                 .padding(10)
                 .foregroundColor(Color.primary)
         }.background(Constants.SwiftUIConstants.AppTheme.primaryColor)
-            .cornerRadius(Constants.SwiftUIConstants.UIFormat.roundedCornerRadius)
+            .cornerRadius(Constants.UIFormat.roundedCornerRadius)
         .overlay(
-            RoundedRectangle(cornerRadius: Constants.SwiftUIConstants.UIFormat.roundedCornerRadius)
-                .stroke(Constants.SwiftUIConstants.AppTheme.primaryColor, lineWidth: Constants.SwiftUIConstants.UIFormat.roundedBorderWidth)
+            RoundedRectangle(cornerRadius: Constants.UIFormat.roundedCornerRadius)
+                .stroke(Constants.SwiftUIConstants.AppTheme.primaryColor, lineWidth: Constants.UIFormat.roundedBorderWidth)
         )
-            .shadow(radius: Constants.SwiftUIConstants.UIFormat.shadowRadius)
+            .shadow(radius: Constants.UIFormat.shadowRadius)
     }
 }

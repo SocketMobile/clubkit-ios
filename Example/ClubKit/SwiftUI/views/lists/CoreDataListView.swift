@@ -67,11 +67,13 @@ struct CoreDataListView: View {
     private func removeItem(at offsets: IndexSet) {
         for index in offsets {
             let user = users.results[index]
-            Club.shared.deleteUser(user)
+            if let error = Club.shared.deleteUser(user) {
+                print("Error deleting user: \(String(describing: user.username)). Error: \(error.localizedDescription)")
+            }
         }
     
         let realm = try! Realm()
-        users = BindableResults(results: try! Realm().objects(MembershipUser.self))
+        users = BindableResults(results: realm.objects(MembershipUser.self))
 //        users = realm.objects(RealmMembershipUser.self)
 //        users.deleteItems(at: offsets)
         
@@ -111,12 +113,12 @@ struct LocalStorageCell: View {
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 300, maxHeight: .infinity, alignment: .leading)
         }
         .background(Constants.SwiftUIConstants.AppTheme.primaryColor)
-        .cornerRadius(Constants.SwiftUIConstants.UIFormat.roundedCornerRadius)
+        .cornerRadius(Constants.UIFormat.roundedCornerRadius)
         .overlay(
-            RoundedRectangle(cornerRadius: Constants.SwiftUIConstants.UIFormat.roundedCornerRadius)
-                .stroke(Constants.SwiftUIConstants.AppTheme.primaryColor, lineWidth: Constants.SwiftUIConstants.UIFormat.roundedBorderWidth)
+            RoundedRectangle(cornerRadius: Constants.UIFormat.roundedCornerRadius)
+                .stroke(Constants.SwiftUIConstants.AppTheme.primaryColor, lineWidth: Constants.UIFormat.roundedBorderWidth)
         )
-        .shadow(radius: Constants.SwiftUIConstants.UIFormat.shadowRadius)
+        .shadow(radius: Constants.UIFormat.shadowRadius)
         .padding(.init(top: 30, leading: 0, bottom: 30, trailing: 0))
     }
 }

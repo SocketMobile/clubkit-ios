@@ -22,7 +22,7 @@ struct CircleImageView: View {
         .resizable()
         .renderingMode(.original)
         .clipShape(Circle())
-            .overlay(Circle().stroke(Constants.SwiftUIConstants.AppTheme.primaryColor, lineWidth: Constants.SwiftUIConstants.UIFormat.roundedBorderWidth))
+            .overlay(Circle().stroke(Constants.SwiftUIConstants.AppTheme.primaryColor, lineWidth: Constants.UIFormat.roundedBorderWidth))
         .frame(width: imageFrameDimension, height: imageFrameDimension)
     }
     

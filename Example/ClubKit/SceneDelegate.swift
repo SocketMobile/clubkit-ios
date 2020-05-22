@@ -21,6 +21,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
 
+        setupUILayoutWithClassicSwift(using: scene)
+//        setupUILayoutWithSwiftUI(using: scene)
+    }
+    
+    private func setupUILayoutWithClassicSwift(using scene: UIScene) {
+        if let windowScene = scene as? UIWindowScene {
+            let window = UIWindow(windowScene: windowScene)
+            
+            let controller = ViewController()
+            let navigationController = UINavigationController(rootViewController: controller)
+            
+            window.rootViewController = navigationController
+            self.window = window
+            window.makeKeyAndVisible()
+        }
+    }
+    
+    private func setupUILayoutWithSwiftUI(using scene: UIScene) {
         // Create the SwiftUI view and set the context as the value for the managedObjectContext environment keyPath.
         // Add `@Environment(\.managedObjectContext)` in the views that will need the context.
         let contentView = ContentView()
