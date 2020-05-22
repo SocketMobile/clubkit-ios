@@ -7,6 +7,9 @@
 //
 
 import UIKit
+import SKTCapture
+import ClubKit
+import SwiftUI
 
 class ViewController: UIViewController {
 
