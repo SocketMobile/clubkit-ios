@@ -112,17 +112,24 @@ public enum CKError: Error {
 
 
 
-
-public struct UserInformation {
+public protocol DecodedDataUserInformationProtocol {
+    var userId: String { get }
+    var username: String { get }
+    var payloadNumber: String { get }
+    var payload: String { get }
     
-    let userId: String
-    let username: String
-    let payloadNumber: String
-    let payload: String
+    init(decodedDataString: String)
+}
+public struct UserInformation: DecodedDataUserInformationProtocol {
+    
+    public let userId: String
+    public let username: String
+    public let payloadNumber: String
+    public let payload: String
     
     // Expects a string from scanning a Mobile Pass or otherwise that
     // contains data
-    init(decodedDataString: String) {
+    public init(decodedDataString: String) {
         let components = decodedDataString.components(separatedBy: "|")
         guard components.count == 4 else {
             // TODO
@@ -130,7 +137,7 @@ public struct UserInformation {
             // This is a temporary assumption (as of 05/19/2020)
             // There are 4 fields expected in the decodedData string
             // payload number, userId, payload, name
-            fatalError("Unexpected decoded data format")
+            fatalError("Unexpected decoded data format: \(decodedDataString)")
         }
         
         payloadNumber = components[0]

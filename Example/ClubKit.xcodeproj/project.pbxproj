@@ -8,8 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		36A2035B7553196466CFF294 /* Pods_ClubKit_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2D0A0EA7CE53356C4CF3270 /* Pods_ClubKit_Tests.framework */; };
+		5233DD1324774EA800FCFF18 /* CaptureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD0A24774EA800FCFF18 /* CaptureViewModel.swift */; };
+		5233DD1424774EA800FCFF18 /* CircularImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD0C24774EA800FCFF18 /* CircularImageView.swift */; };
+		5233DD1524774EA800FCFF18 /* DecodedDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD0D24774EA800FCFF18 /* DecodedDataView.swift */; };
+		5233DD1624774EA800FCFF18 /* HorizontalCaptureDevicesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD0F24774EA800FCFF18 /* HorizontalCaptureDevicesList.swift */; };
+		5233DD1724774EA800FCFF18 /* CoreDataListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD1024774EA800FCFF18 /* CoreDataListView.swift */; };
+		5233DD1824774EA800FCFF18 /* VerticalCaptureDevicesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD1124774EA800FCFF18 /* VerticalCaptureDevicesList.swift */; };
+		5233DD1924774EA800FCFF18 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD1224774EA800FCFF18 /* ContentView.swift */; };
+		5233DD1A2477507E00FCFF18 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
+		5233DD1C2477522B00FCFF18 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD1B2477522B00FCFF18 /* Constants.swift */; };
+		5233DD1E2477529900FCFF18 /* BindableResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD1D2477529900FCFF18 /* BindableResults.swift */; };
+		52DF07A22475E3B300E6FF37 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DF07A12475E3B300E6FF37 /* SceneDelegate.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
-		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
@@ -29,11 +39,21 @@
 
 /* Begin PBXFileReference section */
 		2EDF383728AAF16677F4D102 /* Pods-ClubKit_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ClubKit_Example.debug.xcconfig"; path = "Target Support Files/Pods-ClubKit_Example/Pods-ClubKit_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		5233DD0A24774EA800FCFF18 /* CaptureViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureViewModel.swift; sourceTree = "<group>"; };
+		5233DD0C24774EA800FCFF18 /* CircularImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularImageView.swift; sourceTree = "<group>"; };
+		5233DD0D24774EA800FCFF18 /* DecodedDataView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DecodedDataView.swift; sourceTree = "<group>"; };
+		5233DD0F24774EA800FCFF18 /* HorizontalCaptureDevicesList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HorizontalCaptureDevicesList.swift; sourceTree = "<group>"; };
+		5233DD1024774EA800FCFF18 /* CoreDataListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataListView.swift; sourceTree = "<group>"; };
+		5233DD1124774EA800FCFF18 /* VerticalCaptureDevicesList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VerticalCaptureDevicesList.swift; sourceTree = "<group>"; };
+		5233DD1224774EA800FCFF18 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		5233DD1B2477522B00FCFF18 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		5233DD1D2477529900FCFF18 /* BindableResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableResults.swift; sourceTree = "<group>"; };
+		52DF07A12475E3B300E6FF37 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		58D81AD850559F068C43F42B /* Pods-ClubKit_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ClubKit_Tests.release.xcconfig"; path = "Target Support Files/Pods-ClubKit_Tests/Pods-ClubKit_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* ClubKit_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClubKit_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		607FACD71AFB9204008FA782 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		607FACD71AFB9204008FA782 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = "Classic-Swift/ViewController.swift"; sourceTree = "<group>"; };
 		607FACDA1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		607FACDC1AFB9204008FA782 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -69,6 +89,54 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5233DD07247739AF00FCFF18 /* SwiftUI */ = {
+			isa = PBXGroup;
+			children = (
+				52DF07A12475E3B300E6FF37 /* SceneDelegate.swift */,
+				5233DD1D2477529900FCFF18 /* BindableResults.swift */,
+				5233DD0B24774EA800FCFF18 /* views */,
+				5233DD0924774EA700FCFF18 /* view-models */,
+			);
+			path = SwiftUI;
+			sourceTree = "<group>";
+		};
+		5233DD08247739C400FCFF18 /* Classic-Swift */ = {
+			isa = PBXGroup;
+			children = (
+				607FACD71AFB9204008FA782 /* ViewController.swift */,
+			);
+			name = "Classic-Swift";
+			sourceTree = "<group>";
+		};
+		5233DD0924774EA700FCFF18 /* view-models */ = {
+			isa = PBXGroup;
+			children = (
+				5233DD0A24774EA800FCFF18 /* CaptureViewModel.swift */,
+			);
+			path = "view-models";
+			sourceTree = "<group>";
+		};
+		5233DD0B24774EA800FCFF18 /* views */ = {
+			isa = PBXGroup;
+			children = (
+				5233DD1224774EA800FCFF18 /* ContentView.swift */,
+				5233DD0E24774EA800FCFF18 /* lists */,
+				5233DD0C24774EA800FCFF18 /* CircularImageView.swift */,
+				5233DD0D24774EA800FCFF18 /* DecodedDataView.swift */,
+			);
+			path = views;
+			sourceTree = "<group>";
+		};
+		5233DD0E24774EA800FCFF18 /* lists */ = {
+			isa = PBXGroup;
+			children = (
+				5233DD0F24774EA800FCFF18 /* HorizontalCaptureDevicesList.swift */,
+				5233DD1024774EA800FCFF18 /* CoreDataListView.swift */,
+				5233DD1124774EA800FCFF18 /* VerticalCaptureDevicesList.swift */,
+			);
+			path = lists;
+			sourceTree = "<group>";
+		};
 		607FACC71AFB9204008FA782 = {
 			isa = PBXGroup;
 			children = (
@@ -94,7 +162,9 @@
 			isa = PBXGroup;
 			children = (
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
-				607FACD71AFB9204008FA782 /* ViewController.swift */,
+				5233DD1B2477522B00FCFF18 /* Constants.swift */,
+				5233DD07247739AF00FCFF18 /* SwiftUI */,
+				5233DD08247739C400FCFF18 /* Classic-Swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
@@ -340,8 +410,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
+				5233DD1A2477507E00FCFF18 /* ViewController.swift in Sources */,
+				5233DD1C2477522B00FCFF18 /* Constants.swift in Sources */,
+				5233DD1424774EA800FCFF18 /* CircularImageView.swift in Sources */,
+				5233DD1324774EA800FCFF18 /* CaptureViewModel.swift in Sources */,
+				5233DD1724774EA800FCFF18 /* CoreDataListView.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
+				5233DD1824774EA800FCFF18 /* VerticalCaptureDevicesList.swift in Sources */,
+				5233DD1924774EA800FCFF18 /* ContentView.swift in Sources */,
+				52DF07A22475E3B300E6FF37 /* SceneDelegate.swift in Sources */,
+				5233DD1524774EA800FCFF18 /* DecodedDataView.swift in Sources */,
+				5233DD1624774EA800FCFF18 /* HorizontalCaptureDevicesList.swift in Sources */,
+				5233DD1E2477529900FCFF18 /* BindableResults.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -491,9 +571,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = GCJ274LWEE;
 				INFOPLIST_FILE = ClubKit/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.cocoapods.demo.ClubKit-Example";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.socketmobile.ClubKit-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
@@ -510,9 +591,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = GCJ274LWEE;
 				INFOPLIST_FILE = ClubKit/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.cocoapods.demo.ClubKit-Example";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.socketmobile.ClubKit-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
