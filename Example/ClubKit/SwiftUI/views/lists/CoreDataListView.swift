@@ -12,44 +12,11 @@ import RealmSwift
 
 struct CoreDataListView: View {
     
-//    @FetchRequest(
-//        entity: MembershipUser.entity(),
-//        sortDescriptors: [
-//            NSSortDescriptor(keyPath: \MembershipUser.username, ascending: true),
-//            NSSortDescriptor(keyPath: \MembershipUser.timeStampOfLastVisit, ascending: false)
-//        ]
-//    ) var users: FetchedResults<MembershipUser>
-    
-//    @State private var refreshing = false
-//    private var didSave = NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave)
-//    private var didChange = NotificationCenter.default.publisher(for: .NSManagedObjectContextObjectsDidChange)
-    
     @State private var users = BindableResults(results: try! Realm().objects(MembershipUser.self))
-//    private var users: Results<RealmMembershipUser>!
-//    private var usersToken: NotificationToken?
-//    @ObservedObject var users = BindableResults(results: try! Realm().objects(RealmMembershipUser.self))
-//    @ObservedObject var users = BindableResults(results: <#T##Results<Object>#>)
     
     init() {
-//        loadAllRecords()
-        
-//        let realm = try! Realm()
-//        users = realm.objects(RealmMembershipUser.self)
-        
         removeListSeparators()
     }
-    
-//    private mutating func loadAllRecords() {
-//        do {
-//            let realm = try Realm()
-//            users = realm.objects(RealmMembershipUser.self)
-////            usersToken = users.observe({ (changes) in
-////                <#code#>
-////            })
-//        } catch let error {
-//            print("Error getting realm reference: \(error)")
-//        }
-//    }
     
     var body: some View {
         VStack {
@@ -74,8 +41,6 @@ struct CoreDataListView: View {
     
         let realm = try! Realm()
         users = BindableResults(results: realm.objects(MembershipUser.self))
-//        users = realm.objects(RealmMembershipUser.self)
-//        users.deleteItems(at: offsets)
         
     }
     

@@ -8,6 +8,7 @@
 
 import UIKit
 import ClubKit
+import SKTCapture
 import RealmSwift
 
 class ViewController: UIViewController {
@@ -16,31 +17,56 @@ class ViewController: UIViewController {
     
     private let cellReuseIdentifier = "cellReuseIdentifier"
     
-    private var users: Results<MembershipUser>!
-    private var usersToken: NotificationToken?
+    private let capture = CaptureHelper.sharedInstance
     
     
     // MARK: - UI Elements
     
-    private lazy var tableView: UITableView = {
-        let tbv = UITableView(frame: .zero)
-        tbv.translatesAutoresizingMaskIntoConstraints = false
-        tbv.backgroundColor = UIColor.systemGroupedBackground
-        tbv.delegate = self
-        tbv.dataSource = self
-        tbv.alwaysBounceVertical = true
-        tbv.separatorStyle = .none
-        return tbv
+    private var connectedDevicesLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.translatesAutoresizingMaskIntoConstraints = false
+        lbl.text = "Connected devices: 0"
+        
+        return lbl
     }()
     
+    private lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.translatesAutoresizingMaskIntoConstraints = false
+        cv.delegate = self
+        cv.dataSource = self
+        cv.backgroundColor = UIColor.systemBackground
+        cv.alwaysBounceHorizontal = true
+        return cv
+    }()
     
+    private let decodedDataView = DecodedDataModalView()
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // MARK: - Functions
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
         setupUIElements()
-        loadAllRecords()
+        setupCapture()
     }
 
     override func didReceiveMemoryWarning() {
@@ -48,61 +74,54 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    override func setEditing(_ editing: Bool, animated: Bool) {
-        super.setEditing(editing, animated: true)
-        // Allow edit actions on the tableview, such as deleting users
-        tableView.setEditing(editing, animated: true)
-    }
-    
     private func setupUIElements() {
         
-        self.title = "Stored Users"
+        self.title = "Membership Demo"
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.leftBarButtonItem = self.editButtonItem
-        view.backgroundColor = .white
+        navigationItem.rightBarButtonItem = {
+           let btn = UIBarButtonItem(title: "Menu",
+                                     style: UIBarButtonItemStyle.plain,
+                                     target: self,
+                                     action: #selector(pushUserListController))
+            btn.tintColor = Constants.ClassicSwiftConstants.AppTheme.primaryColor
+            return btn
+        }()
+        view.backgroundColor = UIColor.systemBackground
+        navigationController?.navigationBar.tintColor = Constants.ClassicSwiftConstants.AppTheme.primaryColor
+        
+        [connectedDevicesLabel,
+         collectionView,
+         decodedDataView].forEach { (view) in
+            self.view.addSubview(view)
+        }
         
         
-        view.addSubview(tableView)
         
-        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         
-        tableView.register(UserCell.self, forCellReuseIdentifier: cellReuseIdentifier)
+        connectedDevicesLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8).isActive = true
+        connectedDevicesLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8).isActive = true
+        connectedDevicesLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8).isActive = true
+        connectedDevicesLabel.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8).isActive = true
+        collectionView.topAnchor.constraint(equalTo: connectedDevicesLabel.bottomAnchor, constant: 8).isActive = true
+        collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8).isActive = true
+        collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        
+        collectionView.register(DeviceCollectionViewCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
+        
+        
+        
+        decodedDataView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8).isActive = true
+        
+        decodedDataView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8).isActive = true
+        decodedDataView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        decodedDataView.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
         
     }
     
-    private func loadAllRecords() {
-        do {
-            let realm = try Realm()
-            users = realm.objects(MembershipUser.self)
-            
-            usersToken = users.observe({ [weak self] (changes) in
-                guard let strongSelf = self else { return }
-                strongSelf.updateUI(with: changes)
-            })
-        } catch let error {
-            print("Error getting realm reference: \(error)")
-        }
-    }
-    
-    private func updateUI(with changes: RealmCollectionChange<Results<MembershipUser>>) {
-        switch changes {
-        case .initial(_):
-            tableView.reloadData()
-        case let .update(_, deletions, insertions, modifications):
-            tableView.performBatchUpdates({
-                self.tableView.reloadRows(at: modifications.map { IndexPath(row: $0, section: 0) }, with: .automatic)
-                self.tableView.insertRows(at: insertions.map { IndexPath(row: $0, section: 0) }, with: .automatic)
-                self.tableView.deleteRows(at: deletions.map { IndexPath(row: $0, section: 0) }, with: .automatic)
-            }, completion: { (completed: Bool) in
-                self.tableView.reloadData()
-            })
-            break
-        case let .error(error):
-            print(error.localizedDescription)
-        }
+    @objc private func pushUserListController() {
+        navigationController?.pushViewController(UserListViewController(), animated: true)
     }
 
 }
@@ -112,77 +131,159 @@ class ViewController: UIViewController {
 
 
 
-// MARK: - UITableViewDelegate and UITableViewDataSource
+// MARK: - UICollectionView delegation
 
-extension ViewController: UITableViewDelegate, UITableViewDataSource {
+extension ViewController:
+UICollectionViewDelegate,
+UICollectionViewDataSource,
+UICollectionViewDelegateFlowLayout {
     
-    func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return users.count
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return capture.getDevices().count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath) as? UserCell
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let user = users[indexPath.item]
-        cell?.setup(with: user)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath) as? DeviceCollectionViewCell
+        
+        let device = capture.getDevices()[indexPath.item]
+        cell?.setup(with: device.deviceInfo)
         
         return cell!
     }
     
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 300.0
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        let width: CGFloat = 140.0
+        let height: CGFloat = 140.0
+        
+        return CGSize(width: width, height: height)
+        
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableViewAutomaticDimension
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// MARK: - Capture delegation
+
+extension ViewController: CaptureHelperDeviceManagerPresenceDelegate,
+    CaptureHelperDevicePresenceDelegate,
+    CaptureHelperDeviceManagerDiscoveryDelegate,
+    CaptureHelperDeviceDecodedDataDelegate {
+    
+    
+    private func setupCapture() {
+        let AppInfo = SKTAppInfo();
+        AppInfo.appKey="MCwCFCXpDCyuA6LzdgGJAk01jdbjZa2wAhRI3zDMlVcwi+4pIU0SRE7P6JP7Pw==";
+        AppInfo.appID="ios:com.socketmobile.ClubKit-Example";
+        AppInfo.developerID="bb57d8e1-f911-47ba-b510-693be162686a";
+        // open Capture Helper only once in the application
+        
+        capture.dispatchQueue = DispatchQueue.main
+        capture.pushDelegate(self)
+        capture.openWithAppInfo(AppInfo, withCompletionHandler: { (result: SKTResult) in
+            print("Result of Capture initialization: \(result.rawValue)")
+        })
     }
     
-    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
-    }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
     
-            let user = users[indexPath.item]
-            
-            showAlertForDeleting(user: user)
-            
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-        }
-    }
     
-    private func showAlertForDeleting(user: MembershipUser) {
+    // CaptureHelperDeviceManagerPresenceDelegate
+    
+    func didNotifyArrivalForDeviceManager(_ device: CaptureHelperDeviceManager, withResult result: SKTResult) {
         
-        let title = "Are you sure you want to delete this user?"
-        let message = "This is a permanent action and cannot be reversed"
-        let style = UIAlertControllerStyle.alert
+        device.dispatchQueue = DispatchQueue.main
         
-        
-        
-        let alertController = UIAlertController(title: title,
-                                                message: message,
-                                                preferredStyle: style)
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel) { (_) in
-            alertController.dismiss(animated: true, completion: nil)
-        }
-        
-        let deleteAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.destructive) { (_) in
-            if let error = Club.shared.deleteUser(user) {
-                print("error deleting user: \(String(describing: user.username)). Error: \(error.localizedDescription)")
+        // By default, the favorites is set to ""
+        device.getFavoriteDevicesWithCompletionHandler { (result, favorite) in
+            if result == SKTResult.E_NOERROR {
+                if let favorite = favorite {
+                    print("device favorite: \(favorite)")
+                    if favorite == "" {
+                        device.setFavoriteDevices("*") { (result) in
+                            
+                        }
+                    }
+                }
             }
         }
+    }
+    
+    func didNotifyRemovalForDeviceManager(_ device: CaptureHelperDeviceManager, withResult result: SKTResult) {
         
-        alertController.addAction(cancelAction)
-        alertController.addAction(deleteAction)
+    }
+    
+    
+    
+    
+    // CaptureHelperDevicePresenceDelegate
+    
+    func didNotifyArrivalForDevice(_ device: CaptureHelperDevice, withResult result: SKTResult) {
+        print("capture device arrived")
         
-        self.navigationController?.present(alertController, animated: true, completion: nil)
+        connectedDevicesLabel.text = "Connected devices: \(capture.getDevices().count)"
+        collectionView.reloadData()
+    }
+    
+    func didNotifyRemovalForDevice(_ device: CaptureHelperDevice, withResult result: SKTResult) {
         
+        connectedDevicesLabel.text = "Connected devices: \(capture.getDevices().count)"
+        collectionView.reloadData()
+    }
+
+    
+    
+    
+    // CaptureHelperDeviceManagerDiscoveryDelegate
+    
+    func didDiscoverDevice(_ device: String, fromDeviceManager deviceManager: CaptureHelperDeviceManager) {
+      
+    }
+    
+    func didEndDiscoveryWithResult(_ result: SKTResult, fromDeviceManager deviceManager: CaptureHelperDeviceManager){
+        
+    }
+    
+    
+    
+    
+
+
+
+    // CaptureHelperDeviceDecodedDataDelegate
+    
+    func didReceiveDecodedData(_ decodedData: SKTCaptureDecodedData?, fromDevice device: CaptureHelperDevice, withResult result: SKTResult) {
+        
+        if let error = Club.shared.onDecodedData(decodedData: decodedData, device: device) {
+            print("Error reading decoded data: \(error.localizedDescription)")
+        }
+        
+        if let decodedData = decodedData, let stringFromData = decodedData.stringFromDecodedData() {
+            print("tag id raw value: \(decodedData.dataSourceID.rawValue)")
+            print("tag id: \(decodedData.dataSourceID)")
+            print("data source name: \(String(describing: decodedData.dataSourceName))")
+            print("decoded data: \(stringFromData)")
+            
+            decodedDataView.updateUI(withDecodedData: stringFromData)
+        }
     }
 }

@@ -15,7 +15,6 @@ class InfoStackView: UIView {
     private var titleLabel: UnderlinedLabel = {
         let lbl = UnderlinedLabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
-        
         return lbl
     }()
     
@@ -23,7 +22,6 @@ class InfoStackView: UIView {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.font = UIFont.systemFont(ofSize: 15)
-        lbl.textColor = UIColor.gray
         return lbl
     }()
     

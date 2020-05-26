@@ -43,7 +43,10 @@ struct Constants {
         private init() {}
         
         struct AppTheme {
-            static let primaryColor: UIColor = UIColor.green
+            static let primaryColor: UIColor = UIColor(red:     83/255,
+                                                       green:   189/255,
+                                                       blue:    20/255,
+                                                       alpha:   1.0)
             static let secondaryColor: UIColor = UIColor.secondarySystemBackground
         }
     }

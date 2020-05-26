@@ -38,7 +38,7 @@ class UserCell: UITableViewCell {
         let v = UIView()
         v.translatesAutoresizingMaskIntoConstraints = false
         v.clipsToBounds = true
-        v.backgroundColor = .white
+        v.backgroundColor = UIColor.systemBackground
         v.layer.cornerRadius = Constants.UIFormat.roundedCornerRadius
         v.layer.borderWidth = Constants.UIFormat.roundedBorderWidth
         v.layer.borderColor = Constants.ClassicSwiftConstants.AppTheme.primaryColor.cgColor
