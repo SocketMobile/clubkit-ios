@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SKTCapture
 import ClubKit
 import RealmSwift
 
