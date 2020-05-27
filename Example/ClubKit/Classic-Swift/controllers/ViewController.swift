@@ -200,6 +200,13 @@ extension ViewController: CaptureHelperDeviceManagerPresenceDelegate,
         capture.dispatchQueue = DispatchQueue.main
         capture.pushDelegate(self)
         capture.openWithAppInfo(AppInfo, withCompletionHandler: { (result: SKTResult) in
+            
+            if result != SKTResult.E_NOERROR {
+                // An error was received during intialization.
+                // Perhaps, you should call this function again
+                // or display some prompt on screen
+                // before continuing
+            }
             print("Result of Capture initialization: \(result.rawValue)")
         })
     }
