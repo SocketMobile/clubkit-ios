@@ -28,20 +28,20 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         
         guard
             let decodedData = decodedData,
-            let decodedDataString = decodedData.stringFromDecodedData()
+            let captureDataString = decodedData.stringFromDecodedData()
             else {
                 let error = CKError.nullDecodedDataString("The decoded data string is nil")
                 return error
         }
         
-        let userInformation = UserInformation(decodedDataString: decodedDataString)
+        let captureDataInformation = CaptureDataInformation(captureDataString: captureDataString)
         
-        if let existingUser = getUser(with: userInformation.userId) {
+        if let existingUser = getUser(with: captureDataInformation.userId) {
             
             return updateUserInStorage(existingUser)
         } else {
             // This is a new user
-            return createUser(with: userInformation)
+            return createUser(with: captureDataInformation)
         }
         
     }
@@ -72,9 +72,9 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     
     
     /// Creates a new User object in storage from the data within the decodedDataString
-    public func createUser(with userInformation: UserInformation) -> Error? {
+    public func createUser(with captureDataInformation: CaptureDataInformation) -> Error? {
         
-        if let existingUser = getUser(with: userInformation.userId) {
+        if let existingUser = getUser(with: captureDataInformation.userId) {
             
             let error = CKError.userExistsAlready("Attempted to create a new user but one exists with this userId: \(String(describing: existingUser.userId)) and username: \(String(describing: existingUser.username))")
             return error
@@ -84,12 +84,14 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
             
             let user = MembershipUser()
 
-            user.userId = userInformation.userId
-            user.username = userInformation.username
+            user.userId = captureDataInformation.userId
+            user.username = captureDataInformation.username
+            
+            let currentDateTimestamp = Date().timeIntervalSince1970
 
             user.numVisits = 1
-            user.timeStampOfLastVisit = Date().timeIntervalSince1970
-            user.timeStampAdded = Date().timeIntervalSince1970
+            user.timeStampOfLastVisit = currentDateTimestamp
+            user.timeStampAdded = currentDateTimestamp
             
             do {
                 let realm = try Realm()

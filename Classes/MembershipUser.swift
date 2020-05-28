@@ -8,7 +8,7 @@
 import RealmSwift
 
 /// A default object which represents a user. May be subclassed
-public class MembershipUser: Object, IdentifiableUserProtocol {
+public class MembershipUser: Object, IdentifiableUserProtocol, Identifiable {
     
     /// Unique identifier for this user (Often supplied within the Mobile Pass)
     @objc public dynamic var userId: String?
