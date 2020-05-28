@@ -72,7 +72,7 @@ struct SwiftUICaptureDemoView: View {
             
 //                VerticalCaptureDevicesList(captureHelperDeviceWrappers: captureDeviceViewModel.captureHelperDeviceWrappers)
             
-            DecodedDataView(decodedDataWrapper: captureDeviceViewModel.decodedDataWrapper)
+            CaptureDataView(captureDataWrapper: captureDeviceViewModel.captureDataWrapper)
                 .cornerRadius(Constants.UIFormat.roundedCornerRadius)
                 .overlay(
                     RoundedRectangle(cornerRadius: Constants.UIFormat.roundedCornerRadius)

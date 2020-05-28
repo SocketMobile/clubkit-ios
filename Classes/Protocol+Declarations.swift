@@ -62,7 +62,7 @@ public protocol CaptureMembershipProtocol: CaptureMiddlewareProtocol {
     // CRUD
     
     /// Creates a new User object in storage from the data within the decodedDataString
-    func createUser(with userInformation: UserInformation) -> Error?
+    func createUser(with captureDataInformation: CaptureDataInformation) -> Error?
     
     /// Queries and returns a User object from storage matching the properties within the decodedDataString
     func getUser(with userId: String) -> userType?
@@ -112,15 +112,15 @@ public enum CKError: Error {
 
 
 
-public protocol DecodedDataUserInformationProtocol {
+public protocol CaptureDataUserInformationProtocol {
     var userId: String { get }
     var username: String { get }
     var payloadNumber: String { get }
     var payload: String { get }
     
-    init(decodedDataString: String)
+    init(captureDataString: String)
 }
-public struct UserInformation: DecodedDataUserInformationProtocol {
+public struct CaptureDataInformation: CaptureDataUserInformationProtocol {
     
     public let userId: String
     public let username: String
@@ -129,15 +129,15 @@ public struct UserInformation: DecodedDataUserInformationProtocol {
     
     // Expects a string from scanning a Mobile Pass or otherwise that
     // contains data
-    public init(decodedDataString: String) {
-        let components = decodedDataString.components(separatedBy: "|")
+    public init(captureDataString: String) {
+        let components = captureDataString.components(separatedBy: "|")
         guard components.count == 4 else {
             // TODO
             // NOTE
             // This is a temporary assumption (as of 05/19/2020)
             // There are 4 fields expected in the decodedData string
             // payload number, userId, payload, name
-            fatalError("Unexpected decoded data format: \(decodedDataString)")
+            fatalError("Unexpected capture data format: \(captureDataString)")
         }
         
         payloadNumber = components[0]

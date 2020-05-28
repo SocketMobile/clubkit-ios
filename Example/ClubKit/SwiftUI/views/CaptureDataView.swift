@@ -1,5 +1,5 @@
 //
-//  DecodedDataView.swift
+//  CaptureDataView.swift
 //  MembershipDemo
 //
 //  Created by Chrishon Wyllie on 5/6/20.
@@ -9,28 +9,28 @@
 import SwiftUI
 import ClubKit
 
-struct DecodedDataView: View {
+struct CaptureDataView: View {
     
-    let decodedDataWrapper: DecodedDataWrapper
+    let captureDataWrapper: CaptureDataWrapper
     
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         VStack (alignment: .leading) {
             
-            Text(getGreeting(from: decodedDataWrapper.decodedData?.stringFromDecodedData()) ?? "")
+            Text(getGreeting(from: captureDataWrapper.decodedData?.stringFromDecodedData()) ?? "")
                 .font(Font.custom("Avenir Heavy", size: 25))
                 .underline()
                 .lineLimit(nil)
                 .foregroundColor(Color.primary)
                 .padding(.top, 20)
-            Text(decodedDataWrapper.decodedData?.stringFromDecodedData() != nil ? "welcome to [BUSINESS NAME]" : "")
+            Text(captureDataWrapper.decodedData?.stringFromDecodedData() != nil ? "welcome to [BUSINESS NAME]" : "")
                 .font(Font.custom("Avenir Heavy", size: 25))
                 .underline()
                 .lineLimit(nil)
                 .foregroundColor(Color.primary)
                 .padding(.top, 20)
-            Text(getNumVisits(from: decodedDataWrapper.decodedData?.stringFromDecodedData()) ?? "")
+            Text(getNumVisits(from: captureDataWrapper.decodedData?.stringFromDecodedData()) ?? "")
                 .font(.subheadline)
                 .lineLimit(nil)
                 .foregroundColor(Color.primary)
@@ -49,9 +49,9 @@ struct DecodedDataView: View {
             return nil
         }
         
-        let userInformation = UserInformation(decodedDataString: decodedDataString)
+        let captureDataInformation = CaptureDataInformation(captureDataString: decodedDataString)
         
-        let user = Club.shared.getUser(with: userInformation.userId)
+        let user = Club.shared.getUser(with: captureDataInformation.userId)
         guard let username = user?.username else {
             return nil
         }
@@ -63,9 +63,9 @@ struct DecodedDataView: View {
             return nil
         }
         
-        let userInformation = UserInformation(decodedDataString: decodedDataString)
+        let captureDataInformation = CaptureDataInformation(captureDataString: decodedDataString)
         
-        let user = Club.shared.getUser(with: userInformation.userId)
+        let user = Club.shared.getUser(with: captureDataInformation.userId)
         guard let numberOfVisits = user?.numVisits else {
             return nil
         }

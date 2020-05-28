@@ -14,6 +14,17 @@ class UserCell: UITableViewCell {
     
     // MARK: - Variables
     
+    private var dateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM dd, yyyy 'at' hh:mm a"
+        formatter.calendar = Calendar(identifier: Calendar.Identifier.gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone.current
+        formatter.amSymbol = "AM"
+        formatter.pmSymbol = "PM"
+        return formatter
+    }
+    
     
     
     
@@ -92,15 +103,14 @@ class UserCell: UITableViewCell {
         userIdInfoStackView.setText(title: "User Unique Id:", secondary: user.userId)
         
         
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM dd, yyyy 'at' hh:mm"
+        
         
         let creationDate = Date(timeIntervalSince1970: user.timeStampAdded)
-        let creationDateAsString = formatter.string(from: creationDate)
+        let creationDateAsString = dateFormatter.string(from: creationDate)
         userCreationInfoStackView.setText(title: "Date Added:", secondary: creationDateAsString)
         
         let lastVisitDate = Date(timeIntervalSince1970: user.timeStampOfLastVisit)
-        let lastVisitDateAsString = formatter.string(from: lastVisitDate)
+        let lastVisitDateAsString = dateFormatter.string(from: lastVisitDate)
         userLastVisitInfoStackView.setText(title: "Date of last visit:", secondary: lastVisitDateAsString)
         
         userNumVisitsInfoStackView.setText(title: "Number of visits:", secondary: String(describing: user.numVisits))

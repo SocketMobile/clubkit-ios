@@ -20,7 +20,7 @@ struct CaptureHelperDeviceWrapper: Identifiable {
 
 
 
-struct DecodedDataWrapper {
+struct CaptureDataWrapper {
     public private(set) var decodedData: SKTCaptureDecodedData?
     public private(set) var device: CaptureHelperDevice?
     
@@ -53,7 +53,7 @@ class SKTCaptureDeviceViewModel: ObservableObject,
     
     @Published var captureHelperDeviceWrappers: [CaptureHelperDeviceWrapper] = []
     
-    @Published var decodedDataWrapper = DecodedDataWrapper()
+    @Published var captureDataWrapper = CaptureDataWrapper()
     
 
     init() {
@@ -150,7 +150,7 @@ class SKTCaptureDeviceViewModel: ObservableObject,
         if let error = Club.shared.onDecodedData(decodedData: decodedData, device: device) {
             print("Error reading decoded data: \(error.localizedDescription)")
         }
-        decodedDataWrapper.update(decodedData: decodedData, device: device)
+        captureDataWrapper.update(decodedData: decodedData, device: device)
 
         if let decodedData = decodedData, let stringFromData = decodedData.stringFromDecodedData() {
             print("tag id raw value: \(decodedData.dataSourceID.rawValue)")

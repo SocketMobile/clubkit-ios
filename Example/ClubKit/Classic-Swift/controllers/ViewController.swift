@@ -43,7 +43,7 @@ class ViewController: UIViewController {
         return cv
     }()
     
-    private let decodedDataView = DecodedDataModalView()
+    private let captureDataModalView = CaptureDataModalView()
     
     
     
@@ -91,7 +91,7 @@ class ViewController: UIViewController {
         
         [connectedDevicesLabel,
          collectionView,
-         decodedDataView].forEach { (view) in
+         captureDataModalView].forEach { (view) in
             self.view.addSubview(view)
         }
         
@@ -112,11 +112,11 @@ class ViewController: UIViewController {
         
         
         
-        decodedDataView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8).isActive = true
+        captureDataModalView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8).isActive = true
         
-        decodedDataView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8).isActive = true
-        decodedDataView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        decodedDataView.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+        captureDataModalView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8).isActive = true
+        captureDataModalView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        captureDataModalView.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
         
     }
     
@@ -290,7 +290,7 @@ extension ViewController: CaptureHelperDeviceManagerPresenceDelegate,
             print("data source name: \(String(describing: decodedData.dataSourceName))")
             print("decoded data: \(stringFromData)")
             
-            decodedDataView.updateUI(withDecodedData: stringFromData)
+            captureDataModalView.updateUI(withDecodedData: stringFromData)
         }
     }
 }

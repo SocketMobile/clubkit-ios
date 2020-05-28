@@ -1,5 +1,5 @@
 //
-//  DecodedDataModalView.swift
+//  CaptureDataModalView.swift
 //  ClubKit_Example
 //
 //  Created by Chrishon Wyllie on 5/26/20.
@@ -10,7 +10,7 @@ import UIKit
 import SKTCapture
 import ClubKit
 
-class DecodedDataModalView: UIView {
+class CaptureDataModalView: UIView {
     
     private var titleLabel: UILabel = {
         let lbl = UILabel()
@@ -27,7 +27,7 @@ class DecodedDataModalView: UIView {
         return lbl
     }()
     
-    private var decodedDataTextView: UITextView = {
+    private var captureDataTextView: UITextView = {
         let tv = UITextView()
         tv.translatesAutoresizingMaskIntoConstraints = false
         tv.isEditable = false
@@ -59,7 +59,9 @@ class DecodedDataModalView: UIView {
         layer.borderWidth = Constants.UIFormat.roundedBorderWidth
         layer.cornerRadius = Constants.UIFormat.roundedCornerRadius
         
-        [titleLabel, secondaryLabel, decodedDataTextView].forEach { (view) in
+        [titleLabel,
+         secondaryLabel,
+         captureDataTextView].forEach { (view) in
             self.addSubview(view)
         }
         
@@ -76,10 +78,10 @@ class DecodedDataModalView: UIView {
         secondaryLabel.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
         
-        decodedDataTextView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8).isActive = true
-        decodedDataTextView.topAnchor.constraint(equalTo: secondaryLabel.bottomAnchor, constant: 8).isActive = true
-        decodedDataTextView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8).isActive = true
-        decodedDataTextView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8).isActive = true
+        captureDataTextView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8).isActive = true
+        captureDataTextView.topAnchor.constraint(equalTo: secondaryLabel.bottomAnchor, constant: 8).isActive = true
+        captureDataTextView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8).isActive = true
+        captureDataTextView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8).isActive = true
         
     }
     
@@ -88,9 +90,9 @@ class DecodedDataModalView: UIView {
             return
         }
         
-        let userInformation = UserInformation(decodedDataString: decodedDataString)
+        let captureDataInformation = CaptureDataInformation(captureDataString: decodedDataString)
         
-        let user = Club.shared.getUser(with: userInformation.userId)
+        let user = Club.shared.getUser(with: captureDataInformation.userId)
         guard let username = user?.username else {
             return
         }
@@ -108,6 +110,6 @@ class DecodedDataModalView: UIView {
         
         
         
-        decodedDataTextView.text = decodedDataString
+        captureDataTextView.text = decodedDataString
     }
 }

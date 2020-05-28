@@ -10,7 +10,7 @@
 		36A2035B7553196466CFF294 /* Pods_ClubKit_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2D0A0EA7CE53356C4CF3270 /* Pods_ClubKit_Tests.framework */; };
 		5233DD1324774EA800FCFF18 /* CaptureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD0A24774EA800FCFF18 /* CaptureViewModel.swift */; };
 		5233DD1424774EA800FCFF18 /* CircularImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD0C24774EA800FCFF18 /* CircularImageView.swift */; };
-		5233DD1524774EA800FCFF18 /* DecodedDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD0D24774EA800FCFF18 /* DecodedDataView.swift */; };
+		5233DD1524774EA800FCFF18 /* CaptureDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD0D24774EA800FCFF18 /* CaptureDataView.swift */; };
 		5233DD1624774EA800FCFF18 /* HorizontalCaptureDevicesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD0F24774EA800FCFF18 /* HorizontalCaptureDevicesList.swift */; };
 		5233DD1724774EA800FCFF18 /* CoreDataListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD1024774EA800FCFF18 /* CoreDataListView.swift */; };
 		5233DD1824774EA800FCFF18 /* VerticalCaptureDevicesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD1124774EA800FCFF18 /* VerticalCaptureDevicesList.swift */; };
@@ -21,7 +21,7 @@
 		5233DD2324784AD900FCFF18 /* InfoStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD2224784AD900FCFF18 /* InfoStackView.swift */; };
 		5233DD2524784B5800FCFF18 /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD2424784B5800FCFF18 /* UserCell.swift */; };
 		5233DD27247D80BA00FCFF18 /* UserListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD26247D80BA00FCFF18 /* UserListViewController.swift */; };
-		5233DD29247D820A00FCFF18 /* DecodedDataModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD28247D820A00FCFF18 /* DecodedDataModalView.swift */; };
+		5233DD29247D820A00FCFF18 /* CaptureDataModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD28247D820A00FCFF18 /* CaptureDataModalView.swift */; };
 		5233DD2B247DA3D500FCFF18 /* DeviceCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD2A247DA3D500FCFF18 /* DeviceCollectionViewCell.swift */; };
 		52DF07A22475E3B300E6FF37 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DF07A12475E3B300E6FF37 /* SceneDelegate.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
@@ -46,7 +46,7 @@
 		2EDF383728AAF16677F4D102 /* Pods-ClubKit_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ClubKit_Example.debug.xcconfig"; path = "Target Support Files/Pods-ClubKit_Example/Pods-ClubKit_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		5233DD0A24774EA800FCFF18 /* CaptureViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureViewModel.swift; sourceTree = "<group>"; };
 		5233DD0C24774EA800FCFF18 /* CircularImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularImageView.swift; sourceTree = "<group>"; };
-		5233DD0D24774EA800FCFF18 /* DecodedDataView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DecodedDataView.swift; sourceTree = "<group>"; };
+		5233DD0D24774EA800FCFF18 /* CaptureDataView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureDataView.swift; sourceTree = "<group>"; };
 		5233DD0F24774EA800FCFF18 /* HorizontalCaptureDevicesList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HorizontalCaptureDevicesList.swift; sourceTree = "<group>"; };
 		5233DD1024774EA800FCFF18 /* CoreDataListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataListView.swift; sourceTree = "<group>"; };
 		5233DD1124774EA800FCFF18 /* VerticalCaptureDevicesList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VerticalCaptureDevicesList.swift; sourceTree = "<group>"; };
@@ -56,7 +56,7 @@
 		5233DD2224784AD900FCFF18 /* InfoStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoStackView.swift; sourceTree = "<group>"; };
 		5233DD2424784B5800FCFF18 /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
 		5233DD26247D80BA00FCFF18 /* UserListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListViewController.swift; sourceTree = "<group>"; };
-		5233DD28247D820A00FCFF18 /* DecodedDataModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecodedDataModalView.swift; sourceTree = "<group>"; };
+		5233DD28247D820A00FCFF18 /* CaptureDataModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureDataModalView.swift; sourceTree = "<group>"; };
 		5233DD2A247DA3D500FCFF18 /* DeviceCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCollectionViewCell.swift; sourceTree = "<group>"; };
 		52DF07A12475E3B300E6FF37 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		58D81AD850559F068C43F42B /* Pods-ClubKit_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ClubKit_Tests.release.xcconfig"; path = "Target Support Files/Pods-ClubKit_Tests/Pods-ClubKit_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -133,7 +133,7 @@
 				5233DD1224774EA800FCFF18 /* ContentView.swift */,
 				5233DD0E24774EA800FCFF18 /* lists */,
 				5233DD0C24774EA800FCFF18 /* CircularImageView.swift */,
-				5233DD0D24774EA800FCFF18 /* DecodedDataView.swift */,
+				5233DD0D24774EA800FCFF18 /* CaptureDataView.swift */,
 			);
 			path = views;
 			sourceTree = "<group>";
@@ -163,7 +163,7 @@
 			children = (
 				5233DD2224784AD900FCFF18 /* InfoStackView.swift */,
 				5233DD2424784B5800FCFF18 /* UserCell.swift */,
-				5233DD28247D820A00FCFF18 /* DecodedDataModalView.swift */,
+				5233DD28247D820A00FCFF18 /* CaptureDataModalView.swift */,
 				5233DD2A247DA3D500FCFF18 /* DeviceCollectionViewCell.swift */,
 			);
 			name = views;
@@ -464,10 +464,10 @@
 				5233DD1824774EA800FCFF18 /* VerticalCaptureDevicesList.swift in Sources */,
 				5233DD1924774EA800FCFF18 /* ContentView.swift in Sources */,
 				52DF07A22475E3B300E6FF37 /* SceneDelegate.swift in Sources */,
-				5233DD1524774EA800FCFF18 /* DecodedDataView.swift in Sources */,
+				5233DD1524774EA800FCFF18 /* CaptureDataView.swift in Sources */,
 				5233DD1624774EA800FCFF18 /* HorizontalCaptureDevicesList.swift in Sources */,
 				5233DD1E2477529900FCFF18 /* BindableResults.swift in Sources */,
-				5233DD29247D820A00FCFF18 /* DecodedDataModalView.swift in Sources */,
+				5233DD29247D820A00FCFF18 /* CaptureDataModalView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
