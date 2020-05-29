@@ -17,7 +17,8 @@ class ViewController: UIViewController {
     
     private let cellReuseIdentifier = "cellReuseIdentifier"
     
-    private let capture = CaptureHelper.sharedInstance
+    private var devices: [CaptureHelperDevice] = []
+    
     
     
     // MARK: - UI Elements
@@ -66,12 +67,27 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         
         setupUIElements()
-        setupCapture()
+        setupClub()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    private func setupClub() {
+        let appKey =        "MCwCFCXpDCyuA6LzdgGJAk01jdbjZa2wAhRI3zDMlVcwi+4pIU0SRE7P6JP7Pw=="
+        let appID =         "ios:com.socketmobile.ClubKit-Example"
+        let developerID =   "bb57d8e1-f911-47ba-b510-693be162686a"
+        
+        Club.shared.setDelegate(to: self)
+            .setDispatchQueue(DispatchQueue.main)
+            .open(withAppKey:appKey,
+                  appId: appID,
+                  developerId: developerID, completion: { (result) in
+                    
+             })
+        
     }
     
     private func setupUIElements() {
@@ -143,14 +159,14 @@ UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return capture.getDevices().count
+        return devices.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath) as? DeviceCollectionViewCell
         
-        let device = capture.getDevices()[indexPath.item]
+        let device = devices[indexPath.item]
         cell?.setup(with: device.deviceInfo)
         
         return cell!
@@ -176,121 +192,44 @@ UICollectionViewDelegateFlowLayout {
 
 
 
+//MARK: - CaptureMiddlewareDelegate
 
-
-
-
-
-
-// MARK: - Capture delegation
-
-extension ViewController: CaptureHelperDeviceManagerPresenceDelegate,
-    CaptureHelperDevicePresenceDelegate,
-    CaptureHelperDeviceManagerDiscoveryDelegate,
-    CaptureHelperDeviceDecodedDataDelegate {
+extension ViewController: CaptureMiddlewareDelegate {
     
-    
-    private func setupCapture() {
-        let AppInfo = SKTAppInfo();
-        AppInfo.appKey="MCwCFCXpDCyuA6LzdgGJAk01jdbjZa2wAhRI3zDMlVcwi+4pIU0SRE7P6JP7Pw==";
-        AppInfo.appID="ios:com.socketmobile.ClubKit-Example";
-        AppInfo.developerID="bb57d8e1-f911-47ba-b510-693be162686a";
-        // open Capture Helper only once in the application
+    func capture(_ middleware: CaptureMiddleware, didNotifyArrivalFor device: CaptureHelperDevice, result: SKTResult) {
         
-        capture.dispatchQueue = DispatchQueue.main
-        capture.pushDelegate(self)
-        capture.openWithAppInfo(AppInfo, withCompletionHandler: { (result: SKTResult) in
-            
-            if result != SKTResult.E_NOERROR {
-                // An error was received during intialization.
-                // Perhaps, you should call this function again
-                // or display some prompt on screen
-                // before continuing
-            }
-            print("Result of Capture initialization: \(result.rawValue)")
-        })
+        devices.append(device)
+        connectedDevicesLabel.text = "Connected devices: \(devices.count)"
+        collectionView.reloadData()
     }
     
-    
-    
-    
-    // CaptureHelperDeviceManagerPresenceDelegate
-    
-    func didNotifyArrivalForDeviceManager(_ device: CaptureHelperDeviceManager, withResult result: SKTResult) {
+    func capture(_ middleware: CaptureMiddleware, didNotifyRemovalFor device: CaptureHelperDevice, result: SKTResult) {
         
-        device.dispatchQueue = DispatchQueue.main
-        
-        // By default, the favorites is set to ""
-        device.getFavoriteDevicesWithCompletionHandler { (result, favorite) in
-            if result == SKTResult.E_NOERROR {
-                if let favorite = favorite {
-                    print("device favorite: \(favorite)")
-                    if favorite == "" {
-                        device.setFavoriteDevices("*") { (result) in
-                            
-                        }
-                    }
-                }
-            }
+        if let index = devices.firstIndex(of: device) {
+            devices.remove(at: index)
+            connectedDevicesLabel.text = "Connected devices: \(devices.count)"
         }
-    }
-    
-    func didNotifyRemovalForDeviceManager(_ device: CaptureHelperDeviceManager, withResult result: SKTResult) {
-        
-    }
-    
-    
-    
-    
-    // CaptureHelperDevicePresenceDelegate
-    
-    func didNotifyArrivalForDevice(_ device: CaptureHelperDevice, withResult result: SKTResult) {
-        print("capture device arrived")
-        
-        connectedDevicesLabel.text = "Connected devices: \(capture.getDevices().count)"
         collectionView.reloadData()
     }
     
-    func didNotifyRemovalForDevice(_ device: CaptureHelperDevice, withResult result: SKTResult) {
-        
-        connectedDevicesLabel.text = "Connected devices: \(capture.getDevices().count)"
-        collectionView.reloadData()
-    }
-
-    
-    
-    
-    // CaptureHelperDeviceManagerDiscoveryDelegate
-    
-    func didDiscoverDevice(_ device: String, fromDeviceManager deviceManager: CaptureHelperDeviceManager) {
-      
-    }
-    
-    func didEndDiscoveryWithResult(_ result: SKTResult, fromDeviceManager deviceManager: CaptureHelperDeviceManager){
+    func capture(_ middleware: CaptureMiddleware, batteryLevelDidChange value: Int, for device: CaptureHelperDevice) {
         
     }
     
-    
-    
-    
-
-
-
-    // CaptureHelperDeviceDecodedDataDelegate
-    
-    func didReceiveDecodedData(_ decodedData: SKTCaptureDecodedData?, fromDevice device: CaptureHelperDevice, withResult result: SKTResult) {
+    func capture(_ middleware: CaptureMiddleware, didReceive decodedData: SKTCaptureDecodedData?, for device: CaptureHelperDevice, withResult result: SKTResult) {
         
         if let error = Club.shared.onDecodedData(decodedData: decodedData, device: device) {
             print("Error reading decoded data: \(error.localizedDescription)")
         }
-        
+
         if let decodedData = decodedData, let stringFromData = decodedData.stringFromDecodedData() {
             print("tag id raw value: \(decodedData.dataSourceID.rawValue)")
             print("tag id: \(decodedData.dataSourceID)")
             print("data source name: \(String(describing: decodedData.dataSourceName))")
             print("decoded data: \(stringFromData)")
-            
+
             captureDataModalView.updateUI(withDecodedData: stringFromData)
         }
     }
+    
 }

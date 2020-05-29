@@ -108,6 +108,37 @@ public enum CKError: Error {
 
 
 
+/// Public optional delegate used the CaptureMiddleware class and its subclasses.
+@objc public protocol CaptureMiddlewareDelegate: class {
+    
+    /// Notifies the delegate that a CaptureHelper device has been connected
+    /// Use this to refresh UI in iOS application
+    ///
+    /// Even if using CaptureMiddleware and SKTCapture simultaneously, this function will
+    /// only be called once, depending on which entity is set as the Capture delegate.
+    @objc optional func capture(_ middleware: CaptureMiddleware, didNotifyArrivalFor device: CaptureHelperDevice, result: SKTResult)
+    
+    /// Notifies the delegate that a CaptureHelper device has been disconnected
+    /// Use this to refresh UI in iOS application
+    ///
+    /// Even if using CaptureMiddleware and SKTCapture simultaneously, this function will
+    /// only be called once, depending on which entity is set as the Capture delegate.
+    @objc optional func capture(_ middleware: CaptureMiddleware, didNotifyRemovalFor device: CaptureHelperDevice, result: SKTResult)
+    
+    /// Notifies the delegate that the battery level of aa CaptureHelperDevice has changed
+    /// Use this to refresh UI in iOS application
+    ///
+    /// Even if using CaptureMiddleware and SKTCapture simultaneously, this function will
+    /// only be called once, depending on which entity is set as the Capture delegate.
+    @objc optional func capture(_ middleware: CaptureMiddleware, batteryLevelDidChange value: Int, for device: CaptureHelperDevice)
+    
+    
+    
+    @objc optional func capture(_ middleware: CaptureMiddleware, didReceive decodedData: SKTCaptureDecodedData?, for device: CaptureHelperDevice, withResult result: SKTResult)
+    
+}
+
+
 
 
 

@@ -7,18 +7,42 @@
 
 import SKTCapture
 import RealmSwift
+import SKTCapture
 
 public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     
-    public static let shared = Club()
-    
-    private override init() {
-        super.init()
-    }
+    // MARK: - Variables
     
     /// Associated type which will be used as arguments in the API
     /// Custom User objects may be used only if they conform to this protocol
     public typealias userType = MembershipUser
+    
+    public static let shared = Club(capture: CaptureHelper.sharedInstance)
+    
+    public private(set) weak var capture: CaptureHelper!
+    
+    private weak var delegate: CaptureMiddlewareDelegate?
+    
+    private var numberOfFailedOpenCaptureAttempts: Int = 0
+    
+    private var captureLayer: SKTCaptureLayer?
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // MARK: - Initializers (PRIVATE / Singleton)
+    
+    private init(capture: CaptureHelper) {
+        super.init()
+        self.capture = capture
+    }
+    
+    
     
     
     
@@ -62,6 +86,7 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         let numSecondsInAnHour: Int = 60 * 60
         return dayPassHours * numSecondsInAnHour
     }
+    
     public func setDayPass(hours: Int) {
         guard hours > 0 && hours <= 24 else {
             return
@@ -69,7 +94,132 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         dayPassHours = hours
     }
     
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// MARK: - Setup Functions
+
+extension Club {
     
+    @discardableResult
+    public func setDelegate(to: CaptureMiddlewareDelegate) -> Club {
+        self.delegate = to
+        return self
+    }
+    
+    @discardableResult
+    public func setDispatchQueue(_ queue: DispatchQueue) -> Club {
+        capture.dispatchQueue = queue
+        return self
+    }
+    
+    public func open(withAppKey appKey: String, appId: String, developerId: String, completion: ((SKTResult) -> ())? = nil) {
+        
+        let AppInfo = SKTAppInfo()
+        AppInfo.appKey = appKey
+        AppInfo.appID = appId
+        AppInfo.developerID = developerId
+        
+        capture.openWithAppInfo(AppInfo) { [weak self] (result) in
+            guard let strongSelf = self else { return }
+            print("Result of Capture initialization: \(result.rawValue)")
+            
+            if result == SKTResult.E_NOERROR {
+                
+                strongSelf.captureLayer = strongSelf.setupCaptureLayer()
+                completion?(result)
+                
+            } else {
+
+                if strongSelf.numberOfFailedOpenCaptureAttempts == 2 {
+
+                    // Display an alert to the user to restart the app
+                    // if attempts to open capture have failed twice
+
+                    // What should we do here in case of this issue?
+                    // This is a SKTCapture-specific error
+                    completion?(result)
+                    
+                } else {
+
+                    // Attempt to open capture again
+                    print("\n--- Failed to open capture. attempting again...\n")
+                    strongSelf.numberOfFailedOpenCaptureAttempts += 1
+                    strongSelf.open(withAppKey: appKey, appId: appId, developerId: developerId)
+                }
+            }
+        }
+    }
+    
+    public func close(_ completion: ((Bool) -> ())?) {
+        capture?.closeWithCompletionHandler({ (result) in
+            if result == SKTResult.E_NOERROR {
+                completion?(true)
+            } else {
+                
+                // What should we do here in case of this issue?
+                // This is a SKTCapture-specific error
+                completion?(false)
+            }
+        })
+    }
+    
+    private func setupCaptureLayer() -> SKTCaptureLayer {
+        
+        let captureLayer = SKTCaptureLayer()
+        capture.pushDelegate(captureLayer)
+        captureLayer.deviceManagerArrivalHandler = { (deviceManager, result) in
+            
+        }
+        captureLayer.deviceManagerRemovalHandler = { (deviceManager, result) in
+            
+        }
+        captureLayer.deviceArrivalHandler = { (device, result) in
+            self.delegate?.capture?(self, didNotifyArrivalFor: device, result: result)
+        }
+        captureLayer.deviceRemovalHandler = { (device, result) in
+            self.delegate?.capture?(self, didNotifyRemovalFor: device, result: result)
+        }
+        captureLayer.batteryLevelChangeHandler = { (batteryLevel, device) in
+            self.delegate?.capture?(self, batteryLevelDidChange: batteryLevel, for: device)
+        }
+        captureLayer.captureDataHandler = { (decodedData, device, result) in
+            self.delegate?.capture?(self, didReceive: decodedData, for: device, withResult: result)
+        }
+        return captureLayer
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// MARK: - API
+
+extension Club {
     
     /// Creates a new User object in storage from the data within the decodedDataString
     public func createUser(with captureDataInformation: CaptureDataInformation) -> Error? {
@@ -162,5 +312,5 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         }
         return nil
     }
-    
 }
+
