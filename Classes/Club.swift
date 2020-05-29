@@ -181,8 +181,21 @@ extension Club {
         
         let captureLayer = SKTCaptureLayer()
         capture.pushDelegate(captureLayer)
+        
         captureLayer.deviceManagerArrivalHandler = { (deviceManager, result) in
             
+            deviceManager.dispatchQueue = DispatchQueue.main
+
+            // By default, the favorites is set to ""
+            deviceManager.getFavoriteDevicesWithCompletionHandler { (result, favorite) in
+                if result == SKTResult.E_NOERROR {
+                    if let favorite = favorite, favorite == "" {
+                        deviceManager.setFavoriteDevices("*") { (result) in
+
+                        }
+                    }
+                }
+            }
         }
         captureLayer.deviceManagerRemovalHandler = { (deviceManager, result) in
             

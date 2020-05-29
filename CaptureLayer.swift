@@ -50,21 +50,7 @@ internal class SKTCaptureLayer:
     }
     
     func didNotifyArrivalForDeviceManager(_ device: CaptureHelperDeviceManager, withResult result: SKTResult) {
-        device.dispatchQueue = DispatchQueue.main
-
-        // By default, the favorites is set to ""
-        device.getFavoriteDevicesWithCompletionHandler { (result, favorite) in
-            if result == SKTResult.E_NOERROR {
-                if let favorite = favorite {
-                    print("device favorite: \(favorite)")
-                    if favorite == "" {
-                        device.setFavoriteDevices("*") { (result) in
-
-                        }
-                    }
-                }
-            }
-        }
+        
         deviceManagerArrivalHandler?(device, result)
 
     }
