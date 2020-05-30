@@ -19,13 +19,13 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     
     public static let shared = Club(capture: CaptureHelper.sharedInstance)
     
-    public private(set) weak var capture: CaptureHelper!
-    
     private weak var delegate: CaptureMiddlewareDelegate?
     
     private var numberOfFailedOpenCaptureAttempts: Int = 0
     
-    private var captureLayer: SKTCaptureLayer?
+    public private(set) weak var capture: CaptureHelper!
+    
+    private var captureLayer: SKTCaptureLayer!
     
     
     
@@ -165,7 +165,7 @@ extension Club {
     }
     
     public func close(_ completion: ((Bool) -> ())?) {
-        capture?.closeWithCompletionHandler({ (result) in
+        capture.closeWithCompletionHandler({ (result) in
             if result == SKTResult.E_NOERROR {
                 completion?(true)
             } else {
