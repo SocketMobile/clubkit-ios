@@ -203,9 +203,14 @@ extension Club {
         return captureLayer
     }
     
-    public func resignCaptureDelegate(to: CaptureHelperAllDelegate) {
-        capture?.pushDelegate(to)
+    public func assumeCaptureDelegate() {
+        capture.pushDelegate(captureLayer)
     }
+    
+    public func resignCaptureDelegate(to: CaptureHelperAllDelegate) {
+        capture.pushDelegate(to)
+    }
+    
 }
 
 
