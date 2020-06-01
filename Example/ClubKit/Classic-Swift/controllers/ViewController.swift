@@ -8,7 +8,6 @@
 
 import UIKit
 import ClubKit
-import SKTCapture
 
 class ViewController: UIViewController {
     
@@ -16,7 +15,7 @@ class ViewController: UIViewController {
     
     private let cellReuseIdentifier = "cellReuseIdentifier"
     
-    private var devices: [CaptureHelperDevice] = []
+    private var devices: [CaptureLayerDevice] = []
     
     
     
@@ -195,14 +194,34 @@ UICollectionViewDelegateFlowLayout {
 
 extension ViewController: CaptureMiddlewareDelegate {
     
-    func capture(_ middleware: CaptureMiddleware, didNotifyArrivalFor device: CaptureHelperDevice, result: SKTResult) {
+    func capture(_ middleware: CaptureMiddleware, didNotifyArrivalForManager deviceManager: CaptureLayerDeviceManager, result: CaptureLayerResult) {
+        
+        deviceManager.dispatchQueue = DispatchQueue.main
+
+        // By default, the favorites is set to ""
+        deviceManager.getFavoriteDevicesWithCompletionHandler { (result, favorite) in
+            if result == CaptureLayerResult.E_NOERROR {
+                if let favorite = favorite, favorite == "" {
+                    deviceManager.setFavoriteDevices("*") { (result) in
+
+                    }
+                }
+            }
+        }
+    }
+    
+    func capture(_ middleware: CaptureMiddleware, didNotifyRemovalForManager deviceManager: CaptureLayerDeviceManager, result: CaptureLayerResult) {
+        
+    }
+    
+    func capture(_ middleware: CaptureMiddleware, didNotifyArrivalFor device: CaptureLayerDevice, result: CaptureLayerResult) {
         
         devices.append(device)
         connectedDevicesLabel.text = "Connected devices: \(devices.count)"
         collectionView.reloadData()
     }
     
-    func capture(_ middleware: CaptureMiddleware, didNotifyRemovalFor device: CaptureHelperDevice, result: SKTResult) {
+    func capture(_ middleware: CaptureMiddleware, didNotifyRemovalFor device: CaptureLayerDevice, result: CaptureLayerResult) {
         
         if let index = devices.firstIndex(of: device) {
             devices.remove(at: index)
@@ -211,11 +230,11 @@ extension ViewController: CaptureMiddlewareDelegate {
         collectionView.reloadData()
     }
     
-    func capture(_ middleware: CaptureMiddleware, batteryLevelDidChange value: Int, for device: CaptureHelperDevice) {
+    func capture(_ middleware: CaptureMiddleware, batteryLevelDidChange value: Int, for device: CaptureLayerDevice) {
         
     }
     
-    func capture(_ middleware: CaptureMiddleware, didReceive decodedData: SKTCaptureDecodedData?, for device: CaptureHelperDevice, withResult result: SKTResult) {
+    func capture(_ middleware: CaptureMiddleware, didReceive decodedData: CaptureLayerDecodedData?, for device: CaptureLayerDevice, withResult result: CaptureLayerResult) {
         
         if let error = Club.shared.onDecodedData(decodedData: decodedData, device: device) {
             print("Error reading decoded data: \(error.localizedDescription)")

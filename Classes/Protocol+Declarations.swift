@@ -107,34 +107,57 @@ public enum CKError: Error {
 
 
 
+/// Typealias to refer to SKTCapture device manager without exposing SKTCapture framework
+public typealias CaptureLayerDeviceManager = CaptureHelperDeviceManager
+/// Typealias to refer to SKTCapture device  without exposing SKTCapture framework
+public typealias CaptureLayerDevice = CaptureHelperDevice
+/// Typealias to refer to SKTCapture result without exposing SKTCapture framework
+public typealias CaptureLayerResult = SKTResult
+/// Typealias to refer to SKTCapture decoded data without exposing SKTCapture framework
+public typealias CaptureLayerDecodedData = SKTCaptureDecodedData
+
+
 
 /// Public optional delegate used the CaptureMiddleware class and its subclasses.
 @objc public protocol CaptureMiddlewareDelegate: class {
+    
+    /// Notifies the delegate that a CaptureHelper device manager is now available for use
+    /// Use this to configure the manager
+    ///
+    /// Even if using CaptureMiddleware and SKTCapture simultaneously, this function will
+    /// only be called once, depending on which entity is set as the Capture delegate.
+    @objc optional func capture(_ middleware: CaptureMiddleware, didNotifyArrivalForManager deviceManager: CaptureLayerDeviceManager, result: CaptureLayerResult)
+    
+    /// Notifies the delegate that a CaptureHelper device manager is no longer available
+    ///
+    /// Even if using CaptureMiddleware and SKTCapture simultaneously, this function will
+    /// only be called once, depending on which entity is set as the Capture delegate.
+    @objc optional func capture(_ middleware: CaptureMiddleware, didNotifyRemovalForManager deviceManager: CaptureLayerDeviceManager, result: CaptureLayerResult)
     
     /// Notifies the delegate that a CaptureHelper device has been connected
     /// Use this to refresh UI in iOS application
     ///
     /// Even if using CaptureMiddleware and SKTCapture simultaneously, this function will
     /// only be called once, depending on which entity is set as the Capture delegate.
-    @objc optional func capture(_ middleware: CaptureMiddleware, didNotifyArrivalFor device: CaptureHelperDevice, result: SKTResult)
+    @objc optional func capture(_ middleware: CaptureMiddleware, didNotifyArrivalFor device: CaptureLayerDevice, result: CaptureLayerResult)
     
     /// Notifies the delegate that a CaptureHelper device has been disconnected
     /// Use this to refresh UI in iOS application
     ///
     /// Even if using CaptureMiddleware and SKTCapture simultaneously, this function will
     /// only be called once, depending on which entity is set as the Capture delegate.
-    @objc optional func capture(_ middleware: CaptureMiddleware, didNotifyRemovalFor device: CaptureHelperDevice, result: SKTResult)
+    @objc optional func capture(_ middleware: CaptureMiddleware, didNotifyRemovalFor device: CaptureLayerDevice, result: CaptureLayerResult)
     
     /// Notifies the delegate that the battery level of aa CaptureHelperDevice has changed
     /// Use this to refresh UI in iOS application
     ///
     /// Even if using CaptureMiddleware and SKTCapture simultaneously, this function will
     /// only be called once, depending on which entity is set as the Capture delegate.
-    @objc optional func capture(_ middleware: CaptureMiddleware, batteryLevelDidChange value: Int, for device: CaptureHelperDevice)
+    @objc optional func capture(_ middleware: CaptureMiddleware, batteryLevelDidChange value: Int, for device: CaptureLayerDevice)
     
     
     
-    @objc optional func capture(_ middleware: CaptureMiddleware, didReceive decodedData: SKTCaptureDecodedData?, for device: CaptureHelperDevice, withResult result: SKTResult)
+    @objc optional func capture(_ middleware: CaptureMiddleware, didReceive decodedData: CaptureLayerDecodedData?, for device: CaptureLayerDevice, withResult result: CaptureLayerResult)
     
 }
 

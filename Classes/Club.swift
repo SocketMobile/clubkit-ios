@@ -183,22 +183,10 @@ extension Club {
         capture.pushDelegate(captureLayer)
         
         captureLayer.deviceManagerArrivalHandler = { (deviceManager, result) in
-            
-            deviceManager.dispatchQueue = DispatchQueue.main
-
-            // By default, the favorites is set to ""
-            deviceManager.getFavoriteDevicesWithCompletionHandler { (result, favorite) in
-                if result == SKTResult.E_NOERROR {
-                    if let favorite = favorite, favorite == "" {
-                        deviceManager.setFavoriteDevices("*") { (result) in
-
-                        }
-                    }
-                }
-            }
+            self.delegate?.capture?(self, didNotifyArrivalForManager: deviceManager, result: result)
         }
         captureLayer.deviceManagerRemovalHandler = { (deviceManager, result) in
-            
+            self.delegate?.capture?(self, didNotifyRemovalForManager: deviceManager, result: result)
         }
         captureLayer.deviceArrivalHandler = { (device, result) in
             self.delegate?.capture?(self, didNotifyArrivalFor: device, result: result)
@@ -213,6 +201,10 @@ extension Club {
             self.delegate?.capture?(self, didReceive: decodedData, for: device, withResult: result)
         }
         return captureLayer
+    }
+    
+    public func resignCaptureDelegate(to: CaptureHelperAllDelegate) {
+        capture?.pushDelegate(to)
     }
 }
 

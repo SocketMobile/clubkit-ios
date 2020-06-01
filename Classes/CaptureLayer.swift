@@ -7,13 +7,13 @@
 
 import SKTCapture
 
-internal typealias SKTCaptureErrorResultHandler = (SKTResult) -> ()
-internal typealias SKTCaptureDeviceManagerArrivalHandler = (CaptureHelperDeviceManager, SKTResult) -> ()
-internal typealias SKTCaptureDeviceManagerRemovalHandler = (CaptureHelperDeviceManager, SKTResult) -> ()
-internal typealias SKTCaptureDeviceArrivalHandler = (CaptureHelperDevice, SKTResult) -> ()
-internal typealias SKTCaptureDeviceRemovalHandler = (CaptureHelperDevice, SKTResult) -> ()
-internal typealias SKTCaptureDataHandler = (SKTCaptureDecodedData?, CaptureHelperDevice, SKTResult) -> ()
-internal typealias SKTCaptureBatteryLevelChangeHandler = (Int, CaptureHelperDevice) -> ()
+internal typealias SKTCaptureErrorResultHandler = (CaptureLayerResult) -> ()
+internal typealias SKTCaptureDeviceManagerArrivalHandler = (CaptureLayerDeviceManager, CaptureLayerResult) -> ()
+internal typealias SKTCaptureDeviceManagerRemovalHandler = (CaptureLayerDeviceManager, CaptureLayerResult) -> ()
+internal typealias SKTCaptureDeviceArrivalHandler = (CaptureLayerDevice, CaptureLayerResult) -> ()
+internal typealias SKTCaptureDeviceRemovalHandler = (CaptureLayerDevice, CaptureLayerResult) -> ()
+internal typealias SKTCaptureDataHandler = (CaptureLayerDecodedData?, CaptureLayerDevice, CaptureLayerResult) -> ()
+internal typealias SKTCaptureBatteryLevelChangeHandler = (Int, CaptureLayerDevice) -> ()
 
 
 
@@ -28,7 +28,7 @@ internal class SKTCaptureLayer:
     
     public var errorEventHandler: SKTCaptureErrorResultHandler?
     public var deviceManagerArrivalHandler: SKTCaptureDeviceManagerArrivalHandler?
-    public var deviceManagerRemovalHandler: SKTCaptureDeviceRemovalHandler?
+    public var deviceManagerRemovalHandler: SKTCaptureDeviceManagerRemovalHandler?
     public var deviceArrivalHandler: SKTCaptureDeviceArrivalHandler?
     public var deviceRemovalHandler: SKTCaptureDeviceRemovalHandler?
     public var captureDataHandler: SKTCaptureDataHandler?
