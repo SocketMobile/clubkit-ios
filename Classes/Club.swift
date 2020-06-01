@@ -135,7 +135,7 @@ extension Club {
         
         capture.openWithAppInfo(AppInfo) { [weak self] (result) in
             guard let strongSelf = self else { return }
-            print("Result of Capture initialization: \(result.rawValue)")
+            NSLog("Result of Capture initialization: \(result.rawValue)")
             
             if result == SKTResult.E_NOERROR {
                 
@@ -156,7 +156,7 @@ extension Club {
                 } else {
 
                     // Attempt to open capture again
-                    print("\n--- Failed to open capture. attempting again...\n")
+                    NSLog("\n--- Failed to open capture. attempting again...\n")
                     strongSelf.numberOfFailedOpenCaptureAttempts += 1
                     strongSelf.open(withAppKey: appKey, appId: appId, developerId: developerId)
                 }
@@ -274,7 +274,7 @@ extension Club {
             let user = realm.object(ofType: MembershipUser.self, forPrimaryKey: userId)
             return user
         } catch let error {
-            print("Error getting user: \(error)")
+            NSLog("Error getting user: \(error)")
         }
         
         return nil
@@ -370,7 +370,7 @@ public class MembershipUserCollection: NSObject {
                 completion(changes)
             })
         } catch let error {
-            print("Error getting realm reference: \(error)")
+            NSLog("Error getting realm reference: \(error)")
         }
     }
     
