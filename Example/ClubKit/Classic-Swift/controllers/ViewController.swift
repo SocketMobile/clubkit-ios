@@ -9,7 +9,6 @@
 import UIKit
 import ClubKit
 import SKTCapture
-import RealmSwift
 
 class ViewController: UIViewController {
     

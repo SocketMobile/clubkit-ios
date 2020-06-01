@@ -327,3 +327,54 @@ extension Club {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// MARK: - MembershipUserCollection
+/// A wrapper for RealmSwift-related query on MemberShipUser
+/// without exposing the RealmSwift framework
+
+public typealias MembershipUserChanges = RealmCollectionChange<Results<MembershipUser>>
+
+public class MembershipUserCollection: NSObject {
+    
+    public private(set) var users: Results<MembershipUser>!
+    
+    private var usersToken: NotificationToken?
+    
+    public override init() {
+        super.init()
+    }
+    
+    open func observeAllRecords(_ completion: @escaping (MembershipUserChanges) -> ()) {
+        do {
+            let realm = try Realm()
+            users = realm.objects(MembershipUser.self)
+            
+            usersToken = users.observe({ (changes) in
+                completion(changes)
+            })
+        } catch let error {
+            print("Error getting realm reference: \(error)")
+        }
+    }
+    
+}

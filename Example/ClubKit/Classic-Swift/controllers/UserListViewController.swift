@@ -8,7 +8,6 @@
 
 import UIKit
 import ClubKit
-import RealmSwift
 
 class UserListViewController: UIViewController {
     
@@ -16,9 +15,7 @@ class UserListViewController: UIViewController {
     
     private let cellReuseIdentifier = "cellReuseIdentifier"
     
-    private var users: Results<MembershipUser>!
-    private var usersToken: NotificationToken?
-    
+    private let usersCollection = MembershipUserCollection()
     
     // MARK: - UI Elements
     
@@ -75,37 +72,28 @@ class UserListViewController: UIViewController {
     }
     
     private func loadAllRecords() {
-        do {
-            let realm = try Realm()
-            users = realm.objects(MembershipUser.self)
+        
+        usersCollection.observeAllRecords({ [weak self] (changes: MembershipUserChanges) in
+            guard let strongSelf = self else { return }
             
-            usersToken = users.observe({ [weak self] (changes) in
-                guard let strongSelf = self else { return }
-                strongSelf.updateUI(with: changes)
-            })
-        } catch let error {
-            print("Error getting realm reference: \(error)")
-        }
+            switch changes {
+            case .initial(_):
+                strongSelf.tableView.reloadData()
+            case let .update(_, deletions, insertions, modifications):
+                strongSelf.tableView.performBatchUpdates({
+                    strongSelf.tableView.reloadRows(at: modifications.map { IndexPath(row: $0, section: 0) }, with: .automatic)
+                    strongSelf.tableView.insertRows(at: insertions.map { IndexPath(row: $0, section: 0) }, with: .automatic)
+                    strongSelf.tableView.deleteRows(at: deletions.map { IndexPath(row: $0, section: 0) }, with: .automatic)
+                }, completion: { (completed: Bool) in
+                    strongSelf.tableView.reloadData()
+                })
+                break
+            case let .error(error):
+                print(error.localizedDescription)
+            }
+            
+        })
     }
-    
-    private func updateUI(with changes: RealmCollectionChange<Results<MembershipUser>>) {
-        switch changes {
-        case .initial(_):
-            tableView.reloadData()
-        case let .update(_, deletions, insertions, modifications):
-            tableView.performBatchUpdates({
-                self.tableView.reloadRows(at: modifications.map { IndexPath(row: $0, section: 0) }, with: .automatic)
-                self.tableView.insertRows(at: insertions.map { IndexPath(row: $0, section: 0) }, with: .automatic)
-                self.tableView.deleteRows(at: deletions.map { IndexPath(row: $0, section: 0) }, with: .automatic)
-            }, completion: { (completed: Bool) in
-                self.tableView.reloadData()
-            })
-            break
-        case let .error(error):
-            print(error.localizedDescription)
-        }
-    }
-
 }
 
 
@@ -122,13 +110,13 @@ extension UserListViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return users.count
+        return usersCollection.users.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath) as? UserCell
         
-        let user = users[indexPath.item]
+        let user = usersCollection.users[indexPath.item]
         cell?.setup(with: user)
         
         return cell!
@@ -149,7 +137,7 @@ extension UserListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
     
-            let user = users[indexPath.item]
+            let user = usersCollection.users[indexPath.item]
             
             showAlertForDeleting(user: user)
             
