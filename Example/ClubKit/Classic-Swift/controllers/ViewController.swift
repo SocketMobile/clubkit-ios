@@ -80,10 +80,16 @@ class ViewController: UIViewController {
         
         Club.shared.setDelegate(to: self)
             .setDispatchQueue(DispatchQueue.main)
-            .open(withAppKey:appKey,
-                  appId: appID,
-                  developerId: developerID, completion: { (result) in
+            .open(withAppKey:   appKey,
+                  appId:        appID,
+                  developerId:  developerID,
+                  completion: { (result) in
                     
+                    if result != CaptureLayerResult.E_NOERROR {
+                        // Open failed due to internal error.
+                        // Display an alert to the user suggesting to restart the app
+                        // or perform some other action.
+                    }
              })
         
     }
