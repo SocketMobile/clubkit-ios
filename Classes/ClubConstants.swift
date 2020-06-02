@@ -13,6 +13,14 @@ internal struct ClubConstants {
     
     private init() {}
     
+    struct DebugMode {
+        
+        private init() {}
+        
+        static let debugModeUserDefaultsKey: String = "com.socketmobile.clubkit.debug-mode.user-defaults-key"
+        static let debugModeActivatedKey: String = "com.socketmobile.clubkit.userdefaultskey.debug-mode.is-activated"
+    }
+    
     struct RealmQueryConstants {
         
         private init() {}

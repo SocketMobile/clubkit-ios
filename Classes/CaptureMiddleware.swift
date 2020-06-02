@@ -13,7 +13,10 @@ public class CaptureMiddleware: NSObject, CaptureMiddlewareProtocol {
     
     /// Accepts decoded data from a BLE device which can be used to
     /// manage users if the data is from a Mobile Pass
-    public func onDecodedData(decodedData: SKTCaptureDecodedData?, device: CaptureHelperDevice) -> Error? {
+    /// - Parameters:
+    ///   - decodedData: Defines a Capture event Decoded Data, which has a Symbology ID, Symbology Name and decoded data.
+    ///   - device: SKTCapture device
+    public func onDecodedData(decodedData: CaptureLayerDecodedData?, device: CaptureLayerDevice) -> Error? {
         return nil
     }
     

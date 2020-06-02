@@ -80,6 +80,7 @@ class ViewController: UIViewController {
         
         Club.shared.setDelegate(to: self)
             .setDispatchQueue(DispatchQueue.main)
+            .setDebugMode(isActivated: true)
             .open(withAppKey:   appKey,
                   appId:        appID,
                   developerId:  developerID,

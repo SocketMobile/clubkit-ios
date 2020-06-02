@@ -46,9 +46,7 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     
     
     
-    /// Accepts decoded data from a BLE device which can be used to
-    /// manage users if the data is from a Mobile Pass
-    public override func onDecodedData(decodedData: SKTCaptureDecodedData?, device: CaptureHelperDevice) -> Error? {
+    public override func onDecodedData(decodedData: CaptureLayerDecodedData?, device: CaptureLayerDevice) -> Error? {
         
         guard
             let decodedData = decodedData,
@@ -114,18 +112,38 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
 
 extension Club {
     
+    /// Set the delegate for CaptureMiddlewareDelegate
     @discardableResult
     public func setDelegate(to: CaptureMiddlewareDelegate) -> Club {
         self.delegate = to
         return self
     }
     
+    /// Set the DispatchQueue by which SKTCapture delegate functions will be invoked on
     @discardableResult
     public func setDispatchQueue(_ queue: DispatchQueue) -> Club {
         capture.dispatchQueue = queue
         return self
     }
     
+    /// Determines whether debug messages will be logged
+    /// to the DebugLogger object
+    /// - Parameters:
+    ///   - isActivated: Boolean value that, when set to true will save debug messages to the DebugLogger. False by default if unused
+    @discardableResult
+    public func setDebugMode(isActivated: Bool) -> Club {
+        UserDefaults.standard.set(isActivated, forKey: ClubConstants.DebugMode.debugModeUserDefaultsKey)
+        return self
+    }
+    
+    /// Open the SKTCapture layer with credentials.
+    /// This is required for proper use of BLE devices in the desired app.
+    ///
+    /// - Parameters:
+    ///   - appKey: appKey String provided during SDK registration:  [Socket Mobile Developer portal](https://www.socketmobile.com/developer/welcome)
+    ///   - appId: appId String that represents the local bundle identifier, prefixed with platform. Provided during SDK registration:  [Socket Mobile Developer portal](https://www.socketmobile.com/developer/welcome)
+    ///   - developerId: developerId String provided during SDK registration:  [Socket Mobile Developer portal](https://www.socketmobile.com/developer/welcome)
+    ///   - completion: completes with CaptureLayer result which maps success or failure of operation into a code
     public func open(withAppKey appKey: String, appId: String, developerId: String, completion: ((CaptureLayerResult) -> ())? = nil) {
         
         let AppInfo = SKTAppInfo()
@@ -164,6 +182,7 @@ extension Club {
         }
     }
     
+    /// Closes the SKTCapture layer
     public func close(_ completion: ((CaptureLayerResult) -> ())?) {
         capture.closeWithCompletionHandler({ (result) in
             completion?(result)
@@ -196,10 +215,12 @@ extension Club {
         return captureLayer
     }
     
+    /// Re-assumes SKTCapture layer delegate
     public func assumeCaptureDelegate() {
         capture.pushDelegate(captureLayer)
     }
     
+    /// Resigns SKTCapture layer delegate to desired receiver
     public func resignCaptureDelegate(to: CaptureHelperAllDelegate) {
         capture.pushDelegate(to)
     }
@@ -224,7 +245,6 @@ extension Club {
 
 extension Club {
     
-    /// Creates a new User object in storage from the data within the decodedDataString
     public func createUser(with captureDataInformation: CaptureDataInformation) -> Error? {
         
         if let existingUser = getUser(with: captureDataInformation.userId) {
@@ -259,7 +279,6 @@ extension Club {
         return nil
     }
     
-    /// Queries and returns a User object from storage matching the properties within the decodedDataString
     public func getUser(with userId: String) -> MembershipUser? {
         
         do {
@@ -273,7 +292,6 @@ extension Club {
         return nil
     }
     
-    /// Updates a User object with new properties and re-saves it in storage
     public func updateUserInStorage(_ user: MembershipUser) -> Error? {
         
         do {
@@ -292,7 +310,6 @@ extension Club {
         return nil
     }
     
-    /// Queries and deletes a User object from storage matching the properties within the decodedDataString
     public func deleteUser(with userId: String) -> Error? {
         if let user = getUser(with: userId) {
             return deleteUser(user)
@@ -302,7 +319,6 @@ extension Club {
         return error
     }
     
-    /// Deletes a User object from storage
     public func deleteUser(_ user: MembershipUser) -> Error? {
         
         do {
@@ -339,13 +355,15 @@ extension Club {
 
 
 // MARK: - MembershipUserCollection
+
 /// A wrapper for RealmSwift-related query on MemberShipUser
 /// without exposing the RealmSwift framework
-
 public typealias MembershipUserChanges = RealmCollectionChange<Results<MembershipUser>>
 
+/// Maintains self-updating collection of MembershipUsers
 public class MembershipUserCollection: NSObject {
     
+    /// Results collection of MembershipUsers
     public private(set) var users: Results<MembershipUser>!
     
     private var usersToken: NotificationToken?
@@ -354,6 +372,10 @@ public class MembershipUserCollection: NSObject {
         super.init()
     }
     
+    /// Observes changes to MembershipUser records
+    ///
+    /// - Parameters:
+    ///   - completion: Provides all changes such as insertions, deletions, modifications and initial result of the collection of MembershipUser records. Use this to update UI (such as UITableView and UICollectionViews) with updated records.
     open func observeAllRecords(_ completion: @escaping (MembershipUserChanges) -> ()) {
         do {
             let realm = try Realm()
