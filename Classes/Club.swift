@@ -126,7 +126,7 @@ extension Club {
         return self
     }
     
-    public func open(withAppKey appKey: String, appId: String, developerId: String, completion: ((SKTResult) -> ())? = nil) {
+    public func open(withAppKey appKey: String, appId: String, developerId: String, completion: ((CaptureLayerResult) -> ())? = nil) {
         
         let AppInfo = SKTAppInfo()
         AppInfo.appKey = appKey
@@ -135,9 +135,9 @@ extension Club {
         
         capture.openWithAppInfo(AppInfo) { [weak self] (result) in
             guard let strongSelf = self else { return }
-            NSLog("Result of Capture initialization: \(result.rawValue)")
+            DebugLogger.shared.addDebugMessage("Result of Capture initialization: \(result.rawValue)")
             
-            if result == SKTResult.E_NOERROR {
+            if result == CaptureLayerResult.E_NOERROR {
                 
                 strongSelf.captureLayer = strongSelf.setupCaptureLayer()
                 completion?(result)
@@ -156,7 +156,7 @@ extension Club {
                 } else {
 
                     // Attempt to open capture again
-                    NSLog("\n--- Failed to open capture. attempting again...\n")
+                    DebugLogger.shared.addDebugMessage("\n--- Failed to open capture. attempting again...\n")
                     strongSelf.numberOfFailedOpenCaptureAttempts += 1
                     strongSelf.open(withAppKey: appKey, appId: appId, developerId: developerId)
                 }
@@ -164,16 +164,9 @@ extension Club {
         }
     }
     
-    public func close(_ completion: ((Bool) -> ())?) {
+    public func close(_ completion: ((CaptureLayerResult) -> ())?) {
         capture.closeWithCompletionHandler({ (result) in
-            if result == SKTResult.E_NOERROR {
-                completion?(true)
-            } else {
-                
-                // What should we do here in case of this issue?
-                // This is a SKTCapture-specific error
-                completion?(false)
-            }
+            completion?(result)
         })
     }
     
@@ -274,7 +267,7 @@ extension Club {
             let user = realm.object(ofType: MembershipUser.self, forPrimaryKey: userId)
             return user
         } catch let error {
-            NSLog("Error getting user: \(error)")
+            DebugLogger.shared.addDebugMessage("Error getting user: \(error)")
         }
         
         return nil
@@ -370,7 +363,7 @@ public class MembershipUserCollection: NSObject {
                 completion(changes)
             })
         } catch let error {
-            NSLog("Error getting realm reference: \(error)")
+            DebugLogger.shared.addDebugMessage("Error getting realm reference: \(error)")
         }
     }
     
