@@ -248,6 +248,10 @@ extension ViewController: CaptureMiddlewareDelegate {
         }
 
         if let decodedData = decodedData, let stringFromData = decodedData.stringFromDecodedData() {
+            
+            // NOTE
+            // Assumes the decodedData is in UTF8 format
+            
             print("tag id raw value: \(decodedData.dataSourceID.rawValue)")
             print("tag id: \(decodedData.dataSourceID)")
             print("data source name: \(String(describing: decodedData.dataSourceName))")
