@@ -48,12 +48,14 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     
     public override func onDecodedData(decodedData: CaptureLayerDecodedData?, device: CaptureLayerDevice) -> Error? {
         
-        guard
-            let decodedData = decodedData,
-            let captureDataString = decodedData.stringFromDecodedData()
-            else {
-                let error = CKError.nullDecodedDataString("The decoded data string is nil")
-                return error
+        guard let decodedData = decodedData else {
+            let error = CKError.nullDecodedData("The decoded data proeprty is nil")
+            return error
+        }
+        
+        guard let captureDataString = decodedData.stringFromDecodedData() else {
+            let error = CKError.nonExistentUTF8DecodedDataString("The decoded data property could not be translated to a UTF8 String")
+            return error
         }
         
         let captureDataInformation = CaptureDataInformation(captureDataString: captureDataString)

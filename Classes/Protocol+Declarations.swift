@@ -119,10 +119,15 @@ public enum CKError: Error {
     ///   - ErrorMessage: Detailed message of the error
     case nonexistentUser(String)
     
-    /// String representation of DecodedData does not exist
+    /// DecodedData does not exist
     /// - Parameters:
     ///   - ErrorMessage: Detailed message of the error
-    case nullDecodedDataString(String)
+    case nullDecodedData(String)
+    
+    /// UTF8 String representation of DecodedData does not exist
+    /// - Parameters:
+    ///   - ErrorMessage: Detailed message of the error
+    case nonExistentUTF8DecodedDataString(String)
     
 }
 
