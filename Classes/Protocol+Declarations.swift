@@ -7,6 +7,8 @@
 
 import SKTCapture
 
+// MARK: - IdentifiableUserProtocool
+
 /// Protocol for all User objects to conform to. If creating a custom User class, the custom class must
 /// conform to this protocol
 public protocol IdentifiableUserProtocol: class {
@@ -26,13 +28,15 @@ public protocol IdentifiableUserProtocol: class {
 
 
 
+// MARK: - CaptureMiddlewareProtocol
+
 /// Protocol for CaptureMiddleware classes. If creating a custom CaptureMiddleware class, the custom class
 /// must conform to this protocol
 public protocol CaptureMiddlewareProtocol: class {
     
     /// Accepts decoded data from a BLE device which can be used to
     /// manage users if the data is from a Mobile Pass
-    @discardableResult func onDecodedData(decodedData: SKTCaptureDecodedData?, device: CaptureHelperDevice) -> Error?
+    @discardableResult func onDecodedData(decodedData: CaptureLayerDecodedData?, device: CaptureLayerDevice) -> Error?
     
     /// Determines how the decoded data will be parsed. Can be configured.
     var decodedDataFormat: CaptureMiddleware.DecodedDataParseFormat { get }
@@ -47,6 +51,8 @@ public protocol CaptureMiddlewareProtocol: class {
 
 
 
+// MARK: - CaptureMembershipProtocol
+
 /// Protocol for managing users. If creating a custom CaptureMembership class, the custom class
 /// must conform to this protocol
 public protocol CaptureMembershipProtocol: CaptureMiddlewareProtocol {
@@ -56,24 +62,32 @@ public protocol CaptureMembershipProtocol: CaptureMiddlewareProtocol {
     associatedtype userType: IdentifiableUserProtocol
     
     
-    typealias MembershipCompletionResult = ((Result<userType, Error>) -> ())?
-    typealias MembershipReturnResult = Result<userType, Error>
     
     // CRUD
     
     /// Creates a new User object in storage from the data within the decodedDataString
+    /// - Parameters:
+    ///   - captureDataInformation: Object that represents the data contained in a mobile pass, RFID card or otherwise
     func createUser(with captureDataInformation: CaptureDataInformation) -> Error?
     
     /// Queries and returns a User object from storage matching the properties within the decodedDataString
+    /// - Parameters:
+    ///   - userId: Unique String (often alpha-numeric) that represents a single user
     func getUser(with userId: String) -> userType?
     
     /// Updates a User object with new properties and re-saves it in storage
+    /// - Parameters:
+    ///   - user: User object/class. May be subclassed
     func updateUserInStorage(_ user: userType) -> Error?
     
     /// Queries and deletes a User object from storage matching the properties within the decodedDataString
+    /// - Parameters:
+    ///   - userId: Unique String (often alpha-numeric) that represents a single user
     func deleteUser(with userId: String) -> Error?
     
     /// Deletes a User object from storage
+    /// - Parameters:
+    ///   - user: User object/class. May be subclassed
     func deleteUser(_ user: userType) -> Error?
     
 }
@@ -89,16 +103,121 @@ public protocol CaptureMembershipProtocol: CaptureMiddlewareProtocol {
 
 
 
+// MARK: - CKError
+
+/// Internal errors related to scanning mobile passes, RFID cards, etc.
 
 public enum CKError: Error {
     
+    /// Attempted to create a new user with a userId of an existing user
+    /// - Parameters:
+    ///   - ErrorMessage: Detailed message of the error
     case userExistsAlready(String)
     
+    /// Attempted to delete a user with a userId that does not match any existing user
+    /// - Parameters:
+    ///   - ErrorMessage: Detailed message of the error
     case nonexistentUser(String)
     
-    case nullDecodedDataString(String)
+    /// DecodedData does not exist
+    /// - Parameters:
+    ///   - ErrorMessage: Detailed message of the error
+    case nullDecodedData(String)
     
-    case malformedDecodedData(String)
+    /// UTF8 String representation of DecodedData does not exist
+    /// - Parameters:
+    ///   - ErrorMessage: Detailed message of the error
+    case nonExistentUTF8DecodedDataString(String)
+    
+}
+
+
+
+
+
+
+/// Typealias to refer to SKTCapture device manager without exposing SKTCapture framework
+public typealias CaptureLayerDeviceManager = CaptureHelperDeviceManager
+/// Typealias to refer to SKTCapture device  without exposing SKTCapture framework
+public typealias CaptureLayerDevice = CaptureHelperDevice
+/// Typealias to refer to SKTCapture result without exposing SKTCapture framework
+public typealias CaptureLayerResult = SKTResult
+/// Typealias to refer to SKTCapture decoded data without exposing SKTCapture framework
+public typealias CaptureLayerDecodedData = SKTCaptureDecodedData
+
+
+
+// MARK: - CaptureMiddlewareDelegate
+
+/// Public optional delegate used the CaptureMiddleware class and its subclasses.
+@objc public protocol CaptureMiddlewareDelegate: class {
+    
+    /// Notifies the delegate that a CaptureHelper device manager is now available for use
+    /// Use this to configure the manager
+    ///
+    /// Even if using CaptureMiddleware and SKTCapture simultaneously, this function will
+    /// only be called once, depending on which entity is set as the Capture delegate.
+    /// - Parameters:
+    ///   - middleware: CaptureMiddleware object/class that invokes this delegate function
+    ///   - deviceManager: SKTCapture device manager
+    ///   - result: CaptureLayer result which maps success or failure of operation into a code
+    @objc optional func capture(_ middleware: CaptureMiddleware, didNotifyArrivalForManager deviceManager: CaptureLayerDeviceManager, result: CaptureLayerResult)
+    
+    /// Notifies the delegate that a CaptureHelper device manager is no longer available
+    ///
+    /// Even if using CaptureMiddleware and SKTCapture simultaneously, this function will
+    /// only be called once, depending on which entity is set as the Capture delegate.
+    /// - Parameters:
+    ///   - middleware: CaptureMiddleware object/class that invokes this delegate function
+    ///   - deviceManager: SKTCapture device manager
+    ///   - result: CaptureLayer result which maps success or failure of operation into a code
+    @objc optional func capture(_ middleware: CaptureMiddleware, didNotifyRemovalForManager deviceManager: CaptureLayerDeviceManager, result: CaptureLayerResult)
+    
+    /// Notifies the delegate that a CaptureHelper device has been connected
+    /// Use this to refresh UI in iOS application
+    ///
+    /// Even if using CaptureMiddleware and SKTCapture simultaneously, this function will
+    /// only be called once, depending on which entity is set as the Capture delegate.
+    /// - Parameters:
+    ///   - middleware: CaptureMiddleware object/class that invokes this delegate function
+    ///   - device: SKTCapture device
+    ///   - result: CaptureLayer result which maps success or failure of operation into a code
+    @objc optional func capture(_ middleware: CaptureMiddleware, didNotifyArrivalFor device: CaptureLayerDevice, result: CaptureLayerResult)
+    
+    /// Notifies the delegate that a CaptureHelper device has been disconnected
+    /// Use this to refresh UI in iOS application
+    ///
+    /// Even if using CaptureMiddleware and SKTCapture simultaneously, this function will
+    /// only be called once, depending on which entity is set as the Capture delegate.
+    /// - Parameters:
+    ///   - middleware: CaptureMiddleware object/class that invokes this delegate function
+    ///   - device: SKTCapture device
+    ///   - result: CaptureLayer result which maps success or failure of operation into a code
+    @objc optional func capture(_ middleware: CaptureMiddleware, didNotifyRemovalFor device: CaptureLayerDevice, result: CaptureLayerResult)
+    
+    /// Notifies the delegate that the battery level of aa CaptureHelperDevice has changed
+    /// Use this to refresh UI in iOS application
+    ///
+    /// Even if using CaptureMiddleware and SKTCapture simultaneously, this function will
+    /// only be called once, depending on which entity is set as the Capture delegate.
+    /// - Parameters:
+    ///   - middleware: CaptureMiddleware object/class that invokes this delegate function
+    ///   - value: Integer value representing battery level of respective device (0-100)
+    ///   - deviceManager: SKTCapture device
+    @objc optional func capture(_ middleware: CaptureMiddleware, batteryLevelDidChange value: Int, for device: CaptureLayerDevice)
+    
+    
+    /// Notifies the delegate that a CaptureHelper device has scanned some mobile pass, barcode, RFID card, etc.
+    /// This may be used in concert with CaptureMiddleware.onDecodedData function
+    ///
+    /// Even if using CaptureMiddleware and SKTCapture simultaneously, this function will
+    /// only be called once, depending on which entity is set as the Capture delegate.
+    /// - Parameters:
+    ///   - middleware: CaptureMiddleware object/class that invokes this delegate function
+    ///   - decodedData: Defines a Capture event Decoded Data, which has a Symbology ID, Symbology Name and decoded data.
+    ///   - device: SKTCapture device
+    ///   - result: CaptureLayer result which maps success or failure of operation into a code
+    @objc optional func capture(_ middleware: CaptureMiddleware, didReceive decodedData: CaptureLayerDecodedData?, for device: CaptureLayerDevice, withResult result: CaptureLayerResult)
     
 }
 
@@ -111,6 +230,7 @@ public enum CKError: Error {
 
 
 
+// MARK: - CaptureDataUserInformation
 
 public protocol CaptureDataUserInformationProtocol {
     var userId: String { get }
@@ -120,6 +240,8 @@ public protocol CaptureDataUserInformationProtocol {
     
     init(captureDataString: String)
 }
+
+/// Struct for representing the user information obtained from scanning a mobile pass, RFID card, etc.
 public struct CaptureDataInformation: CaptureDataUserInformationProtocol {
     
     public let userId: String
