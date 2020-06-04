@@ -75,24 +75,42 @@ def getCurrentDir():
 def getFullVersion(directory):
     currentDir = os.getcwd()
     os.chdir(directory)
-    version = subprocess.check_output(['git','describe', '--long'])
-    version = version.splitlines()[0]
-    version = version.split('-')
-    subversion = version[0].split('.')
-    lastNumber = version[1]
-    if len(subversion) == 3:
-        lastNumber = subversion[2]
-    currentVersion = subversion[0] + '.' + subversion[1] + '.' + lastNumber
-    version = subversion[0] + '.' + subversion[1] + '.' + str(int(lastNumber) + 1)
-    version = version.split('.');
-    finalVersion = ''
-    for n in range(3):
-        finalVersion += version[n]
-        if n < 2 :
-            finalVersion += '.'
+    
+    # Returns a value like: 0.1.0-2-gebe2fb1
+    # 0 represents the version.major
+    # 1 represents the version.middle
+    # 0 represents the version.minor
+    # 2 represents the version.build
+    # gebe2fb1 represents the hash
+    describedVersion = subprocess.check_output(['git','describe', '--long'])
+    
+    # Splits by "\n" (new line) if there are multiple lines.
+    # Not likely to happen since the version would not contain this
+    oneLinedDescribedVersion = describedVersion.splitlines()[0]
+    
+    # Splits version by hyphens to single out the build number
+    # and the hash. (Array)
+    hyphenSeparatedOneLinedDescribedVersion = oneLinedDescribedVersion.split('-')
+    
+    # Split the current version numbers by .
+    # Produces: [0, 1, 0] (Array)
+    currentVersionNumbers = hyphenSeparatedOneLinedDescribedVersion[0].split('.')
+    
+    # Produces the version build number: 2
+    versionBuildNumber = hyphenSeparatedOneLinedDescribedVersion[1]
+        
+    # Reconstructs a string of the current version (excluding the version build number
+    # Produces: '0.1.0' (String)
+    currentVersion = currentVersionNumbers[0] + '.' + currentVersionNumbers[1] + '.' + currentVersionNumbers[2]
+    
+    
+    finalVersion = currentVersionNumbers[0] + '.' + currentVersionNumbers[1] + '.' + str(int(versionBuildNumber) + 1)
 
     os.chdir(currentDir)
-    print 'full version: ' + finalVersion +' '+directory
+        
+    print 'described version: ' + describedVersion
+    print 'current version before this commit: ' + currentVersion
+    print 'full version after this commit: ' + finalVersion +' '+directory
     return currentVersion, finalVersion
 
 def commitModifications(version):
