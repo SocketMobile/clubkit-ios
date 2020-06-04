@@ -22,12 +22,38 @@ def updateVersionFiles(files, currentVersion, newVersion):
             trg.close()
         os.remove(file)
         os.rename(file + '-new', file)
+        
+def updatePlistFileVersion(newVersion):
+
+    plistname = '../Example/Pods/Target Support Files/ClubKit/ClubKit-Info.plist'
+
+    if not os.path.exists(plistname):
+        print("{0} does not exist".format(plistname))
+        return False
+
+    plistbuddy = '/usr/libexec/Plistbuddy'
+    if not os.path.exists(plistbuddy):
+        print("{0} does not exist".format(plistbuddy))
+        return False
+
+    cmdline = [plistbuddy,
+        "-c", "Set CFBundleShortVersionString {0}".format(newVersion),
+        "-c", "Set CFBundleVersion {0}".format(newVersion),
+        plistname]
+    if subprocess.call(cmdline) != 0:
+        print("Failed to update {0}".format(plistname))
+        return False
+
+    print("Updated {0} with v{1}".format(plistname, newVersion))
+    return True
+        
 
 def updateFiles(targetDirectory, currentVersion, newVersion):
     files = glob.glob(targetDirectory + '/*.txt')
     updateVersionFiles(files, currentVersion, newVersion)
     files = glob.glob(targetDirectory + '/*.podspec')
     updateVersionFiles(files, currentVersion, newVersion)
+    updatePlistFileVersion(newVersion)
 
 def getCurrentDir():
     nbParam = len(sys.argv)
