@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # OS X
 .DS_Store
 
@@ -22,7 +21,6 @@ xcuserdata/
 build/
 DerivedData/
 *.moved-aside
->>>>>>> 07ce8708f2d7634bfcfc3b3727c175088c6dbd8d
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -31,7 +29,6 @@ DerivedData/
 !default.mode2v3
 *.perspectivev3
 !default.perspectivev3
-<<<<<<< HEAD
 xcuserdata/
 *.xccheckout
 profile
@@ -72,7 +69,7 @@ playground.xcworkspace
 
 
 
-Example/Pods
+Example/Pods/
 
 
 
@@ -131,4 +128,3 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
->>>>>>> 07ce8708f2d7634bfcfc3b3727c175088c6dbd8d
