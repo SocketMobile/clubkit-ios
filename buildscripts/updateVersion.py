@@ -25,6 +25,8 @@ def updateVersionFiles(files, currentVersion, newVersion):
         
 def updatePlistFileVersion(newVersion):
 
+    # Hard-coded reference to plist file. This assumes the plist file in
+    # ClubKit cocoapod will never be moved from its current position
     plistname = '../Example/Pods/Target Support Files/ClubKit/ClubKit-Info.plist'
 
     if not os.path.exists(plistname):
@@ -40,6 +42,7 @@ def updatePlistFileVersion(newVersion):
         "-c", "Set CFBundleShortVersionString {0}".format(newVersion),
         "-c", "Set CFBundleVersion {0}".format(newVersion),
         plistname]
+        
     if subprocess.call(cmdline) != 0:
         print("Failed to update {0}".format(plistname))
         return False
@@ -49,10 +52,16 @@ def updatePlistFileVersion(newVersion):
         
 
 def updateFiles(targetDirectory, currentVersion, newVersion):
+
+    # Update the version in any text files in the first level of the project directory (May be unused)
     files = glob.glob(targetDirectory + '/*.txt')
     updateVersionFiles(files, currentVersion, newVersion)
+    
+    # Update the version in the podspec
     files = glob.glob(targetDirectory + '/*.podspec')
     updateVersionFiles(files, currentVersion, newVersion)
+    
+    # Update the version in the plist file
     updatePlistFileVersion(newVersion)
 
 def getCurrentDir():
