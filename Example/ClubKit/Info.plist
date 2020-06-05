@@ -54,5 +54,9 @@
 	</array>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>&quot;Access to Bluetooth is required to connect to BLE devices&quot;</string>
+	<key>UISupportedExternalAccessoryProtocols</key>
+	<array>
+		<string>com.socketmobile.chs</string>
+	</array>
 </dict>
 </plist>
