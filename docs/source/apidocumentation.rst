@@ -10,29 +10,22 @@ There are four functions used in setting up the Maraca singleton:
 
 .. code-block:: Swift
 
-  /// Set the delegate for CaptureMiddlewareDelegate
+  // Set the delegate for CaptureMiddlewareDelegate
   @discardableResult
   public func setDelegate(to: CaptureMiddlewareDelegate) -> Club
 
-  /// Set the DispatchQueue by which SKTCapture delegate functions will be invoked on
+  // Set the DispatchQueue by which SKTCapture delegate
+  // functions will be invoked on
   @discardableResult
   public func setDispatchQueue(_ queue: DispatchQueue) -> Club
 
-  /// Determines whether debug messages will be logged
-  /// to the DebugLogger object
-  /// - Parameters:
-  ///   - isActivated: Boolean value that, when set to true will save debug messages to the DebugLogger. False by default if unused
+  // Toggles whether debug messages will be logged
+  // to the DebugLogger object
   @discardableResult
   public func setDebugMode(isActivated: Bool) -> Club
 
-  /// Open the SKTCapture layer with credentials.
-  /// This is required for proper use of BLE devices in the desired app.
-  ///
-  /// - Parameters:
-  ///   - appKey: appKey String provided during SDK registration:  [Socket Mobile Developer portal](https://www.socketmobile.com/developer/welcome)
-  ///   - appId: appId String that represents the local bundle identifier, prefixed with platform. Provided during SDK registration:  [Socket Mobile Developer portal](https://www.socketmobile.com/developer/welcome)
-  ///   - developerId: developerId String provided during SDK registration:  [Socket Mobile Developer portal](https://www.socketmobile.com/developer/welcome)
-  ///   - completion: completes with CaptureLayer result which maps success or failure of operation into a code
+  // Open the SKTCapture layer with credentials.
+  // This is required for proper use of BLE devices in the desired app.
   public func open(withAppKey appKey: String, appId: String, developerId: String, completion: ((CaptureLayerResult) -> ())? = nil)
 
 
