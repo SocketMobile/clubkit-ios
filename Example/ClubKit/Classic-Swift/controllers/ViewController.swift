@@ -197,7 +197,7 @@ UICollectionViewDelegateFlowLayout {
 
 
 
-//MARK: - CaptureMiddlewareDelegate
+// MARK: - CaptureMiddlewareDelegate
 
 extension ViewController: CaptureMiddlewareDelegate {
     
