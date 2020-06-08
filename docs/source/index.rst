@@ -2,7 +2,7 @@ Welcome to ClubKit Documentation
 ==================================
 
 The Socket Mobile Inc. ClubKit open-source framework provides support for building
-loyalty-based applications that allow users to manage users using mobile passes
+loyalty-based applications that allow business owners to manage customers using mobile passes
 and RFID cards.
 
 
