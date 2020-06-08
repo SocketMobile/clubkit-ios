@@ -53,7 +53,7 @@ Putting it all together
   // It can be used anywhere in your application afterward.
   private func setupClub() {
     // Use the values provided when you registered your application on the Socket Mobile developer site.
-    // This is necessary to using Maraca and Capture together.
+    // This is necessary to using ClubKit and Capture together.
     let appKey =        <Your app key>
     let appId =         <Your app ID>
     let developerId =   <Your developer ID>
