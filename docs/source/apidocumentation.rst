@@ -6,7 +6,7 @@
 Setting up ClubKit
 ---------------------------------------
 
-There are four functions used in setting up the Maraca singleton:
+There are four functions used in setting up the ClubKit singleton:
 
 .. code-block:: Swift
 
