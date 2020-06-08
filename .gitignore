@@ -1,6 +1,11 @@
 # OS X
 .DS_Store
 
+# where the python virtualenv is for the docs
+docs/docs
+docs/build
+
+
 # Xcode
 build/
 =======
