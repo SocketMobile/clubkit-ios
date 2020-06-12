@@ -15,11 +15,17 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     
     /// Associated type which will be used as arguments in the API
     /// Custom User objects may be used only if they conform to this protocol
+    /// May be overriden by providing your own custom MembershipUser class type
+    /// in the `setCustomMembershipUser(classType:)` function during initialization
     public typealias userType = MembershipUser
+    
+    /// Gives developer the opportunity to use their own MembershipUser subclasses
+    /// Will override the default MembershipUser class that is used in typical operations
+    private var OverridableMembershipUserClassType: MembershipUser.Type = MembershipUser.self
     
     public static let shared = Club(capture: CaptureHelper.sharedInstance)
     
-    private weak var delegate: CaptureMiddlewareDelegate?
+    private weak var delegate: ClubMiddlewareDelegate?
     
     private var numberOfFailedOpenCaptureAttempts: Int = 0
     
@@ -42,10 +48,6 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         self.capture = capture
     }
     
-    
-    
-    
-    
     public override func onDecodedData(decodedData: CaptureLayerDecodedData?, device: CaptureLayerDevice) -> Error? {
         
         guard let decodedData = decodedData else {
@@ -62,12 +64,13 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         
         if let existingUser = getUser(with: captureDataInformation.userId) {
             
-            return updateUserInStorage(existingUser)
+            updateVisits(for: existingUser)
         } else {
             // This is a new user
-            return createUser(with: captureDataInformation)
+            createUser(with: captureDataInformation)
         }
         
+        return nil
     }
     
     
@@ -116,7 +119,7 @@ extension Club {
     
     /// Set the delegate for CaptureMiddlewareDelegate
     @discardableResult
-    public func setDelegate(to: CaptureMiddlewareDelegate) -> Club {
+    public func setDelegate(to: ClubMiddlewareDelegate) -> Club {
         self.delegate = to
         return self
     }
@@ -135,6 +138,16 @@ extension Club {
     @discardableResult
     public func setDebugMode(isActivated: Bool) -> Club {
         UserDefaults.standard.set(isActivated, forKey: ClubConstants.DebugMode.debugModeUserDefaultsKey)
+        return self
+    }
+    
+    /// Provide your own custom MembershipUser class type
+    /// to be used for all operations.
+    /// If this function is not called, the default `MembershipUser` class will be used
+    /// `classType` must be a subclass of `MembershipUser`
+    @discardableResult
+    public func setCustomMembershipUser(classType: MembershipUser.Type) -> Club {
+        OverridableMembershipUserClassType = classType
         return self
     }
     
@@ -213,6 +226,9 @@ extension Club {
         }
         captureLayer.captureDataHandler = { (decodedData, device, result) in
             self.delegate?.capture?(self, didReceive: decodedData, for: device, withResult: result)
+            if let possibleError = self.onDecodedData(decodedData: decodedData, device: device) {
+                self.delegate?.club?(self, didReceive: possibleError)
+            }
         }
         return captureLayer
     }
@@ -247,17 +263,18 @@ extension Club {
 
 extension Club {
     
-    public func createUser(with captureDataInformation: CaptureDataInformation) -> Error? {
+    public func createUser(with captureDataInformation: CaptureDataInformation) {
         
         if let existingUser = getUser(with: captureDataInformation.userId) {
             
             let error = CKError.userExistsAlready("Attempted to create a new user but one exists with this userId: \(String(describing: existingUser.userId)) and username: \(String(describing: existingUser.username))")
-            return error
+            
+            delegate?.club?(self, didReceive: error)
             
         } else {
             // This user does not exist and there is no error
             
-            let user = MembershipUser()
+            let user = OverridableMembershipUserClassType.init()
 
             user.userId = captureDataInformation.userId
             user.username = captureDataInformation.username
@@ -272,66 +289,74 @@ extension Club {
                 let realm = try Realm()
                 try realm.write {
                     realm.add(user)
+                    delegate?.club?(self, didCreateNewMembership: user)
                 }
             } catch let error {
-                return error
+                delegate?.club?(self, didReceive: error)
             }
         }
-        
-        return nil
     }
     
     public func getUser(with userId: String) -> MembershipUser? {
         
         do {
             let realm = try Realm()
-            let user = realm.object(ofType: MembershipUser.self, forPrimaryKey: userId)
+            let user = realm.object(ofType: OverridableMembershipUserClassType.self, forPrimaryKey: userId)
             return user
         } catch let error {
+            delegate?.club?(self, didReceive: error)
             DebugLogger.shared.addDebugMessage("Error getting user: \(error)")
         }
         
         return nil
     }
     
-    public func updateUserInStorage(_ user: MembershipUser) -> Error? {
-        
+    private func updateVisits(for user: MembershipUser) {
+        self.update(user: user) {
+            let previousNumberOfVisits = user.numVisits
+            let updatedValue = previousNumberOfVisits + 1
+            
+            user.numVisits = updatedValue
+            user.timeStampOfLastVisit = Date().timeIntervalSince1970
+            
+            delegate?.club?(self, didUpdateMembership: user)
+        }
+    }
+    
+    public func update(user: MembershipUser, withChanges changes: () -> ()) {
         do {
             let realm = try Realm()
             try realm.write {
-                let previousNumberOfVisits = user.numVisits
-                let updatedValue = previousNumberOfVisits + 1
                 
-                user.numVisits = updatedValue
-                user.timeStampOfLastVisit = Date().timeIntervalSince1970
+                // Perform changes to user object and update in Realm
+                changes()
             }
         } catch let error {
-            return error
+            delegate?.club?(self, didReceive: error)
         }
-        
-        return nil
     }
     
-    public func deleteUser(with userId: String) -> Error? {
+    public func deleteUser(with userId: String) {
         if let user = getUser(with: userId) {
-            return deleteUser(user)
+            deleteUser(user)
+        } else {
+            
+            let error = CKError.nonexistentUser("No such user exists")
+            delegate?.club?(self, didReceive: error)
         }
-        
-        let error = CKError.nonexistentUser("No such user exists")
-        return error
     }
     
-    public func deleteUser(_ user: MembershipUser) -> Error? {
+    public func deleteUser(_ user: MembershipUser) {
         
         do {
             let realm = try Realm()
             try realm.write {
                 realm.delete(user)
+                delegate?.club?(self, didDeleteMembership: user)
             }
         } catch let error {
-            return error
+            delegate?.club?(self, didReceive: error)
         }
-        return nil
     }
 }
 
@@ -360,13 +385,13 @@ extension Club {
 
 /// A wrapper for RealmSwift-related query on MemberShipUser
 /// without exposing the RealmSwift framework
-public typealias MembershipUserChanges = RealmCollectionChange<Results<MembershipUser>>
+public typealias MembershipUserChanges<T: MembershipUser> = RealmCollectionChange<Results<T>>
 
 /// Maintains self-updating collection of MembershipUsers
-public class MembershipUserCollection: NSObject {
+public class MembershipUserCollection<T: MembershipUser>: NSObject {
     
     /// Results collection of MembershipUsers
-    public private(set) var users: Results<MembershipUser>!
+    public private(set) var users: Results<T>!
     
     private var usersToken: NotificationToken?
     
@@ -378,10 +403,10 @@ public class MembershipUserCollection: NSObject {
     ///
     /// - Parameters:
     ///   - completion: Provides all changes such as insertions, deletions, modifications and initial result of the collection of MembershipUser records. Use this to update UI (such as UITableView and UICollectionViews) with updated records.
-    open func observeAllRecords(_ completion: @escaping (MembershipUserChanges) -> ()) {
+    open func observeAllRecords(_ completion: @escaping (MembershipUserChanges<T>) -> ()) {
         do {
             let realm = try Realm()
-            users = realm.objects(MembershipUser.self)
+            users = realm.objects(T.self)
             
             usersToken = users.observe({ (changes) in
                 completion(changes)

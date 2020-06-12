@@ -35,9 +35,10 @@ class UserCell: UITableViewCell {
     private var userCreationInfoStackView = InfoStackView()
     private var userLastVisitInfoStackView = InfoStackView()
     private var userNumVisitsInfoStackView = InfoStackView()
+    private var emailAddressInfoStackView = InfoStackView()
     
     private lazy var containerStackView: UIStackView = {
-        let sv = UIStackView(arrangedSubviews: [usernameInfoStackView, userIdInfoStackView, userCreationInfoStackView, userLastVisitInfoStackView, userNumVisitsInfoStackView])
+        let sv = UIStackView(arrangedSubviews: [usernameInfoStackView, userIdInfoStackView, userCreationInfoStackView, userLastVisitInfoStackView, userNumVisitsInfoStackView, emailAddressInfoStackView])
         sv.translatesAutoresizingMaskIntoConstraints = false
         sv.axis = .vertical
         sv.alignment = .leading
@@ -98,7 +99,7 @@ class UserCell: UITableViewCell {
         containerStackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -paddingConstant).isActive = true
     }
     
-    public func setup(with user: MembershipUser) {
+    public func setup(with user: CustomMembershipUser) {
         usernameInfoStackView.setText(title: "User name:", secondary: user.username)
         userIdInfoStackView.setText(title: "User Unique Id:", secondary: user.userId)
         
@@ -114,6 +115,8 @@ class UserCell: UITableViewCell {
         userLastVisitInfoStackView.setText(title: "Date of last visit:", secondary: lastVisitDateAsString)
         
         userNumVisitsInfoStackView.setText(title: "Number of visits:", secondary: String(describing: user.numVisits))
+        
+        emailAddressInfoStackView.setText(title: "Email Address", secondary: user.emailAddress)
     }
     
 }

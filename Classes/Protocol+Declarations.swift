@@ -68,7 +68,7 @@ public protocol CaptureMembershipProtocol: CaptureMiddlewareProtocol {
     /// Creates a new User object in storage from the data within the decodedDataString
     /// - Parameters:
     ///   - captureDataInformation: Object that represents the data contained in a mobile pass, RFID card or otherwise
-    func createUser(with captureDataInformation: CaptureDataInformation) -> Error?
+    func createUser(with captureDataInformation: CaptureDataInformation)
     
     /// Queries and returns a User object from storage matching the properties within the decodedDataString
     /// - Parameters:
@@ -78,17 +78,18 @@ public protocol CaptureMembershipProtocol: CaptureMiddlewareProtocol {
     /// Updates a User object with new properties and re-saves it in storage
     /// - Parameters:
     ///   - user: User object/class. May be subclassed
-    func updateUserInStorage(_ user: userType) -> Error?
+    ///   - changes: Block in which you should perform your changes to the user object
+    func update(user: userType, withChanges changes: () -> ())
     
     /// Queries and deletes a User object from storage matching the properties within the decodedDataString
     /// - Parameters:
     ///   - userId: Unique String (often alpha-numeric) that represents a single user
-    func deleteUser(with userId: String) -> Error?
+    func deleteUser(with userId: String)
     
     /// Deletes a User object from storage
     /// - Parameters:
     ///   - user: User object/class. May be subclassed
-    func deleteUser(_ user: userType) -> Error?
+    func deleteUser(_ user: userType)
     
 }
 
@@ -149,7 +150,7 @@ public typealias CaptureLayerDecodedData = SKTCaptureDecodedData
 
 // MARK: - CaptureMiddlewareDelegate
 
-/// Public optional delegate used the CaptureMiddleware class and its subclasses.
+/// Public optional delegate used in the CaptureMiddleware class and its subclasses.
 @objc public protocol CaptureMiddlewareDelegate: class {
     
     /// Notifies the delegate that a CaptureHelper device manager is now available for use
@@ -220,6 +221,56 @@ public typealias CaptureLayerDecodedData = SKTCaptureDecodedData
     @objc optional func capture(_ middleware: CaptureMiddleware, didReceive decodedData: CaptureLayerDecodedData?, for device: CaptureLayerDevice, withResult result: CaptureLayerResult)
     
 }
+
+
+
+
+
+
+
+
+
+
+
+// MARK: - ClubMiddlewareDelegate
+
+/// Public optional delegate used in the Club object. Notifies of operations on MembershipUsers and its subclasses
+@objc public protocol ClubMiddlewareDelegate: CaptureMiddlewareDelegate {
+    
+    /// Notifies the delegate of errors received during Club CaptureMiddleware operations
+    /// Use this to get more information on errors
+    ///
+    /// - Parameters:
+    ///   - clubMiddleware: Club CaptureMiddleware object/class that invokes this delegate function
+    ///   - error: Error received during operation
+    @objc optional func club(_ clubMiddleware: Club, didReceive error: Error)
+    
+    /// Notifies the delegate that a new MembershipUser object has been created
+    /// Use this to show popup views, or update the UI, etc. if desired
+    ///
+    /// - Parameters:
+    ///   - clubMiddleware: Club CaptureMiddleware object/class that invokes this delegate function
+    ///   - user: MembershipUser object that has been newly created
+    @objc optional func club(_ clubMiddleware: Club, didCreateNewMembership user: MembershipUser)
+    
+    /// Notifies the delegate that a MembershipUser object has been updated
+    /// Use this to show popup views, or update the UI, etc. if desired
+    ///
+    /// - Parameters:
+    ///   - clubMiddleware: Club CaptureMiddleware object/class that invokes this delegate function
+    ///   - user: MembershipUser object that has been updated
+    @objc optional func club(_ clubMiddleware: Club, didUpdateMembership user: MembershipUser)
+    
+    /// Notifies the delegate that a MembershipUser object has been deleted
+    /// Use this to show popup views, or update the UI, etc. if desired
+    ///
+    /// - Parameters:
+    ///   - clubMiddleware: Club CaptureMiddleware object/class that invokes this delegate function
+    ///   - user: MembershipUser object that has been deleted
+    @objc optional func club(_ clubMiddleware: Club, didDeleteMembership user: MembershipUser)
+}
+
+
 
 
 

@@ -79,6 +79,7 @@ class ViewController: UIViewController {
         let developerID =   "bb57d8e1-f911-47ba-b510-693be162686a"
         
         Club.shared.setDelegate(to: self)
+            .setCustomMembershipUser(classType: CustomMembershipUser.self)
             .setDispatchQueue(DispatchQueue.main)
             .setDebugMode(isActivated: true)
             .open(withAppKey:   appKey,
@@ -199,7 +200,19 @@ UICollectionViewDelegateFlowLayout {
 
 // MARK: - CaptureMiddlewareDelegate
 
-extension ViewController: CaptureMiddlewareDelegate {
+extension ViewController: ClubMiddlewareDelegate {
+    
+    func club(_ clubMiddleware: Club, didCreateNewMembership user: MembershipUser) {
+        print("did create new membership user: \(user)")
+    }
+    
+    func club(_ clubMiddleware: Club, didUpdateMembership user: MembershipUser) {
+        print("did update membership user: \(user)")
+    }
+    
+    func club(_ clubMiddleware: Club, didDeleteMembership user: MembershipUser) {
+        print("did delete membership user: \(user)")
+    }
     
     func capture(_ middleware: CaptureMiddleware, didNotifyArrivalForManager deviceManager: CaptureLayerDeviceManager, result: CaptureLayerResult) {
         
@@ -243,10 +256,6 @@ extension ViewController: CaptureMiddlewareDelegate {
     
     func capture(_ middleware: CaptureMiddleware, didReceive decodedData: CaptureLayerDecodedData?, for device: CaptureLayerDevice, withResult result: CaptureLayerResult) {
         
-        if let error = Club.shared.onDecodedData(decodedData: decodedData, device: device) {
-            print("Error reading decoded data: \(error.localizedDescription)")
-        }
-
         if let decodedData = decodedData, let stringFromData = decodedData.stringFromDecodedData() {
             
             // NOTE
