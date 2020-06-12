@@ -34,9 +34,7 @@ struct CoreDataListView: View {
     private func removeItem(at offsets: IndexSet) {
         for index in offsets {
             let user = users.results[index]
-            if let error = Club.shared.deleteUser(user) {
-                print("Error deleting user: \(String(describing: user.username)). Error: \(error.localizedDescription)")
-            }
+            Club.shared.deleteUser(user)
         }
     
         let realm = try! Realm()

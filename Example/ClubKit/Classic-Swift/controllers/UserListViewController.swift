@@ -9,20 +9,25 @@
 import UIKit
 import ClubKit
 
+class CustomMembershipUser: MembershipUser {
+    @objc dynamic var emailAddress: String? = "Some Email address"
+}
+
 class UserListViewController: UIViewController {
     
     // MARK: - Variables
     
     private let cellReuseIdentifier = "cellReuseIdentifier"
     
-    private let usersCollection = MembershipUserCollection()
+    private let usersCollection = MembershipUserCollection<CustomMembershipUser>()
+    
     
     // MARK: - UI Elements
     
     private lazy var tableView: UITableView = {
         let tbv = UITableView(frame: .zero)
         tbv.translatesAutoresizingMaskIntoConstraints = false
-        tbv.backgroundColor = UIColor.systemGroupedBackground
+        tbv.backgroundColor = UIColor.white
         tbv.delegate = self
         tbv.dataSource = self
         tbv.alwaysBounceVertical = true
@@ -134,19 +139,61 @@ extension UserListViewController: UITableViewDelegate, UITableViewDataSource {
         return true
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-    
-            let user = usersCollection.users[indexPath.item]
-            
-            showAlertForDeleting(user: user)
-            
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-        }
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
+        return .none
     }
     
-    private func showAlertForDeleting(user: MembershipUser) {
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+
+        let updateTitle = "Update Email"
+        let updateAction = UIContextualAction(style: .normal, title: updateTitle, handler: { [weak self] (action, view, completionHandler) in
+            guard let strongSelf = self else { return }
+            let user = strongSelf.usersCollection.users[indexPath.item]
+            
+            strongSelf.showAlertForUpdating(user: user)
+            
+            completionHandler(true)
+        })
+        
+        let deleteTitle = "Delete"
+        let deleteAction = UIContextualAction(style: .destructive, title: deleteTitle, handler: { [weak self] (action, view, completionHandler) in
+            guard let strongSelf = self else { return }
+            let user = strongSelf.usersCollection.users[indexPath.item]
+            
+            strongSelf.showAlertForDeleting(user: user)
+            completionHandler(true)
+        })
+
+        let configuration = UISwipeActionsConfiguration(actions: [updateAction, deleteAction])
+        return configuration
+    }
+    
+    private func showAlertForUpdating(user: CustomMembershipUser) {
+        
+        let alertController = UIAlertController(title: "Update Email Address",
+                                                message: "Provide new email address for \(user.username!)",
+                                                preferredStyle: .alert)
+        alertController.addTextField()
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let submitAction = UIAlertAction(title: "Confirm", style: .default) { [unowned alertController] _ in
+            
+            if let newEmailAddress = alertController.textFields?.first?.text {
+                
+                Club.shared.update(user: user) {
+                    user.emailAddress = newEmailAddress
+                }
+            }
+            
+        }
+
+        alertController.addAction(cancelAction)
+        alertController.addAction(submitAction)
+
+        present(alertController, animated: true)
+    }
+    
+    private func showAlertForDeleting(user: CustomMembershipUser) {
         
         let title = "Are you sure you want to delete this user?"
         let message = "This is a permanent action and cannot be reversed"
@@ -163,9 +210,7 @@ extension UserListViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         let deleteAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.destructive) { (_) in
-            if let error = Club.shared.deleteUser(user) {
-                print("error deleting user: \(String(describing: user.username)). Error: \(error.localizedDescription)")
-            }
+            Club.shared.deleteUser(user)
         }
         
         alertController.addAction(cancelAction)
