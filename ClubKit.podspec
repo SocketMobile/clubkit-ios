@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ClubKit'
-  s.version          = '0.1.7'
+  s.version          = '0.1.18'
   s.summary          = 'A framework for managing membership'
   s.swift_versions    = ['4.0', '5.0']
 
@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { "Socket" => "developers@socketmobile.com" }
-  s.source           = { :git => 'https://git.socketmobile.com/scanning/clubkit-ios.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/SocketMobile/clubkit-ios.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   # Minimum target of 9.3 is required for 'SKTCapture'
