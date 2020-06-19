@@ -102,6 +102,29 @@ public protocol CaptureMembershipProtocol: CaptureMiddlewareProtocol {
 
 
 
+// MARK: - IOFileType
+
+/// Represents the file type to be imported/exported
+public enum IOFileType {
+    case userList
+    case csv
+    
+    var fileExtension: String {
+        switch self {
+        case .userList: return ClubConstants.IOFileType.userListFileExtension
+        case .csv:      return ClubConstants.IOFileType.csvFileExtension
+        default: break
+        }
+    }
+}
+
+
+
+
+
+
+
+
 
 
 // MARK: - CKError
