@@ -60,7 +60,10 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
             return error
         }
         
-        let captureDataInformation = CaptureDataInformation(captureDataString: captureDataString)
+        guard let captureDataInformation = CaptureDataInformation(captureDataString: captureDataString) else {
+            let error = CKError.invalidPassInformation("Unexpected pass format. Could not find user information.")
+            return error
+        }
         
         if let existingUser = getUser(with: captureDataInformation.userId) {
             
@@ -73,7 +76,20 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         return nil
     }
     
+    public func getExportableURLForDataSource<T: MembershipUser>(ofType objectType: T.Type, fileType: IOFileType) -> URL? {        
+        switch fileType {
+        case .userList: return ExportableDataSourceContainer<T>().convertDataSourceToUserListFile()
+        case .csv:      return ExportableDataSourceContainer<T>().convertDataSourceToCSVFile()
+        }
+    }
     
+    public func getImportedDataSource<T: MembershipUser>(ofType objectType: T.Type, from url: URL) {
+        if let importedUsers = ExportableDataSourceContainer<T>.importDataSource(at: url) {
+            // TODO
+            // Import into data source
+            print("imported users: \(importedUsers)")
+        }
+    }
     
     
     
