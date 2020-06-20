@@ -9,10 +9,6 @@
 import UIKit
 import ClubKit
 
-class CustomMembershipUser: MembershipUser {
-    @objc dynamic var emailAddress: String? = "Some Email address"
-}
-
 class UserListViewController: UIViewController {
     
     // MARK: - Variables
@@ -23,6 +19,14 @@ class UserListViewController: UIViewController {
     
     
     // MARK: - UI Elements
+    
+    private var numUsersLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.translatesAutoresizingMaskIntoConstraints = false
+        lbl.textAlignment = .center
+        lbl.font = UIFont.boldSystemFont(ofSize: 18)
+        return lbl
+    }()
     
     private lazy var tableView: UITableView = {
         let tbv = UITableView(frame: .zero)
@@ -56,19 +60,84 @@ class UserListViewController: UIViewController {
         tableView.setEditing(editing, animated: true)
     }
     
+    private lazy var exportAllButton: UIBarButtonItem = {
+        let btn = UIBarButtonItem(title: "Export", style: UIBarButtonItemStyle.plain, target: self, action: #selector(showExportSheetController))
+        return btn
+    }()
+    
+    @objc private func showExportSheetController() {
+        
+        let alertController = UIAlertController(title: "Export", message: "Choose export file", preferredStyle: UIAlertControllerStyle.actionSheet)
+        let userListFileAction = UIAlertAction(title: "User List", style: UIAlertActionStyle.default) { (_) in
+            guard
+                let exportableURL = Club.shared.getExportableURLForDataSource(ofType: CustomMembershipUser.self, fileType: .userList)
+                else {
+                return
+            }
+            
+            self.showShareController(with: exportableURL)
+        }
+        let csvFileAction = UIAlertAction(title: "CSV", style: UIAlertActionStyle.default) { (_) in
+            guard
+                let exportableURL = Club.shared.getExportableURLForDataSource(ofType: CustomMembershipUser.self, fileType: .csv)
+                else {
+                return
+            }
+            
+            self.showShareController(with: exportableURL)
+        }
+        
+        alertController.addAction(userListFileAction)
+        alertController.addAction(csvFileAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    private func showShareController(with exportableURL: URL) {
+        let activityItems: [Any] = [
+            exportableURL
+        ]
+        
+        let activityController = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+        
+        present(activityController, animated: true, completion: nil)
+    }
+    
+    private func stressTestAddingManyUsers() {
+        // Creates 10,000 users
+        // NOTE
+        // Freezes the UI for atleast 2 full minutes
+        // but otherwise, completes without crashing
+        // There is no reason to do this more than once
+        Array(0..<10000).forEach { (num) in
+            let captureDataString = "4|\(UUID().uuidString)|whatever|username_\(num)"
+            let newUserInfoformation = CaptureDataInformation(captureDataString: captureDataString)!
+            Club.shared.createUser(with: newUserInfoformation)
+        }
+    }
+    
     private func setupUIElements() {
         
         self.title = "Stored Users"
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.rightBarButtonItem = self.editButtonItem
+        // right to left
+        navigationItem.rightBarButtonItems = [
+            exportAllButton,
+            editButtonItem
+        ]
         self.editButtonItem.tintColor = Constants.ClassicSwiftConstants.AppTheme.primaryColor
         view.backgroundColor = UIColor.systemBackground
         
-        
+        view.addSubview(numUsersLabel)
         view.addSubview(tableView)
         
+        numUsersLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        numUsersLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        numUsersLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        numUsersLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        tableView.topAnchor.constraint(equalTo: numUsersLabel.bottomAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         
@@ -115,7 +184,9 @@ extension UserListViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return usersCollection.users.count
+        let numRows = usersCollection.users.count
+        numUsersLabel.text = "Num users: \(numRows)"
+        return numRows
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
