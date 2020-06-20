@@ -24,6 +24,7 @@
 		5233DD27247D80BA00FCFF18 /* UserListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD26247D80BA00FCFF18 /* UserListViewController.swift */; };
 		5233DD29247D820A00FCFF18 /* CaptureDataModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD28247D820A00FCFF18 /* CaptureDataModalView.swift */; };
 		5233DD2B247DA3D500FCFF18 /* DeviceCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD2A247DA3D500FCFF18 /* DeviceCollectionViewCell.swift */; };
+		528FBC69249D8F970048D016 /* CustomMembershipUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528FBC68249D8F970048D016 /* CustomMembershipUser.swift */; };
 		52DF07A22475E3B300E6FF37 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DF07A12475E3B300E6FF37 /* SceneDelegate.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
@@ -61,6 +62,7 @@
 		5233DD26247D80BA00FCFF18 /* UserListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListViewController.swift; sourceTree = "<group>"; };
 		5233DD28247D820A00FCFF18 /* CaptureDataModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureDataModalView.swift; sourceTree = "<group>"; };
 		5233DD2A247DA3D500FCFF18 /* DeviceCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCollectionViewCell.swift; sourceTree = "<group>"; };
+		528FBC68249D8F970048D016 /* CustomMembershipUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomMembershipUser.swift; sourceTree = "<group>"; };
 		52DF07A12475E3B300E6FF37 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* ClubKit_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClubKit_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -173,6 +175,7 @@
 		5233DD2124784AC700FCFF18 /* models */ = {
 			isa = PBXGroup;
 			children = (
+				528FBC68249D8F970048D016 /* CustomMembershipUser.swift */,
 			);
 			name = models;
 			sourceTree = "<group>";
@@ -458,6 +461,7 @@
 				5233DD1724774EA800FCFF18 /* CoreDataListView.swift in Sources */,
 				5233DD2B247DA3D500FCFF18 /* DeviceCollectionViewCell.swift in Sources */,
 				5233DD27247D80BA00FCFF18 /* UserListViewController.swift in Sources */,
+				528FBC69249D8F970048D016 /* CustomMembershipUser.swift in Sources */,
 				5233DD2324784AD900FCFF18 /* InfoStackView.swift in Sources */,
 				5233DD2524784B5800FCFF18 /* UserCell.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
