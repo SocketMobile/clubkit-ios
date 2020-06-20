@@ -102,6 +102,28 @@ public protocol CaptureMembershipProtocol: CaptureMiddlewareProtocol {
 
 
 
+// MARK: - IOFileType
+
+/// Represents the file type to be imported/exported
+public enum IOFileType {
+    case userList
+    case csv
+    
+    var fileExtension: String {
+        switch self {
+        case .userList: return ClubConstants.IOFileType.userListFileExtension
+        case .csv:      return ClubConstants.IOFileType.csvFileExtension
+        }
+    }
+}
+
+
+
+
+
+
+
+
 
 
 // MARK: - CKError
@@ -130,6 +152,11 @@ public enum CKError: Error {
     ///   - ErrorMessage: Detailed message of the error
     case nonExistentUTF8DecodedDataString(String)
     
+    
+    /// The pass does not contain the expected fiels: payload number, unique identifier, payload, username
+    /// - Parameters:
+    ///   - ErrorMessage: Detailed message of the error
+    case invalidPassInformation(String)
 }
 
 
@@ -289,7 +316,7 @@ public protocol CaptureDataUserInformationProtocol {
     var payloadNumber: String { get }
     var payload: String { get }
     
-    init(captureDataString: String)
+    init?(captureDataString: String)
 }
 
 /// Struct for representing the user information obtained from scanning a mobile pass, RFID card, etc.
@@ -302,7 +329,7 @@ public struct CaptureDataInformation: CaptureDataUserInformationProtocol {
     
     // Expects a string from scanning a Mobile Pass or otherwise that
     // contains data
-    public init(captureDataString: String) {
+    public init?(captureDataString: String) {
         let components = captureDataString.components(separatedBy: "|")
         guard components.count == 4 else {
             // TODO
@@ -310,7 +337,8 @@ public struct CaptureDataInformation: CaptureDataUserInformationProtocol {
             // This is a temporary assumption (as of 05/19/2020)
             // There are 4 fields expected in the decodedData string
             // payload number, userId, payload, name
-            fatalError("Unexpected capture data format: \(captureDataString)")
+            DebugLogger.shared.addDebugMessage("Unexpected capture data format: \(captureDataString). Expecting 4 fields: payload number, unique identifier, payload, username. Instead, found \(components.count) fields.")
+            return nil
         }
         
         payloadNumber = components[0]

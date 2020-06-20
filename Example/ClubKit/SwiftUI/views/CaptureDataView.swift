@@ -49,7 +49,9 @@ struct CaptureDataView: View {
             return nil
         }
         
-        let captureDataInformation = CaptureDataInformation(captureDataString: decodedDataString)
+        guard let captureDataInformation = CaptureDataInformation(captureDataString: decodedDataString) else {
+            return nil
+        }
         
         let user = Club.shared.getUser(with: captureDataInformation.userId)
         guard let username = user?.username else {
@@ -63,7 +65,9 @@ struct CaptureDataView: View {
             return nil
         }
         
-        let captureDataInformation = CaptureDataInformation(captureDataString: decodedDataString)
+        guard let captureDataInformation = CaptureDataInformation(captureDataString: decodedDataString) else {
+            return nil
+        }
         
         let user = Club.shared.getUser(with: captureDataInformation.userId)
         guard let numberOfVisits = user?.numVisits else {
