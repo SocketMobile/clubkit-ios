@@ -90,7 +90,9 @@ class CaptureDataModalView: UIView {
             return
         }
         
-        let captureDataInformation = CaptureDataInformation(captureDataString: decodedDataString)
+        guard let captureDataInformation = CaptureDataInformation(captureDataString: decodedDataString) else {
+            return
+        }
         
         let user = Club.shared.getUser(with: captureDataInformation.userId)
         guard let username = user?.username else {
