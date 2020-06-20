@@ -113,7 +113,6 @@ public enum IOFileType {
         switch self {
         case .userList: return ClubConstants.IOFileType.userListFileExtension
         case .csv:      return ClubConstants.IOFileType.csvFileExtension
-        default: break
         }
     }
 }
