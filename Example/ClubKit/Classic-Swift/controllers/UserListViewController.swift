@@ -67,7 +67,14 @@ class UserListViewController: UIViewController {
     
     @objc private func showExportSheetController() {
         
-        let alertController = UIAlertController(title: "Export", message: "Choose export file", preferredStyle: UIAlertControllerStyle.actionSheet)
+        var alertStyle = UIAlertController.Style.actionSheet
+        if (UIDevice.current.userInterfaceIdiom == .pad) {
+            alertStyle = UIAlertController.Style.alert
+        }
+        
+        let alertController = UIAlertController(title: "Export",
+                                                message: "Choose export file",
+                                                preferredStyle: alertStyle)
         let userListFileAction = UIAlertAction(title: "User List", style: UIAlertActionStyle.default) { (_) in
             guard
                 let exportableURL = Club.shared.getExportableURLForDataSource(ofType: CustomMembershipUser.self, fileType: .userList)
@@ -99,6 +106,13 @@ class UserListViewController: UIViewController {
         ]
         
         let activityController = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+        
+        // iPad requires a source view and CGRect for displaying
+        // popover views
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            activityController.popoverPresentationController?.sourceView = self.view
+            activityController.popoverPresentationController?.barButtonItem = self.exportAllButton
+        }
         
         present(activityController, animated: true, completion: nil)
     }
