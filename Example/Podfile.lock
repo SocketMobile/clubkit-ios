@@ -1,5 +1,5 @@
 PODS:
-  - ClubKit (0.1.18):
+  - ClubKit (0.2.3):
     - RealmSwift (~> 4.4)
     - SKTCapture (~> 1.2)
   - Realm (4.4.1):
@@ -25,7 +25,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  ClubKit: dd19418d9d10cfb0045a066caf9c18b6d5fb58c5
+  ClubKit: 313c3f32ea4d96873d4a84d8dfd3b4432c9a985d
   Realm: 4eb04d7487bd43c0581256f40b424eafb711deff
   RealmSwift: 3eb8924ff7100df5928c7602f71d0fec51e7c9c5
   SKTCapture: 49e42fab5b272728a7b275831598af4a6fca379a
