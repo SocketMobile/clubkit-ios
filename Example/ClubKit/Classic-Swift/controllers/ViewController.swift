@@ -270,4 +270,26 @@ extension ViewController: ClubMiddlewareDelegate {
         }
     }
     
+    func club(_ clubMiddleware: Club, didReceiveImported users: [MembershipUser]) {
+        var alertStyle = UIAlertController.Style.actionSheet
+        if (UIDevice.current.userInterfaceIdiom == .pad) {
+            alertStyle = UIAlertController.Style.alert
+        }
+        
+        let alertController = UIAlertController(title: "Import",
+                                                message: "Received \(users.count) users to import. Would you like to save them?",
+                                                preferredStyle: alertStyle)
+        let yesAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) { (_) in
+            Club.shared.merge(importedUsers: users)
+        }
+        let noAction = UIAlertAction(title: "No", style: UIAlertAction.Style.cancel) { (_) in
+            
+        }
+        
+        alertController.addAction(yesAction)
+        alertController.addAction(noAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
 }
