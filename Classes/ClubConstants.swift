@@ -16,8 +16,8 @@ internal struct ClubConstants {
     struct IOFileType {
         private init() {}
         
-        static let userListFileExtension: String = "mbus"
-        static let csvFileExtension: String = "csv"
+        static let userListFileExtension: String = "usrl"
+        static let csvFileExtension: String = "ucsv"
     }
     
     struct DebugMode {
