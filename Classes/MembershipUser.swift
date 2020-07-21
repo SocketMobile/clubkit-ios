@@ -43,9 +43,29 @@ import RealmSwift
         
         userId = try container.decode(String.self, forKey: .userId)
         username = try container.decode(String.self, forKey: .username)
-        timeStampAdded = try container.decode(Double.self, forKey: .timeStampAdded)
-        numVisits = try container.decode(Int.self, forKey: .numVisits)
-        timeStampOfLastVisit = try container.decode(Double.self, forKey: .timeStampOfLastVisit)
+        
+        // In the case where the decoded items are CSVs,
+        // all the values will be Strings
+        // In such a case where the expected value is NOT a String
+        // cast the return value back to the expected value type
+        if let timeStampAddedDoubleValue = try? container.decode(Double.self, forKey: .timeStampAdded) {
+            timeStampAdded = timeStampAddedDoubleValue
+        } else if let timeStampAddedStringValue = try? container.decode(String.self, forKey: .timeStampAdded) {
+            // CSV return String for this variable. Cast back to original value type
+            timeStampAdded = Double(timeStampAddedStringValue) ?? 0
+        }
+                
+        if let numVisitsIntValue = try? container.decode(Int.self, forKey: .numVisits) {
+            numVisits = numVisitsIntValue
+        } else if let numVisitsStringValue = try? container.decode(String.self, forKey: .numVisits) {
+            numVisits = Int(numVisitsStringValue) ?? 0
+        }
+        
+        if let timeStampOfLastVisitDoubleValue = try? container.decode(Double.self, forKey: .timeStampOfLastVisit) {
+            timeStampOfLastVisit = timeStampOfLastVisitDoubleValue
+        } else if let timeStampOfLastVisitStringValue = try? container.decode(String.self, forKey: .timeStampOfLastVisit) {
+            timeStampOfLastVisit = Double(timeStampOfLastVisitStringValue) ?? 0
+        }
         
         super.init()
     }

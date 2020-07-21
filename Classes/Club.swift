@@ -84,10 +84,16 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     }
     
     public func getImportedDataSource<T: MembershipUser>(ofType objectType: T.Type, from url: URL) {
-        if let importedUsers = ExportableDataSourceContainer<T>.importDataSource(at: url) {
-            // TODO
-            // Import into data source
-            print("imported users: \(importedUsers)")
+        // Perform parsing of imported URL on background thread
+        DispatchQueue.global(qos: .background).async { [weak self] in
+            guard let strongSelf = self else { return }
+            if let importedUsers = ExportableDataSourceContainer<T>.importDataSource(at: url) {
+                
+                // Return to main thread
+                DispatchQueue.main.async {
+                    strongSelf.delegate?.club?(strongSelf, didReceiveImported: importedUsers)
+                }
+            }
         }
     }
     
@@ -310,6 +316,19 @@ extension Club {
             } catch let error {
                 delegate?.club?(self, didReceive: error)
             }
+        }
+    }
+    
+    public func merge(importedUsers: [MembershipUser]) {
+        
+        do {
+            let realm = try Realm()
+            try realm.write {
+                realm.add(importedUsers, update: Realm.UpdatePolicy.modified)
+            }
+        } catch let error {
+            delegate?.club?(self, didReceive: error)
+            DebugLogger.shared.addDebugMessage("Error getting user: \(error)")
         }
     }
     

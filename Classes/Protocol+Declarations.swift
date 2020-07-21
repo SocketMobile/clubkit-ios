@@ -70,6 +70,13 @@ public protocol CaptureMembershipProtocol: CaptureMiddlewareProtocol {
     ///   - captureDataInformation: Object that represents the data contained in a mobile pass, RFID card or otherwise
     func createUser(with captureDataInformation: CaptureDataInformation)
     
+    /// Merges User objects that are imported from another device
+    /// If an object already exists with the same primary key (user Id), the changes are merged using the values
+    /// of the imported object
+    /// - Parameters:
+    ///   - importedUsers: Array of `MembershipUser` objects imported from another device
+    func merge(importedUsers: [MembershipUser])
+    
     /// Queries and returns a User object from storage matching the properties within the decodedDataString
     /// - Parameters:
     ///   - userId: Unique String (often alpha-numeric) that represents a single user
@@ -295,6 +302,14 @@ public typealias CaptureLayerDecodedData = SKTCaptureDecodedData
     ///   - clubMiddleware: Club CaptureMiddleware object/class that invokes this delegate function
     ///   - user: MembershipUser object that has been deleted
     @objc optional func club(_ clubMiddleware: Club, didDeleteMembership user: MembershipUser)
+    
+    /// Notifies the delegate that an array of `MembershipUser` objects have been imported from another device
+    /// Use this to store new list of transferred data in local Realm
+    ///
+    /// - Parameters:
+    ///   - clubMiddleware: Club CaptureMiddleware object/class that invokes this delegate function
+    ///   - users: Array of imported MembershipUser objects to be stored
+    @objc optional func club(_ clubMiddleware: Club, didReceiveImported users: [MembershipUser])
 }
 
 
