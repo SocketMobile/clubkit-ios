@@ -352,7 +352,7 @@ public struct CaptureDataInformation: CaptureDataUserInformationProtocol {
             // This is a temporary assumption (as of 05/19/2020)
             // There are 4 fields expected in the decodedData string
             // payload number, userId, payload, name
-            DebugLogger.shared.addDebugMessage("Unexpected capture data format: \(captureDataString). Expecting 4 fields: payload number, unique identifier, payload, username. Instead, found \(components.count) fields.")
+            DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Unexpected capture data format: \(captureDataString). Expecting 4 fields: payload number, unique identifier, payload, username. Instead, found \(components.count) fields.")
             return nil
         }
         

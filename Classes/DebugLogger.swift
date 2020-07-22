@@ -18,16 +18,15 @@ public class DebugLogger {
         clear()
     }
     
-    public func toggleDebug() {
-        let key = ClubConstants.DebugMode.debugModeUserDefaultsKey
+    public func toggleDebug(isActivated: Bool? = nil) {
+        let key = ClubConstants.DebugMode.debugModeActivatedKey
         let currentBoolValue = UserDefaults.standard.bool(forKey: key)
-        UserDefaults.standard.set(!currentBoolValue, forKey: key)
+        let newBoolValue = isActivated ?? !currentBoolValue
+        UserDefaults.standard.set(newBoolValue, forKey: key)
     }
     
     public func addDebugMessage(_ message: String) {
-        if
-            UserDefaults.standard.bool(forKey: ClubConstants.DebugMode.debugModeActivatedKey) == false
-            || UserDefaults.standard.bool(forKey: ClubConstants.DebugMode.debugModeUserDefaultsKey) == false {
+        if UserDefaults.standard.bool(forKey: ClubConstants.DebugMode.debugModeActivatedKey) == false {
             return
         }
         if self.withNsLog {

@@ -159,7 +159,7 @@ extension Club {
     ///   - isActivated: Boolean value that, when set to true will save debug messages to the DebugLogger. False by default if unused
     @discardableResult
     public func setDebugMode(isActivated: Bool) -> Club {
-        UserDefaults.standard.set(isActivated, forKey: ClubConstants.DebugMode.debugModeUserDefaultsKey)
+        DebugLogger.shared.toggleDebug(isActivated: isActivated)
         return self
     }
     
@@ -190,7 +190,7 @@ extension Club {
         
         capture.openWithAppInfo(AppInfo) { [weak self] (result) in
             guard let strongSelf = self else { return }
-            DebugLogger.shared.addDebugMessage("Result of Capture initialization: \(result.rawValue)")
+            DebugLogger.shared.addDebugMessage("\(String(describing: type(of: strongSelf))) - Result of Capture initialization: \(result.rawValue)")
             
             if result == CaptureLayerResult.E_NOERROR {
                 
@@ -211,7 +211,7 @@ extension Club {
                 } else {
 
                     // Attempt to open capture again
-                    DebugLogger.shared.addDebugMessage("\n--- Failed to open capture. attempting again...\n")
+                    DebugLogger.shared.addDebugMessage("\(String(describing: type(of: strongSelf))) - \n--- Failed to open capture. attempting again...\n")
                     strongSelf.numberOfFailedOpenCaptureAttempts += 1
                     strongSelf.open(withAppKey: appKey, appId: appId, developerId: developerId)
                 }
@@ -328,7 +328,7 @@ extension Club {
             }
         } catch let error {
             delegate?.club?(self, didReceive: error)
-            DebugLogger.shared.addDebugMessage("Error getting user: \(error)")
+            DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error getting user: \(error)")
         }
     }
     
@@ -340,7 +340,7 @@ extension Club {
             return user
         } catch let error {
             delegate?.club?(self, didReceive: error)
-            DebugLogger.shared.addDebugMessage("Error getting user: \(error)")
+            DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error getting user: \(error)")
         }
         
         return nil
@@ -447,7 +447,7 @@ public class MembershipUserCollection<T: MembershipUser>: NSObject {
                 completion(changes)
             })
         } catch let error {
-            DebugLogger.shared.addDebugMessage("Error getting realm reference: \(error)")
+            DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error getting realm reference: \(error)")
         }
     }
     
