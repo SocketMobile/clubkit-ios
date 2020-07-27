@@ -102,3 +102,53 @@ import RealmSwift
         case timeStampOfLastVisit
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// MARK: - MembershipUserCollection
+
+/// A wrapper for RealmSwift-related query on MemberShipUser
+/// without exposing the RealmSwift framework
+public typealias MembershipUserChanges<T: MembershipUser> = RealmCollectionChange<Results<T>>
+
+/// Maintains self-updating collection of MembershipUsers
+public class MembershipUserCollection<T: MembershipUser>: NSObject {
+    
+    /// Results collection of MembershipUsers
+    public private(set) var users: Results<T>!
+    
+    private var usersToken: NotificationToken?
+    
+    public override init() {
+        super.init()
+    }
+    
+    /// Observes changes to MembershipUser records
+    ///
+    /// - Parameters:
+    ///   - completion: Provides all changes such as insertions, deletions, modifications and initial result of the collection of MembershipUser records. Use this to update UI (such as UITableView and UICollectionViews) with updated records.
+    open func observeAllRecords(_ completion: @escaping (MembershipUserChanges<T>) -> ()) {
+        do {
+            let realm = try Realm()
+            users = realm.objects(T.self)
+            
+            usersToken = users.observe({ (changes) in
+                completion(changes)
+            })
+        } catch let error {
+            DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error getting realm reference: \(error)")
+        }
+    }
+    
+}
