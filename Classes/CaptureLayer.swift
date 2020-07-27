@@ -16,7 +16,7 @@ internal typealias SKTCaptureDataHandler = (CaptureLayerDecodedData?, CaptureLay
 internal typealias SKTCaptureBatteryLevelChangeHandler = (Int, CaptureLayerDevice) -> ()
 
 
-
+/// Manages events from `SKTCapture` and notifies receiver
 internal class SKTCaptureLayer:
     NSObject,
     CaptureHelperErrorDelegate,
@@ -26,13 +26,13 @@ internal class SKTCaptureLayer:
     CaptureHelperDeviceDecodedDataDelegate
 {
     
-    public var errorEventHandler: SKTCaptureErrorResultHandler?
-    public var deviceManagerArrivalHandler: SKTCaptureDeviceManagerArrivalHandler?
-    public var deviceManagerRemovalHandler: SKTCaptureDeviceManagerRemovalHandler?
-    public var deviceArrivalHandler: SKTCaptureDeviceArrivalHandler?
-    public var deviceRemovalHandler: SKTCaptureDeviceRemovalHandler?
-    public var captureDataHandler: SKTCaptureDataHandler?
-    public var batteryLevelChangeHandler: SKTCaptureBatteryLevelChangeHandler?
+    internal var errorEventHandler: SKTCaptureErrorResultHandler?
+    internal var deviceManagerArrivalHandler: SKTCaptureDeviceManagerArrivalHandler?
+    internal var deviceManagerRemovalHandler: SKTCaptureDeviceManagerRemovalHandler?
+    internal var deviceArrivalHandler: SKTCaptureDeviceArrivalHandler?
+    internal var deviceRemovalHandler: SKTCaptureDeviceRemovalHandler?
+    internal var captureDataHandler: SKTCaptureDataHandler?
+    internal var batteryLevelChangeHandler: SKTCaptureBatteryLevelChangeHandler?
     
     
     override init() {
