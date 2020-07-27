@@ -67,8 +67,8 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 ## Requirements
 
 <ul>
-<li><h2>Xcode 7.3</h2></li>
-<li><h2>iOS 9.3</h2></li>
+<li><p>Xcode 7.3</p></li>
+<li><p>iOS 9.3</p></li>
 </ul>
 
 <a name="installation" />
