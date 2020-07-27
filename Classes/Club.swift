@@ -9,7 +9,7 @@ import SKTCapture
 import RealmSwift
 import SKTCapture
 
-public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
+public final class Club: CaptureMiddleware, CaptureMembershipProtocol, ClubKitProtocol {
     
     // MARK: - Variables
     
@@ -21,17 +21,12 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     
     /// Gives developer the opportunity to use their own MembershipUser subclasses
     /// Will override the default MembershipUser class that is used in typical operations
-    private var OverridableMembershipUserClassType: MembershipUser.Type = MembershipUser.self
+    public private(set) var OverridableMembershipUserClassType: MembershipUser.Type = MembershipUser.self
     
     public static let shared = Club(capture: CaptureHelper.sharedInstance)
     
-    private weak var delegate: ClubMiddlewareDelegate?
+    public private(set) weak var delegate: ClubMiddlewareDelegate?
     
-    private var numberOfFailedOpenCaptureAttempts: Int = 0
-    
-    public private(set) weak var capture: CaptureHelper!
-    
-    private var captureLayer: SKTCaptureLayer!
     
     
     
@@ -45,7 +40,7 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
     
     private init(capture: CaptureHelper) {
         super.init()
-        self.capture = capture
+        super.setCapture(instance: capture)
     }
     
     public override func onDecodedData(decodedData: CaptureLayerDecodedData?, device: CaptureLayerDevice) -> Error? {
@@ -76,30 +71,6 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         return nil
     }
     
-    public func getExportableURLForDataSource<T: MembershipUser>(ofType objectType: T.Type, fileType: IOFileType) -> URL? {        
-        switch fileType {
-        case .userList: return ExportableDataSourceContainer<T>().convertDataSourceToUserListFile()
-        case .csv:      return ExportableDataSourceContainer<T>().convertDataSourceToCSVFile()
-        }
-    }
-    
-    public func getImportedDataSource<T: MembershipUser>(ofType objectType: T.Type, from url: URL) {
-        // Perform parsing of imported URL on background thread
-        DispatchQueue.global(qos: .background).async { [weak self] in
-            guard let strongSelf = self else { return }
-            if let importedUsers = ExportableDataSourceContainer<T>.importDataSource(at: url) {
-                
-                // Return to main thread
-                DispatchQueue.main.async {
-                    strongSelf.delegate?.club?(strongSelf, didReceiveImported: importedUsers)
-                }
-            }
-        }
-    }
-    
-    
-    
-    
     // Use to determine if the accrued time between punches
     // is within this time period.
     // If not, the user has been "punched in" for too long.
@@ -119,117 +90,10 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol {
         dayPassHours = hours
     }
     
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// MARK: - Setup Functions
-
-extension Club {
-    
-    /// Set the delegate for CaptureMiddlewareDelegate
-    @discardableResult
-    public func setDelegate(to: ClubMiddlewareDelegate) -> Club {
-        self.delegate = to
-        return self
-    }
-    
-    /// Set the DispatchQueue by which SKTCapture delegate functions will be invoked on
-    @discardableResult
-    public func setDispatchQueue(_ queue: DispatchQueue) -> Club {
-        capture.dispatchQueue = queue
-        return self
-    }
-    
-    /// Determines whether debug messages will be logged
-    /// to the DebugLogger object
-    /// - Parameters:
-    ///   - isActivated: Boolean value that, when set to true will save debug messages to the DebugLogger. False by default if unused
-    @discardableResult
-    public func setDebugMode(isActivated: Bool) -> Club {
-        DebugLogger.shared.toggleDebug(isActivated: isActivated)
-        return self
-    }
-    
-    /// Provide your own custom MembershipUser class type
-    /// to be used for all operations.
-    /// If this function is not called, the default `MembershipUser` class will be used
-    /// `classType` must be a subclass of `MembershipUser`
-    @discardableResult
-    public func setCustomMembershipUser(classType: MembershipUser.Type) -> Club {
-        OverridableMembershipUserClassType = classType
-        return self
-    }
-    
-    /// Open the SKTCapture layer with credentials.
-    /// This is required for proper use of BLE devices in the desired app.
-    ///
-    /// - Parameters:
-    ///   - appKey: appKey String provided during SDK registration:  [Socket Mobile Developer portal](https://www.socketmobile.com/developer/welcome)
-    ///   - appId: appId String that represents the local bundle identifier, prefixed with platform. Provided during SDK registration:  [Socket Mobile Developer portal](https://www.socketmobile.com/developer/welcome)
-    ///   - developerId: developerId String provided during SDK registration:  [Socket Mobile Developer portal](https://www.socketmobile.com/developer/welcome)
-    ///   - completion: completes with CaptureLayer result which maps success or failure of operation into a code
-    public func open(withAppKey appKey: String, appId: String, developerId: String, completion: ((CaptureLayerResult) -> ())? = nil) {
-        
-        let AppInfo = SKTAppInfo()
-        AppInfo.appKey = appKey
-        AppInfo.appID = appId
-        AppInfo.developerID = developerId
-        
-        capture.openWithAppInfo(AppInfo) { [weak self] (result) in
-            guard let strongSelf = self else { return }
-            DebugLogger.shared.addDebugMessage("\(String(describing: type(of: strongSelf))) - Result of Capture initialization: \(result.rawValue)")
-            
-            if result == CaptureLayerResult.E_NOERROR {
-                
-                strongSelf.captureLayer = strongSelf.setupCaptureLayer()
-                completion?(result)
-                
-            } else {
-
-                if strongSelf.numberOfFailedOpenCaptureAttempts == 2 {
-
-                    // Display an alert to the user to restart the app
-                    // if attempts to open capture have failed twice
-
-                    // What should we do here in case of this issue?
-                    // This is a SKTCapture-specific error
-                    completion?(result)
-                    
-                } else {
-
-                    // Attempt to open capture again
-                    DebugLogger.shared.addDebugMessage("\(String(describing: type(of: strongSelf))) - \n--- Failed to open capture. attempting again...\n")
-                    strongSelf.numberOfFailedOpenCaptureAttempts += 1
-                    strongSelf.open(withAppKey: appKey, appId: appId, developerId: developerId)
-                }
-            }
-        }
-    }
-    
-    /// Closes the SKTCapture layer
-    public func close(_ completion: ((CaptureLayerResult) -> ())?) {
-        capture.closeWithCompletionHandler({ (result) in
-            completion?(result)
-        })
-    }
-    
-    private func setupCaptureLayer() -> SKTCaptureLayer {
+    override func setupCaptureLayer() -> SKTCaptureLayer {
         
         let captureLayer = SKTCaptureLayer()
-        capture.pushDelegate(captureLayer)
+        super.capture.pushDelegate(captureLayer)
         
         captureLayer.deviceManagerArrivalHandler = { (deviceManager, result) in
             self.delegate?.capture?(self, didNotifyArrivalForManager: deviceManager, result: result)
@@ -255,15 +119,38 @@ extension Club {
         return captureLayer
     }
     
-    /// Re-assumes SKTCapture layer delegate
-    public func assumeCaptureDelegate() {
-        capture.pushDelegate(captureLayer)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// MARK: - Setup Functions
+
+extension Club {
+    
+    @discardableResult
+    public func setDelegate(to: ClubMiddlewareDelegate) -> Club {
+        self.delegate = to
+        return self
     }
     
-    /// Resigns SKTCapture layer delegate to desired receiver
-    public func resignCaptureDelegate(to: CaptureHelperAllDelegate) {
-        capture.pushDelegate(to)
+    @discardableResult
+    public func setCustomMembershipUser(classType: MembershipUser.Type) -> Club {
+        OverridableMembershipUserClassType = classType
+        return self
     }
+    
     
 }
 
@@ -393,62 +280,4 @@ extension Club {
             delegate?.club?(self, didReceive: error)
         }
     }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// MARK: - MembershipUserCollection
-
-/// A wrapper for RealmSwift-related query on MemberShipUser
-/// without exposing the RealmSwift framework
-public typealias MembershipUserChanges<T: MembershipUser> = RealmCollectionChange<Results<T>>
-
-/// Maintains self-updating collection of MembershipUsers
-public class MembershipUserCollection<T: MembershipUser>: NSObject {
-    
-    /// Results collection of MembershipUsers
-    public private(set) var users: Results<T>!
-    
-    private var usersToken: NotificationToken?
-    
-    public override init() {
-        super.init()
-    }
-    
-    /// Observes changes to MembershipUser records
-    ///
-    /// - Parameters:
-    ///   - completion: Provides all changes such as insertions, deletions, modifications and initial result of the collection of MembershipUser records. Use this to update UI (such as UITableView and UICollectionViews) with updated records.
-    open func observeAllRecords(_ completion: @escaping (MembershipUserChanges<T>) -> ()) {
-        do {
-            let realm = try Realm()
-            users = realm.objects(T.self)
-            
-            usersToken = users.observe({ (changes) in
-                completion(changes)
-            })
-        } catch let error {
-            DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error getting realm reference: \(error)")
-        }
-    }
-    
 }
