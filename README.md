@@ -5,6 +5,15 @@
 [![License](https://img.shields.io/cocoapods/l/ClubKit.svg?style=flat)](https://cocoapods.org/pods/ClubKit)
 [![Platform](https://img.shields.io/cocoapods/p/ClubKit.svg?style=flat)](https://cocoapods.org/pods/ClubKit)
 
+ClubKit provides Membership/Loyalty functionality when paired with our Socket Mobile S550 NFC reader.
+
+* [Usage](#usage)
+* [Documentation](#documentation)
+* [Example App](#example-app)
+* [Requirements](#requirements)
+* [Installation](#installation)
+
+<a name="usage"/>
 
 ## Usage
 
@@ -42,15 +51,27 @@ private func setupClub() {
 }
 ```
 
+<a name="documentation" />
+
 ## Documentation
 
 
+<a name="example-app" />
 
 ## Example
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
+<a name="requirements" />
+
 ## Requirements
+
+<ul>
+<li><h2>Xcode 7.3</h2></li>
+<li><h2>iOS 9.3</h2></li>
+</ul>
+
+<a name="installation" />
 
 ## Installation
 
