@@ -6,6 +6,7 @@
 //
 
 import SKTCapture
+import RealmSwift
 
 // MARK: - IdentifiableUserProtocool
 
@@ -33,6 +34,25 @@ public protocol IdentifiableUserProtocol: class {
 /// Protocol for CaptureMiddleware classes. If creating a custom CaptureMiddleware class, the custom class
 /// must conform to this protocol
 public protocol CaptureMiddlewareProtocol: class {
+    
+    var capture: CaptureHelper! { get }
+    
+    func setCapture(instance: CaptureHelper)
+    
+    var numberOfFailedOpenCaptureAttempts: Int { get }
+    
+    /// Open the SKTCapture layer with credentials.
+    /// This is required for proper use of BLE devices in the desired app.
+    ///
+    /// - Parameters:
+    ///   - appKey: appKey String provided during SDK registration:  [Socket Mobile Developer portal](https://www.socketmobile.com/developer/welcome)
+    ///   - appId: appId String that represents the local bundle identifier, prefixed with platform. Provided during SDK registration:  [Socket Mobile Developer portal](https://www.socketmobile.com/developer/welcome)
+    ///   - developerId: developerId String provided during SDK registration:  [Socket Mobile Developer portal](https://www.socketmobile.com/developer/welcome)
+    ///   - completion: completes with CaptureLayer result which maps success or failure of operation into a code
+    func open(withAppKey appKey: String, appId: String, developerId: String, completion: ((CaptureLayerResult) -> ())?)
+    
+    /// Closes the SKTCapture layer
+    func close(_ completion: ((CaptureLayerResult) -> ())?)
     
     /// Accepts decoded data from a BLE device which can be used to
     /// manage users if the data is from a Mobile Pass
@@ -100,8 +120,104 @@ public protocol CaptureMembershipProtocol: CaptureMiddlewareProtocol {
     
 }
 
+// MARK: - ClubKitProtocol
 
+public protocol ClubKitProtocol {
+    
+    /// Shared reference to ClubKit singleton
+    static var shared: Club { get }
+    
+    /// Notifies of operations on MembershipUsers and its subclasses
+    var delegate: ClubMiddlewareDelegate? { get }
+    
+    /// Object type for your MembershipUser subclass
+    /// Use `setCustomMembershipUser(classType:)` during setup if you
+    /// would like to provide your own `MembershipUser` subclass
+    var OverridableMembershipUserClassType: MembershipUser.Type { get }
+    
+    /// Creates a a file containing all user records on this device
+    /// This URL can then be exported to other devices
+    /// - Parameters:
+    ///   - objectType: The class type of your MembershipUser subclass. (e.g. CustomMembershipUser.self)
+    ///   - fileType: The file format and extension you would like to export with
+    func getExportableURLForDataSource<T: MembershipUser>(ofType objectType: T.Type, fileType: IOFileType) -> URL?
+    
+    /// Receives imported list of users from a file and merges with existing records
+    /// - Parameters:
+    ///   - objectType: The class type of your MembershipUser subclass. (e.g. CustomMembershipUser.self)
+    ///   - url: The URL pointing to the imported file
+    func getImportedDataSource<T: MembershipUser>(ofType objectType: T.Type, from url: URL)
+    
+    /// Set the delegate for CaptureMiddlewareDelegate
+    /// - Parameters:
+    ///   - to: The receiver of the delegate events
+    @discardableResult func setDelegate(to: ClubMiddlewareDelegate) -> Club
+    
+    /// Set the DispatchQueue by which SKTCapture delegate functions will be invoked on
+    @discardableResult func setDispatchQueue(_ queue: DispatchQueue) -> Club
+    
+    /// Determines whether debug messages will be logged
+    /// to the DebugLogger object
+    /// - Parameters:
+    ///   - isActivated: Boolean value that, when set to true will save debug messages to the DebugLogger. False by default if unused
+    @discardableResult func setDebugMode(isActivated: Bool) -> Club
+    
+    /// Provide your own custom MembershipUser class type
+    /// to be used for all operations.
+    /// If this function is not called, the default `MembershipUser` class will be used
+    /// `classType` must be a subclass of `MembershipUser`
+    @discardableResult func setCustomMembershipUser(classType: MembershipUser.Type) -> Club
+    
+    /// Re-assumes SKTCapture layer delegate
+    func assumeCaptureDelegate()
+    
+    /// Resigns SKTCapture layer delegate to desired receiver
+    func resignCaptureDelegate(to: CaptureHelperAllDelegate)
+}
 
+extension ClubKitProtocol where Self: Club {
+    
+    public func getExportableURLForDataSource<T: MembershipUser>(ofType objectType: T.Type, fileType: IOFileType) -> URL? {
+        switch fileType {
+        case .userList: return ExportableDataSourceContainer<T>().convertDataSourceToUserListFile()
+        case .csv:      return ExportableDataSourceContainer<T>().convertDataSourceToCSVFile()
+        }
+    }
+    
+    public func getImportedDataSource<T: MembershipUser>(ofType objectType: T.Type, from url: URL) {
+        // Perform parsing of imported URL on background thread
+        DispatchQueue.global(qos: .background).async { [weak self] in
+            guard let strongSelf = self else { return }
+            if let importedUsers = ExportableDataSourceContainer<T>.importDataSource(at: url) {
+                
+                // Return to main thread
+                DispatchQueue.main.async {
+                    strongSelf.delegate?.club?(strongSelf, didReceiveImported: importedUsers)
+                }
+            }
+        }
+    }
+    
+    @discardableResult
+    public func setDispatchQueue(_ queue: DispatchQueue) -> Club {
+        capture.dispatchQueue = queue
+        return self
+    }
+    
+    @discardableResult
+    public func setDebugMode(isActivated: Bool) -> Club {
+        DebugLogger.shared.toggleDebug(isActivated: isActivated)
+        return self
+    }
+    
+    public func assumeCaptureDelegate() {
+        capture.pushDelegate(captureLayer)
+    }
+    
+    public func resignCaptureDelegate(to: CaptureHelperAllDelegate) {
+        capture.pushDelegate(to)
+    }
+}
 
 
 
