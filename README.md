@@ -345,10 +345,74 @@ if let exportableURL = Club.shared.getExportableURLForDataSource(ofType: CustomM
 
 ### Step 2/2 (Importing)
 
+Importing requires that the application "catches" incoming URLs and decodes user records from the URL
+
+For pre-iOS 13.0 applications, implement the function below in `AppDelegate` to handle incoming URLs:
+
+```swift
+func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+    
+    Club.shared.getImportedDataSource(ofType: CustomMembershipUser.self, from: url)
+    
+    return true
+}
+```
+
+For applications that support iOS 13.0 and onward, implement the function below in `SceneDelegate`:
+
+```swift
+func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    
+    if let url = URLContexts.first?.url {
+    
+        Club.shared.getImportedDataSource(ofType: CustomMembershipUser.self, from: url)
+    
+    }
+}
+```
+
+The next step is to implement a ClubKit [delegate](#import-users-delegate) which provides the opportunity to approve or deny merging the incoming user records with the local store.
+
 <a name="receiving-delegate-events"/>
 
 ### Delegate Events
 
+Notifies receiver of errors
+
+```swift
+@objc optional func club(_ clubMiddleware: Club, didReceive error: Error)
+```
+
+Notifies receiver that a new MembershipUser object has been created
+Use this to show popup views, or update the UI, etc. if desired.
+NOTE
+
+```swift
+@objc optional func club(_ clubMiddleware: Club, didCreateNewMembership user: MembershipUser)
+```
+
+Notifies the delegate that a MembershipUser object has been updated
+Use this to show popup views, or update the UI, etc. if desired
+
+```swift
+@objc optional func club(_ clubMiddleware: Club, didUpdateMembership user: MembershipUser)
+```
+
+Notifies the delegate that a MembershipUser object has been deleted
+Use this to show popup views, or update the UI, etc. if desired
+
+```swift
+@objc optional func club(_ clubMiddleware: Club, didDeleteMembership user: MembershipUser)
+```
+
+<a name="import-users-delegate" />
+
+Notifies the delegate that an array of `MembershipUser` objects have been imported from another device
+Use this to store new list of transferred data in local Realm
+
+```swift
+@objc optional func club(_ clubMiddleware: Club, didReceiveImported users: [MembershipUser])
+```
 
 
 
