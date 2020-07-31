@@ -11,6 +11,10 @@ their local record. Examples include maintaining number of visits, time of last 
 
 * [Usage](#usage)
 * [Documentation](#documentation)
+    * [Displaying User Records](#displaying-user-list)
+    * [Syncing User Records Between Devices](#syncing-users-between-devices)
+    * [Delegate Events](#receiving-delegate-events)
+    * [Subclassing User class](#subclassing-membership-user)
 * [Example App](#example-app)
 * [Requirements](#requirements)
 * [Installation](#installation)
@@ -64,9 +68,9 @@ private func setupClub() {
 
 ### Displaying User Records
 
-<a name="importing-exporting-users"/>
+<a name="syncing-users-between-devices"/>
 
-### Importing and Exporting User Records
+### Syncing User Records Between Devices
 
 <a name="receiving-delegate-events"/>
 
