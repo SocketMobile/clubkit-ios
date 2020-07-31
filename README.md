@@ -60,7 +60,16 @@ private func setupClub() {
 
 ## Documentation
 
+<a name="displaying-user-list"/>
+
+### Displaying User Records
+
+<a name="receiving-delegate-events"/>
+
+### Delegate Events
+
 <a name="subclassing-membership-user"/>
+
 ### Subclassing Membership User
 
 
