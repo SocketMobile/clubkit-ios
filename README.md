@@ -68,6 +68,16 @@ private func setupClub() {
 
 ### Creating User class
 
+By default, ClubKit offers an out-of-the-box user class: `MembershipUser`
+
+This provides 5 basic values for each user record:
+
+- `userId`: A string that uniquely identifiers the user record.
+- `username`: A string for the user's name. 
+- `timeStampAdded`: The time interval (since UTC Jan 1 1970) of the user record's creation date
+- `numVisits`: Number of times the user has scanned their mobile pass/RFID card.
+- `timeStampOfLastVisit`: The time interval (since UTC Jan 1 1970) of the last time the user has scanned their mobile pass/RFID card.
+
 ```swift
 @objcMembers class CustomMembershipUser: MembershipUser {
     
