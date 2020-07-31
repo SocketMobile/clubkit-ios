@@ -102,6 +102,7 @@ You will <b>NOT</b> be writing Objective C code here. It is merely a requirement
 ```swift
 @objcMembers class CustomMembershipUser: MembershipUser {
 
+    // Step 1/3
     dynamic var userEmailAddress: String?
 
     enum CodingKeys: String, CodingKey, CaseIterable {
@@ -121,15 +122,17 @@ This allows your subclass to be synced between different devices. More on that [
 
 @objcMembers class CustomMembershipUser: MembershipUser {
 
+    // Step 1/3
     dynamic var userEmailAddress: String?
 
     enum CodingKeys: String, CodingKey, CaseIterable {
         case userEmailAddress
     }
     
+    // Step 2/3
     override class func variableNamesAsStrings() -> [String] {
 
-    let superclassVariableNames: [String] = super.variableNamesAsStrings()
+        let superclassVariableNames: [String] = super.variableNamesAsStrings()
         
         // Using CaseIterable, map through all CodingKeys enum and return its rawValue
         let mySubclassVariableNames: [String] = CodingKeys.allCases.map { $0.rawValue }
@@ -149,15 +152,17 @@ Finally, provide implementation to the overriden [Encodabe](https://developer.ap
 
 @objcMembers class CustomMembershipUser: MembershipUser {
 
+    // Step 1/3
     dynamic var userEmailAddress: String?
 
     enum CodingKeys: String, CodingKey, CaseIterable {
         case userEmailAddress
     }
     
+    // Step 2/3
     override class func variableNamesAsStrings() -> [String] {
 
-    let superclassVariableNames: [String] = super.variableNamesAsStrings()
+        let superclassVariableNames: [String] = super.variableNamesAsStrings()
         
         // Using CaseIterable, map through all CodingKeys enum and return its rawValue
         let mySubclassVariableNames: [String] = CodingKeys.allCases.map { $0.rawValue }
@@ -165,6 +170,7 @@ Finally, provide implementation to the overriden [Encodabe](https://developer.ap
         return superclassVariableNames + mySubclassVariableNames
     }
     
+    // Step 3/3
     // Encodable
     public override func encode(to encoder: Encoder) throws {
         try super.encode(to: encoder)
