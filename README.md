@@ -11,10 +11,10 @@ their local record. Examples include maintaining number of visits, time of last 
 
 * [Usage](#usage)
 * [Documentation](#documentation)
+    * [Subclassing User class](#subclassing-membership-user)
     * [Displaying User Records](#displaying-user-list)
     * [Syncing User Records Between Devices](#syncing-users-between-devices)
     * [Delegate Events](#receiving-delegate-events)
-    * [Subclassing User class](#subclassing-membership-user)
 * [Example App](#example-app)
 * [Requirements](#requirements)
 * [Installation](#installation)
@@ -64,9 +64,52 @@ private func setupClub() {
 
 ## Documentation
 
+<a name="subclassing-membership-user"/>
+
+### Creating User class
+
+```swift
+@objcMembers class CustomMembershipUser: MembershipUser {
+    
+    @objc dynamic var emailAddress: String? = "Some Email address"
+    
+    override class func variableNamesAsStrings() -> [String] {
+        let superclassNames = super.variableNamesAsStrings()
+        return superclassNames + CodingKeys.allCases.map { $0.rawValue }
+    }
+
+    enum CodingKeys: String, CodingKey, CaseIterable {
+        case emailAddress
+    }
+    
+    required init() {
+        super.init()
+    }
+    
+    public required init(from decoder: Decoder) throws  {
+        try super.init(from: decoder)
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        emailAddress = try container.decode(String.self, forKey: .emailAddress)
+    }
+    
+    public override func encode(to encoder: Encoder) throws {
+        try super.encode(to: encoder)
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(emailAddress, forKey: .emailAddress)
+    }
+}
+```
+
 <a name="displaying-user-list"/>
 
 ### Displaying User Records
+
+Displaying user records
+
+```swift
+private let usersCollection = MembershipUserCollection<CustomMembershipUser>()
+```
 
 <a name="syncing-users-between-devices"/>
 
@@ -76,9 +119,7 @@ private func setupClub() {
 
 ### Delegate Events
 
-<a name="subclassing-membership-user"/>
 
-### Subclassing Membership User
 
 
 <a name="example-app" />
