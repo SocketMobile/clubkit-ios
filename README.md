@@ -64,6 +64,10 @@ private func setupClub() {
 
 ### Displaying User Records
 
+<a name="importing-exporting-users"/>
+
+### Importing and Exporting User Records
+
 <a name="receiving-delegate-events"/>
 
 ### Delegate Events
