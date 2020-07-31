@@ -6,6 +6,8 @@
 [![Platform](https://img.shields.io/cocoapods/p/ClubKit.svg?style=flat)](https://cocoapods.org/pods/ClubKit)
 
 ClubKit provides Membership/Loyalty functionality when paired with our Socket Mobile S550 NFC reader.
+Developers can use the S550 NFC reader to scan appropriate Mobile Pass and/or RFID cards carried by end users to update
+their local record. Examples include maintaining number of visits, time of last visit and much more when configured.
 
 * [Usage](#usage)
 * [Documentation](#documentation)
@@ -18,6 +20,9 @@ ClubKit provides Membership/Loyalty functionality when paired with our Socket Mo
 ## Usage
 
 Under the hood, ClubKit is an umbrella for our iOS Capture SDK. So naturally, you need to provide credentials to get started. 
+
+You may provide your own [subclass of `MembershipUser`](#subclassing-membership-user) class, to maintain more than the default information
+on end users
 
 ```swift
 
@@ -54,6 +59,9 @@ private func setupClub() {
 <a name="documentation" />
 
 ## Documentation
+
+<a name="subclassing-membership-user"/>
+### Subclassing Membership User
 
 
 <a name="example-app" />
