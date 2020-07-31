@@ -97,7 +97,7 @@ You will <b>NOT</b> be writing Objective C code here. It is merely a requirement
 
 - First, define a variable you would like to observe in this record. As noted before, in this example, we will add an Email Address to this User class.
 - Then, define an enum which conforms to `String`, `CodingKey` and `CaseIterable`. Then define cases for all of your variables
-<b>NOTE: The case name must match the name of the variable it represents. camelCase, lowercased, UPPERCASED, etc. It must match exactly</b>M
+<b>NOTE: The case name must match the name of the variable it represents.</b> camelCase, lowercased, UPPERCASED, etc. It must match exactly
 
 ```swift
 @objcMembers class CustomMembershipUser: MembershipUser {
