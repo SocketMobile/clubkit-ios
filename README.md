@@ -310,6 +310,41 @@ extension UserListViewController: UITableViewDelegate, UITableViewDataSource {
 
 ### Syncing User Records Between Devices
 
+Syncing user records between devices is as simple as airdropping a file containing user records between the two.
+Using the function below, you can generate a file containing the locally stored user records and export that file to wherever necessary
+
+```swift
+func getExportableURLForDataSource<T: MembershipUser>(ofType objectType: T.Type, fileType: IOFileType) -> URL?
+```
+
+`objectType` will be the `CustomMembershipUser` class or any other MembershipUser subclass
+
+`IOFileType` provides two kinds of files:
+
+- UserList
+- CSV
+
+The UserList file should only be used between two applications using ClubKit. It may be difficult opening it in other environments
+The CSV file (comma separated values) can be exported to other environments however.
+
+### Step 1/2 (Exporting)
+
+```swift
+if let exportableURL = Club.shared.getExportableURLForDataSource(ofType: CustomMembershipUser.self, fileType: .userList) {
+    // Show UIActivityViewController with exportableURL
+    
+    let activityItems: [Any] = [
+        exportableURL
+    ]
+    
+    let activityController = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+    
+    present(activityController, animated: true, completion: nil)
+}
+```
+
+### Step 2/2 (Importing)
+
 <a name="receiving-delegate-events"/>
 
 ### Delegate Events
