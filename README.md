@@ -66,7 +66,7 @@ private func setupClub() {
 
 <a name="subclassing-membership-user"/>
 
-### Creating User class
+## Creating User class
 
 By default, ClubKit offers an out-of-the-box user class: `MembershipUser`
 
@@ -203,7 +203,7 @@ For decoding, its reversed. The Data in the container which matches the specific
 
 <a name="displaying-user-list"/>
 
-### Displaying User Records
+## Displaying User Records
 
 Using the `MembershipUserCollection` you can display user records in a UITableView or UICollectionView.
 It accepts a generic parameter in its initializer. Pass in your custom membership user class:
@@ -308,7 +308,7 @@ extension UserListViewController: UITableViewDelegate, UITableViewDataSource {
 
 <a name="syncing-users-between-devices"/>
 
-### Syncing User Records Between Devices
+## Syncing User Records Between Devices
 
 Syncing user records between devices is as simple as airdropping a file containing user records between the two.
 Using the function below, you can generate a file containing the locally stored user records and export that file to wherever necessary
@@ -375,7 +375,9 @@ The next step is to implement a ClubKit [delegate](#import-users-delegate) which
 
 <a name="receiving-delegate-events"/>
 
-### Delegate Events
+## Delegate Events
+
+ClubKit provides notifications on other events through delegate calls. Conform to `ClubMiddlewareDelegate` to receive these events.
 
 Notifies receiver of errors
 
@@ -383,23 +385,25 @@ Notifies receiver of errors
 @objc optional func club(_ clubMiddleware: Club, didReceive error: Error)
 ```
 
-Notifies receiver that a new MembershipUser object has been created
+Notifies receiver that a new MembershipUser object has been created.
 Use this to show popup views, or update the UI, etc. if desired.
-NOTE
+<b>NOTE</b> If displaying list of records in UITableView or UICollectionView, refer to this [section](#displaying-user-list) for updating the list
 
 ```swift
 @objc optional func club(_ clubMiddleware: Club, didCreateNewMembership user: MembershipUser)
 ```
 
-Notifies the delegate that a MembershipUser object has been updated
-Use this to show popup views, or update the UI, etc. if desired
+Notifies the delegate that a MembershipUser object has been updated.
+Use this to show popup views, or update the UI, etc. if desired.
+<b>NOTE</b> If displaying list of records in UITableView or UICollectionView, refer to this [section](#displaying-user-list) for updating the list
 
 ```swift
 @objc optional func club(_ clubMiddleware: Club, didUpdateMembership user: MembershipUser)
 ```
 
-Notifies the delegate that a MembershipUser object has been deleted
-Use this to show popup views, or update the UI, etc. if desired
+Notifies the delegate that a MembershipUser object has been deleted.
+Use this to show popup views, or update the UI, etc. if desired.
+<b>NOTE</b> If displaying list of records in UITableView or UICollectionView, refer to this [section](#displaying-user-list) for updating the list
 
 ```swift
 @objc optional func club(_ clubMiddleware: Club, didDeleteMembership user: MembershipUser)
@@ -413,8 +417,37 @@ Use this to store new list of transferred data in local Realm
 ```swift
 @objc optional func club(_ clubMiddleware: Club, didReceiveImported users: [MembershipUser])
 ```
+This function can be used to determine if the incoming list of user records should be merged with the existing local store
+For example, an alert is displayed giving the developer, clerk, etc. the opportunity to accept or decline the imported user records.
 
+```swift
+func club(_ clubMiddleware: Club, didReceiveImported users: [MembershipUser]) {
 
+    var alertStyle = UIAlertController.Style.actionSheet
+    if (UIDevice.current.userInterfaceIdiom == .pad) {
+        alertStyle = UIAlertController.Style.alert
+    }
+    
+    let title = "Import"
+    let message = "Received \(users.count) users to import. Would you like to save them?"
+    
+    let alertController = UIAlertController(title: title,
+                                            message: message,
+                                            preferredStyle: alertStyle)
+                                            
+    let yesAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) { (_) in
+        Club.shared.merge(importedUsers: users)
+    }
+    let noAction = UIAlertAction(title: "No", style: UIAlertAction.Style.cancel) { (_) in
+        // Just decline and do nothing
+    }
+    
+    alertController.addAction(yesAction)
+    alertController.addAction(noAction)
+    
+    present(alertController, animated: true, completion: nil)
+}
+```
 
 <a name="example-app" />
 
