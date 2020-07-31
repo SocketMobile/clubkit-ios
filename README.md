@@ -88,14 +88,14 @@ Using the example of `CustomMembershipUser` which, aside from the 5 basic values
     // More code coming
 }
 ```
-Use the modifier `@objcMembers` in the class declaration to signify that we will be using Objective C objects in our subclass.
+Use the modifier `@objcMembers` in the class declaration to signify that the class will be using Objective C objects in our subclass.
 You will <b>NOT</b> be writing Objective C code here. It is merely a requirement for observing `dynamic` variables
 
 
 
 ### Step 1/3
 
-- First, define a variable you would like to observe in this record. As noted before, in this example, we will add an Email Address to this User class.
+- First, define a variable you would like to observe in this record. As noted before, in this example, you will add an Email Address to this User class.
 - Then, define an enum which conforms to `String`, `CodingKey` and `CaseIterable`. Then define cases for all of your variables
 <b>NOTE: The case name must match the name of the variable it represents.</b> camelCase, lowercased, UPPERCASED, etc. It must match exactly
 
@@ -114,7 +114,7 @@ You will <b>NOT</b> be writing Objective C code here. It is merely a requirement
 
 ```
 
-### Step 2/3,
+### Step 2/3
 - Next, override an aptly named function called `variableNamesAsStrings() -> [String]` and return all the case values you created in Step 1, plus the superclass values.
 This allows your subclass to be synced between different devices. More on that [later](#syncing-users-between-devices)
 
@@ -199,18 +199,111 @@ Finally, provide implementation to the overriden [Encodabe](https://developer.ap
 
 ```
 For encoding variables, it uses the matching Key you created in the `CodingKeys` enum, and encodes the variable to Data.
-
 For decoding, its reversed. The Data in the container which matches the specific key is decoded to its original variable.
-
 
 <a name="displaying-user-list"/>
 
 ### Displaying User Records
 
-Displaying user records
+Using the `MembershipUserCollection` you can display user records in a UITableView or UICollectionView.
+It accepts a generic parameter in its initializer. Pass in your custom membership user class:
 
 ```swift
 private let usersCollection = MembershipUserCollection<CustomMembershipUser>()
+```
+
+
+
+### Step 1/2
+
+First, you need to begin observing changes to user records.
+Changes include new additions, updates and deletions.
+You can observe or stop observing changes for user records like so:
+
+```swift
+
+var tableView: UITableView...
+
+private let usersCollection = MembershipUserCollection<CustomMembershipUser>()
+
+// ...
+
+private func observeChanges() {
+    
+    usersCollection.observeAllRecords({ [weak self] (changes: MembershipUserChanges) in
+        switch changes {
+        case .initial(_):
+            
+            // Reload tableView with initial data once
+            self?.tableView.reloadData()
+            
+        case let .update(_, deletions, insertions, modifications):
+            self?.tableView.performBatchUpdates({
+            
+                // Reload rows for updated user records
+                self?.tableView.reloadRows(at: modifications.map { IndexPath(row: $0, section: 0) }, with: .automatic)
+                
+                // Insert newly created records
+                self?.tableView.insertRows(at: insertions.map { IndexPath(row: $0, section: 0) }, with: .automatic)
+                
+                // Delete rows for records that have been deleted
+                self?.tableView.deleteRows(at: deletions.map { IndexPath(row: $0, section: 0) }, with: .automatic)
+                
+            }, completion: { (completed: Bool) in
+                self?.tableView.reloadData()
+            })
+            break
+        case let .error(error):
+        
+            // Handle error...
+        
+        }
+        
+    })
+}
+
+private func stopObserving() {
+    // Will stop observing changes.
+    // Call on viewWillDisappear, etc.
+    userCollection.stopObserving()
+}
+```
+
+### Step 2/2
+
+Next, implement the usual `UITableViewDelegate` and `UITableViewDataSource` functions to display the user records:
+
+```swift
+
+extension UserListViewController: UITableViewDelegate, UITableViewDataSource {
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return usersCollection.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath)
+        
+        if let user = usersCollection.user(at: indexPath.item) {
+            
+            // Configure your cell with all of the data in this user record
+            
+        }
+        
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let user = usersCollection.user(at: indexPath.item) {
+            // Perform action with selected user
+        }
+    }
+}
+
 ```
 
 <a name="syncing-users-between-devices"/>
