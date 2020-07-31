@@ -10,7 +10,7 @@ import ClubKit
 
 @objcMembers class CustomMembershipUser: MembershipUser {
     
-    @objc dynamic var emailAddress: String? = "Some Email address"
+    dynamic var emailAddress: String? = "Some Email address"
     
     override class func variableNamesAsStrings() -> [String] {
         let superclassNames = super.variableNamesAsStrings()
