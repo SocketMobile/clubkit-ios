@@ -85,7 +85,7 @@ Using the example of `CustomMembershipUser` which, aside from the 5 basic values
 
 ```swift
 @objcMembers class CustomMembershipUser: MembershipUser {
-
+    // More code coming
 }
 ```
 Use the modifier `@objcMembers` in the class declaration to signify that we will be using Objective C objects in our subclass.
@@ -100,10 +100,15 @@ You will <b>NOT</b> be writing Objective C code here. It is merely a requirement
 <b>NOTE: The case name must match the name of the variable it represents. camelCase, lowercased, UPPERCASED, etc. It must match exactly</b>M
 
 ```swift
-dynamic var userEmailAddress: String?
+@objcMembers class CustomMembershipUser: MembershipUser {
 
-enum CodingKeys: String, CodingKey, CaseIterable {
-    case userEmailAddress
+    dynamic var userEmailAddress: String?
+
+    enum CodingKeys: String, CodingKey, CaseIterable {
+        case userEmailAddress
+    }
+    
+    // More code coming
 }
 
 ```
@@ -114,14 +119,25 @@ This allows your subclass to be synced between different devices. More on that [
 
 ```swift
 
-override class func variableNamesAsStrings() -> [String] {
+@objcMembers class CustomMembershipUser: MembershipUser {
 
-let superclassVariableNames: [String] = super.variableNamesAsStrings()
+    dynamic var userEmailAddress: String?
+
+    enum CodingKeys: String, CodingKey, CaseIterable {
+        case userEmailAddress
+    }
     
-    // Using CaseIterable, map through all CodingKeys enum and return its rawValue
-    let mySubclassVariableNames: [String] = CodingKeys.allCases.map { $0.rawValue }
+    override class func variableNamesAsStrings() -> [String] {
+
+    let superclassVariableNames: [String] = super.variableNamesAsStrings()
+        
+        // Using CaseIterable, map through all CodingKeys enum and return its rawValue
+        let mySubclassVariableNames: [String] = CodingKeys.allCases.map { $0.rawValue }
+        
+        return superclassVariableNames + mySubclassVariableNames
+    }
     
-    return superclassVariableNames + mySubclassVariableNames
+    // More code coming
 }
 
 ```
@@ -131,28 +147,48 @@ Finally, provide implementation to the overriden [Encodabe](https://developer.ap
 
 ```swift
 
-// Encodable
-public override func encode(to encoder: Encoder) throws {
-    try super.encode(to: encoder)
-    
-    // Create container to encode your variables
-    var container = encoder.container(keyedBy: CodingKeys.self)
-    
-    // TRY to encode your variable using the key that matches
-    try container.encode(emailAddress, forKey: .emailAddress)
-    
-    // ... Other variables if necessary
-}
+@objcMembers class CustomMembershipUser: MembershipUser {
 
-// Decodable
-public required init(from decoder: Decoder) throws  {
-    try super.init(from: decoder)
+    dynamic var userEmailAddress: String?
+
+    enum CodingKeys: String, CodingKey, CaseIterable {
+        case userEmailAddress
+    }
     
-    // Create container, again, but this time for decoding your variables
-    let container = try decoder.container(keyedBy: CodingKeys.self)
+    override class func variableNamesAsStrings() -> [String] {
+
+    let superclassVariableNames: [String] = super.variableNamesAsStrings()
+        
+        // Using CaseIterable, map through all CodingKeys enum and return its rawValue
+        let mySubclassVariableNames: [String] = CodingKeys.allCases.map { $0.rawValue }
+        
+        return superclassVariableNames + mySubclassVariableNames
+    }
     
-    // TRY to decode the data into your original variable type and value
-    emailAddress = try container.decode(String.self, forKey: .emailAddress)
+    // Encodable
+    public override func encode(to encoder: Encoder) throws {
+        try super.encode(to: encoder)
+        
+        // Create container to encode your variables
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        // TRY to encode your variable using the key that matches
+        try container.encode(emailAddress, forKey: .emailAddress)
+        
+        // ... Other variables if necessary
+    }
+
+    // Decodable
+    public required init(from decoder: Decoder) throws  {
+        try super.init(from: decoder)
+        
+        // Create container, again, but this time for decoding your variables
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        // TRY to decode the data into your original variable type and value
+        emailAddress = try container.decode(String.self, forKey: .emailAddress)
+    }
+
 }
 
 ```
@@ -160,43 +196,6 @@ For encoding variables, it uses the matching Key you created in the `CodingKeys`
 
 For decoding, its reversed. The Data in the container which matches the specific key is decoded to its original variable.
 
-
-### Final Result
-
-After following the 3 steps, your subclass should look like this
-
-```swift
-@objcMembers class CustomMembershipUser: MembershipUser {
-    
-    dynamic var emailAddress: String? = "Some Email address"
-    
-    enum CodingKeys: String, CodingKey, CaseIterable {
-        case emailAddress
-    }
-    
-    override class func variableNamesAsStrings() -> [String] {
-        let superclassNames = super.variableNamesAsStrings()
-        return superclassNames + CodingKeys.allCases.map { $0.rawValue }
-    }
-    
-    required init() {
-        super.init()
-    }
-    
-    public required init(from decoder: Decoder) throws  {
-        try super.init(from: decoder)
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        emailAddress = try container.decode(String.self, forKey: .emailAddress)
-    }
-    
-    public override func encode(to encoder: Encoder) throws {
-        try super.encode(to: encoder)
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        
-        try container.encode(emailAddress, forKey: .emailAddress)
-    }
-}
-```
 
 <a name="displaying-user-list"/>
 
