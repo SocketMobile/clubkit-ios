@@ -128,6 +128,14 @@ public class MembershipUserCollection<T: MembershipUser>: NSObject {
     /// Results collection of MembershipUsers
     public private(set) var users: Results<T>!
     
+    public var count: Int {
+        return users?.count ?? 0
+    }
+    
+    public func user(at index: Int) -> T? {
+        return users?[index]
+    }
+    
     private var usersToken: NotificationToken?
     
     public override init() {
@@ -151,4 +159,7 @@ public class MembershipUserCollection<T: MembershipUser>: NSObject {
         }
     }
     
+    open func stopObserving() {
+        usersToken?.invalidate()
+    }
 }

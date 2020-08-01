@@ -162,18 +162,16 @@ class UserListViewController: UIViewController {
     private func loadAllRecords() {
         
         usersCollection.observeAllRecords({ [weak self] (changes: MembershipUserChanges) in
-            guard let strongSelf = self else { return }
-            
             switch changes {
             case .initial(_):
-                strongSelf.tableView.reloadData()
+                self?.tableView.reloadData()
             case let .update(_, deletions, insertions, modifications):
-                strongSelf.tableView.performBatchUpdates({
-                    strongSelf.tableView.reloadRows(at: modifications.map { IndexPath(row: $0, section: 0) }, with: .automatic)
-                    strongSelf.tableView.insertRows(at: insertions.map { IndexPath(row: $0, section: 0) }, with: .automatic)
-                    strongSelf.tableView.deleteRows(at: deletions.map { IndexPath(row: $0, section: 0) }, with: .automatic)
+                self?.tableView.performBatchUpdates({
+                    self?.tableView.reloadRows(at: modifications.map { IndexPath(row: $0, section: 0) }, with: .automatic)
+                    self?.tableView.insertRows(at: insertions.map { IndexPath(row: $0, section: 0) }, with: .automatic)
+                    self?.tableView.deleteRows(at: deletions.map { IndexPath(row: $0, section: 0) }, with: .automatic)
                 }, completion: { (completed: Bool) in
-                    strongSelf.tableView.reloadData()
+                    self?.tableView.reloadData()
                 })
                 break
             case let .error(error):
@@ -198,7 +196,7 @@ extension UserListViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let numRows = usersCollection.users.count
+        let numRows = usersCollection.count
         numUsersLabel.text = "Num users: \(numRows)"
         return numRows
     }
@@ -206,10 +204,17 @@ extension UserListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath) as? UserCell
         
-        let user = usersCollection.users[indexPath.item]
-        cell?.setup(with: user)
+        if let user = usersCollection.user(at: indexPath.item) {
+            cell?.setup(with: user)
+        }
         
         return cell!
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let user = usersCollection.user(at: indexPath.item) {
+            // Perform action with selected user
+        }
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -233,7 +238,7 @@ extension UserListViewController: UITableViewDelegate, UITableViewDataSource {
         let updateTitle = "Update Email"
         let updateAction = UIContextualAction(style: .normal, title: updateTitle, handler: { [weak self] (action, view, completionHandler) in
             guard let strongSelf = self else { return }
-            let user = strongSelf.usersCollection.users[indexPath.item]
+            guard let user = strongSelf.usersCollection.user(at: indexPath.item) else { return }
             
             strongSelf.showAlertForUpdating(user: user)
             
@@ -243,7 +248,7 @@ extension UserListViewController: UITableViewDelegate, UITableViewDataSource {
         let deleteTitle = "Delete"
         let deleteAction = UIContextualAction(style: .destructive, title: deleteTitle, handler: { [weak self] (action, view, completionHandler) in
             guard let strongSelf = self else { return }
-            let user = strongSelf.usersCollection.users[indexPath.item]
+            guard let user = strongSelf.usersCollection.user(at: indexPath.item) else { return }
             
             strongSelf.showAlertForDeleting(user: user)
             completionHandler(true)
