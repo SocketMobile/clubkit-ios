@@ -14,12 +14,14 @@ internal typealias SKTCaptureDeviceArrivalHandler = (CaptureLayerDevice, Capture
 internal typealias SKTCaptureDeviceRemovalHandler = (CaptureLayerDevice, CaptureLayerResult) -> ()
 internal typealias SKTCaptureDataHandler = (CaptureLayerDecodedData?, CaptureLayerDevice, CaptureLayerResult) -> ()
 internal typealias SKTCaptureBatteryLevelChangeHandler = (Int, CaptureLayerDevice) -> ()
-
+internal typealias SKTCaptureDiscoveredDeviceHandler = (DiscoveredDevice, CaptureLayerDeviceManager) -> ()
+internal typealias SKTCaptureDiscoveryEndedHandler = (SKTResult, CaptureLayerDeviceManager) -> ()
 
 /// Manages events from `SKTCapture` and notifies receiver
 internal class SKTCaptureLayer:
     NSObject,
     CaptureHelperErrorDelegate,
+    CaptureHelperDeviceManagerDiscoveryDelegate,
     CaptureHelperDeviceManagerPresenceDelegate,
     CaptureHelperDevicePresenceDelegate,
     CaptureHelperDevicePowerDelegate,
@@ -33,7 +35,8 @@ internal class SKTCaptureLayer:
     internal var deviceRemovalHandler: SKTCaptureDeviceRemovalHandler?
     internal var captureDataHandler: SKTCaptureDataHandler?
     internal var batteryLevelChangeHandler: SKTCaptureBatteryLevelChangeHandler?
-    
+    internal var discoveredDeviceHandler: SKTCaptureDiscoveredDeviceHandler?
+    internal var discoveryEndedHandler: SKTCaptureDiscoveryEndedHandler?
     
     override init() {
         super.init()
@@ -89,5 +92,39 @@ internal class SKTCaptureLayer:
         
     }
     
+    func didDiscoverDevice(_ device: String, fromDeviceManager deviceManager: CaptureHelperDeviceManager) {
+        
+        guard let data = device.data(using: String.Encoding.utf8) else {
+            return
+        }
+
+        do {
+            
+            guard let deviceInfo = try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] else {
+                return
+            }
+                
+            guard
+                let identifiierUUID = deviceInfo["identifierUUID"] as? String,
+                let deviceName = deviceInfo["name"] as? String,
+                let serviceUUID = deviceInfo["serviceUUID"] as? String
+                else {
+                return
+            }
+            
+            let discoveredDevice = DiscoveredDevice(identifierUUID: identifiierUUID,
+                                                    deviceName: deviceName,
+                                                    serviceUUID: serviceUUID)
+            
+            discoveredDeviceHandler?(discoveredDevice, deviceManager)
+            
+        } catch let error {
+            print("Error getting device info: \(error.localizedDescription)")
+        }
+    }
+    
+    func didEndDiscoveryWithResult(_ result: SKTResult, fromDeviceManager deviceManager: CaptureHelperDeviceManager) {
+        discoveryEndedHandler?(result, deviceManager)
+    }
 }
 
