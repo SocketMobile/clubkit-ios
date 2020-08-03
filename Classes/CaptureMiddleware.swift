@@ -13,13 +13,27 @@ public class CaptureMiddleware: NSObject, CaptureMiddlewareProtocol {
     
     public private(set) weak var capture: CaptureHelper!
     
-    public func setCapture(instance: CaptureHelper) {
-        self.capture = instance
-    }
-    
     internal var captureLayer: SKTCaptureLayer!
     
     public private(set) var numberOfFailedOpenCaptureAttempts: Int = 0
+    
+    /// Enum for different formats by which the decodedData will be parsed
+    public enum DecodedDataParseFormat: Int {
+        case defaultRFID = 0
+        case NDEF
+    }
+    
+    /// Determines how the decoded data will be parsed. Can be configured.
+    public private(set) var decodedDataFormat: DecodedDataParseFormat = .defaultRFID
+    
+    
+    open func beginAutoDiscovery(numSeconds: Int, completion: @escaping ([DiscoveredDevice]) ->()) {
+        fatalError("Must be overriden by subclass")
+    }
+    
+    public func setCapture(instance: CaptureHelper) {
+        self.capture = instance
+    }
     
     public func open(withAppKey appKey: String, appId: String, developerId: String, completion: ((CaptureLayerResult) -> ())? = nil) {
         
@@ -78,15 +92,6 @@ public class CaptureMiddleware: NSObject, CaptureMiddlewareProtocol {
     public func onDecodedData(decodedData: CaptureLayerDecodedData?, device: CaptureLayerDevice) -> Error? {
         return nil
     }
-    
-    /// Enum for different formats by which the decodedData will be parsed
-    public enum DecodedDataParseFormat: Int {
-        case defaultRFID = 0
-        case NDEF
-    }
-    
-    /// Determines how the decoded data will be parsed. Can be configured.
-    public private(set) var decodedDataFormat: DecodedDataParseFormat = .defaultRFID
     
     /// Sets the format by which the decoded data will be parsed.
     public func setDecodedDataParse(format: DecodedDataParseFormat) {
