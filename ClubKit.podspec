@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ClubKit'
-  s.version          = '0.2.5'
+  s.version          = '1.0.1'
   s.summary          = 'A framework for managing membership'
   s.swift_versions    = ['4.0', '5.0']
 
