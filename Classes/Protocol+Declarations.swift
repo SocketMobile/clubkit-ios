@@ -64,6 +64,17 @@ public protocol CaptureMiddlewareProtocol: class {
     /// Sets the format by which the decoded data will be parsed.
     func setDecodedDataParse(format: CaptureMiddleware.DecodedDataParseFormat)
     
+    /// Begins timer for discovering nearby BLE devices
+    /// - Parameters:
+    ///     -  numSeconds: The number of seconds before the discovery ends, after which the completion handler will be called
+    ///     - completion: Completion block which returns all the devices that were discovered
+    func startAutoDiscovery(numSeconds: Int, completion: @escaping ([DiscoveredDeviceInfo]) -> ())
+    
+    /// Sets the discovered device to be the favorite. Afterward, the "favorited" device
+    /// will auto connect
+    /// - Parameters:
+    ///     - discoveredDeviceInfo: Struct containing identifiers used to set a BLE device as a favorite
+    func setFavorite(discoveredDeviceInfo: DiscoveredDeviceInfo)
 }
 
 

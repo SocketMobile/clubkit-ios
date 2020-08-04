@@ -9,6 +9,48 @@
 import UIKit
 import ClubKit
 
+class AutoDiscoveryLoadingView: UIView {
+    
+    let activityIndicator: UIActivityIndicatorView = {
+        let aiv = UIActivityIndicatorView(activityIndicatorStyle: .large)
+        aiv.translatesAutoresizingMaskIntoConstraints = false
+        aiv.hidesWhenStopped = true
+        return aiv
+    }()
+    
+    
+    init() {
+        super.init(frame: .zero)
+        setupUIElements()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupUIElements() {
+        translatesAutoresizingMaskIntoConstraints = false
+        isHidden = true
+        backgroundColor = UIColor.white
+        
+        addSubview(activityIndicator)
+        
+        activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        
+    }
+    
+    override var isHidden: Bool {
+        didSet {
+            if isHidden {
+                activityIndicator.stopAnimating()
+            } else {
+                activityIndicator.startAnimating()
+            }
+        }
+    }
+}
+
 class ViewController: UIViewController {
     
     // MARK: - Variables
@@ -20,6 +62,27 @@ class ViewController: UIViewController {
     
     
     // MARK: - UI Elements
+    
+    private lazy var menuButton: UIBarButtonItem = {
+        let btn = UIBarButtonItem(title: "Menu",
+                                 style: UIBarButtonItemStyle.plain,
+                                 target: self,
+                                 action: #selector(pushUserListController))
+        btn.tintColor = Constants.ClassicSwiftConstants.AppTheme.primaryColor
+        return btn
+    }()
+    
+    private lazy var autoDiscoveryButton: UIBarButtonItem = {
+        let btn = UIBarButtonItem(title: "AutoDiscovery",
+                                 style: UIBarButtonItemStyle.plain,
+                                 target: self,
+                                 action: #selector(beginAutoDiscovery))
+        btn.tintColor = Constants.ClassicSwiftConstants.AppTheme.primaryColor
+        return btn
+    }()
+    
+    private let autoDiscoveryLoadingView = AutoDiscoveryLoadingView()
+    private let autoDiscoveryResultsView = AutoDiscoveryResultsView()
     
     private var connectedDevicesLabel: UILabel = {
         let lbl = UILabel()
@@ -100,20 +163,15 @@ class ViewController: UIViewController {
         
         self.title = "Membership Demo"
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.rightBarButtonItem = {
-           let btn = UIBarButtonItem(title: "Menu",
-                                     style: UIBarButtonItemStyle.plain,
-                                     target: self,
-                                     action: #selector(pushUserListController))
-            btn.tintColor = Constants.ClassicSwiftConstants.AppTheme.primaryColor
-            return btn
-        }()
+        navigationItem.rightBarButtonItems = [menuButton, autoDiscoveryButton]
         view.backgroundColor = UIColor.systemBackground
         navigationController?.navigationBar.tintColor = Constants.ClassicSwiftConstants.AppTheme.primaryColor
         
         [connectedDevicesLabel,
          collectionView,
-         captureDataModalView].forEach { (view) in
+         captureDataModalView,
+         autoDiscoveryLoadingView,
+         autoDiscoveryResultsView].forEach { (view) in
             self.view.addSubview(view)
         }
         
@@ -140,10 +198,25 @@ class ViewController: UIViewController {
         captureDataModalView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         captureDataModalView.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
         
+        
+        [autoDiscoveryLoadingView, autoDiscoveryResultsView].forEach { (v) in
+            v.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+            v.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+            v.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+            v.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        }
     }
     
     @objc private func pushUserListController() {
         navigationController?.pushViewController(UserListViewController(), animated: true)
+    }
+    
+    @objc private func beginAutoDiscovery() {
+        autoDiscoveryLoadingView.isHidden = false
+        Club.shared.startAutoDiscovery(numSeconds: 2) { [weak self] (discoveredDevices) in
+            self?.autoDiscoveryLoadingView.isHidden = true
+            self?.autoDiscoveryResultsView.add(discoveredDevices: discoveredDevices)
+        }
     }
 
 }
@@ -217,17 +290,6 @@ extension ViewController: ClubMiddlewareDelegate {
     func capture(_ middleware: CaptureMiddleware, didNotifyArrivalForManager deviceManager: CaptureLayerDeviceManager, result: CaptureLayerResult) {
         
         deviceManager.dispatchQueue = DispatchQueue.main
-
-        // By default, the favorites is set to ""
-        deviceManager.getFavoriteDevicesWithCompletionHandler { (result, favorite) in
-            if result == CaptureLayerResult.E_NOERROR {
-                if let favorite = favorite, favorite == "" {
-                    deviceManager.setFavoriteDevices("*") { (result) in
-
-                    }
-                }
-            }
-        }
     }
     
     func capture(_ middleware: CaptureMiddleware, didNotifyRemovalForManager deviceManager: CaptureLayerDeviceManager, result: CaptureLayerResult) {
