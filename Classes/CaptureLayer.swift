@@ -14,7 +14,7 @@ internal typealias SKTCaptureDeviceArrivalHandler = (CaptureLayerDevice, Capture
 internal typealias SKTCaptureDeviceRemovalHandler = (CaptureLayerDevice, CaptureLayerResult) -> ()
 internal typealias SKTCaptureDataHandler = (CaptureLayerDecodedData?, CaptureLayerDevice, CaptureLayerResult) -> ()
 internal typealias SKTCaptureBatteryLevelChangeHandler = (Int, CaptureLayerDevice) -> ()
-internal typealias SKTCaptureDiscoveredDeviceHandler = (DiscoveredDevice, CaptureLayerDeviceManager) -> ()
+internal typealias SKTCaptureDiscoveredDeviceHandler = (DiscoveredDeviceInfo, CaptureLayerDeviceManager) -> ()
 internal typealias SKTCaptureDiscoveryEndedHandler = (SKTResult, CaptureLayerDeviceManager) -> ()
 
 /// Manages events from `SKTCapture` and notifies receiver
@@ -103,18 +103,22 @@ internal class SKTCaptureLayer:
             guard let deviceInfo = try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] else {
                 return
             }
+            
+            let deviceInfoIdentifierUUIDKey = "identifierUUID"
+            let deviceInfoNameKey = "name"
+            let deviceInfoServiceUUIDKey = "serviceUUID"
                 
             guard
-                let identifiierUUID = deviceInfo["identifierUUID"] as? String,
-                let deviceName = deviceInfo["name"] as? String,
-                let serviceUUID = deviceInfo["serviceUUID"] as? String
+                let identifiierUUID = deviceInfo[deviceInfoIdentifierUUIDKey] as? String,
+                let deviceName = deviceInfo[deviceInfoNameKey] as? String,
+                let serviceUUID = deviceInfo[deviceInfoServiceUUIDKey] as? String
                 else {
                 return
             }
             
-            let discoveredDevice = DiscoveredDevice(identifierUUID: identifiierUUID,
-                                                    deviceName: deviceName,
-                                                    serviceUUID: serviceUUID)
+            let discoveredDevice = DiscoveredDeviceInfo(identifierUUID: identifiierUUID,
+                                                        deviceName: deviceName,
+                                                        serviceUUID: serviceUUID)
             
             discoveredDeviceHandler?(discoveredDevice, deviceManager)
             

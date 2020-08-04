@@ -27,9 +27,8 @@ public class CaptureMiddleware: NSObject, CaptureMiddlewareProtocol {
     public private(set) var decodedDataFormat: DecodedDataParseFormat = .defaultRFID
     
     
-    open func beginAutoDiscovery(numSeconds: Int, completion: @escaping ([DiscoveredDevice]) ->()) {
-        fatalError("Must be overriden by subclass")
-    }
+    internal var discoveredDeviceHandler: SKTCaptureDiscoveredDeviceHandler?
+    internal var autodiscoveryEndedHandler: SKTCaptureDiscoveryEndedHandler?
     
     public func setCapture(instance: CaptureHelper) {
         self.capture = instance
@@ -104,4 +103,73 @@ public class CaptureMiddleware: NSObject, CaptureMiddlewareProtocol {
         ]
         return NSError(domain: domain, code: code ?? 0, userInfo: userInfo)
     }
+    
+    public func startAutoDiscovery(numSeconds: Int, completion: @escaping ([DiscoveredDeviceInfo]) -> ()) {
+        
+        guard let deviceManager = capture.getDeviceManagers().first else {
+            completion([])
+            return
+        }
+        
+        let timeout = (numSeconds * 1000)
+        
+        var discoveredDevices: [DiscoveredDeviceInfo] = []
+        
+        deviceManager.setFavoriteDevices("") { [weak self] (result) in
+            if result != .E_NOERROR {
+                let debugMessage = "\(String(describing: type(of: self))) - Error with setting device favorite. Error code: \(result.rawValue)"
+                DebugLogger.shared.addDebugMessage(debugMessage)
+            }
+            
+            deviceManager.startDiscoveryWithTimeout(timeout, withCompletionHandler: { (result) in
+                if result != .E_NOERROR {
+                    let debugMessage = "\(String(describing: type(of: self))) - Error with starting auto discovery. Error code: \(result.rawValue)"
+                    DebugLogger.shared.addDebugMessage(debugMessage)
+                    completion([])
+                }
+            })
+            
+            self?.discoveredDeviceHandler = { (discoveredDevice, _) in
+                discoveredDevices.append(discoveredDevice)
+            }
+            
+            self?.autodiscoveryEndedHandler = { (result, _) in
+                self?.discoveredDeviceHandler = nil
+                self?.autodiscoveryEndedHandler = nil
+                completion(discoveredDevices)
+            }
+        }
+    }
+    
+    public func setFavorite(discoveredDeviceInfo discoveredDevice: DiscoveredDeviceInfo) {
+        
+        guard let deviceManager = capture.getDeviceManagers().first else {
+            return
+        }
+        
+        deviceManager.setFavoriteDevices(discoveredDevice.identifierUUID) { (result) in
+            if result != .E_NOERROR {
+                let debugMessage = "\(String(describing: type(of: self))) - Error with setting device favorite. Error code: \(result.rawValue)"
+                DebugLogger.shared.addDebugMessage(debugMessage)
+            }
+        }
+    }
+}
+
+
+
+
+
+/// Struct containing identifiers used to set a BLE device as a favorite
+/// If using auto discovery to discover nearby devices,
+/// use the `identifierUUID` to set the device as the favorite
+public struct DiscoveredDeviceInfo: Equatable {
+    
+    public static func ==(lhs: DiscoveredDeviceInfo, rhs: DiscoveredDeviceInfo) -> Bool {
+        return lhs.identifierUUID == rhs.identifierUUID
+    }
+    
+    public let identifierUUID: String
+    public let deviceName: String
+    public let serviceUUID: String
 }

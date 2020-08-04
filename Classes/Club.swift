@@ -116,9 +116,14 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol, ClubKitPr
                 self.delegate?.club?(self, didReceive: possibleError)
             }
         }
+        captureLayer.discoveredDeviceHandler = { [weak self] (discoveredDevice, deviceManager) in
+            self?.discoveredDeviceHandler?(discoveredDevice, deviceManager)
+        }
+        captureLayer.discoveryEndedHandler = { [weak self] (result, deviceManager) in
+            self?.autodiscoveryEndedHandler?(result, deviceManager)
+        }
         return captureLayer
     }
-    
 }
 
 
