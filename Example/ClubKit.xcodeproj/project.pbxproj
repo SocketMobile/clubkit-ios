@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		1010226F8C69127FA7B7D2DD /* Pods_ClubKit_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C20FD6E02F252D36A8858660 /* Pods_ClubKit_Example.framework */; };
+		5201587A24D8E1F2008899C8 /* AutoDiscoveryResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5201587924D8E1F2008899C8 /* AutoDiscoveryResultsView.swift */; };
+		5201587C24D8E22B008899C8 /* DiscoveredDeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5201587B24D8E22B008899C8 /* DiscoveredDeviceCell.swift */; };
 		5233DD1324774EA800FCFF18 /* CaptureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD0A24774EA800FCFF18 /* CaptureViewModel.swift */; };
 		5233DD1424774EA800FCFF18 /* CircularImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD0C24774EA800FCFF18 /* CircularImageView.swift */; };
 		5233DD1524774EA800FCFF18 /* CaptureDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DD0D24774EA800FCFF18 /* CaptureDataView.swift */; };
@@ -45,6 +47,8 @@
 
 /* Begin PBXFileReference section */
 		261571601464757AC3274626 /* Pods_ClubKit_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ClubKit_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5201587924D8E1F2008899C8 /* AutoDiscoveryResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoDiscoveryResultsView.swift; sourceTree = "<group>"; };
+		5201587B24D8E22B008899C8 /* DiscoveredDeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveredDeviceCell.swift; sourceTree = "<group>"; };
 		5233DD0A24774EA800FCFF18 /* CaptureViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureViewModel.swift; sourceTree = "<group>"; };
 		5233DD0C24774EA800FCFF18 /* CircularImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularImageView.swift; sourceTree = "<group>"; };
 		5233DD0D24774EA800FCFF18 /* CaptureDataView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureDataView.swift; sourceTree = "<group>"; };
@@ -167,6 +171,8 @@
 				5233DD2424784B5800FCFF18 /* UserCell.swift */,
 				5233DD28247D820A00FCFF18 /* CaptureDataModalView.swift */,
 				5233DD2A247DA3D500FCFF18 /* DeviceCollectionViewCell.swift */,
+				5201587924D8E1F2008899C8 /* AutoDiscoveryResultsView.swift */,
+				5201587B24D8E22B008899C8 /* DiscoveredDeviceCell.swift */,
 			);
 			name = views;
 			path = "Classic-Swift/views";
@@ -459,10 +465,12 @@
 				5233DD1424774EA800FCFF18 /* CircularImageView.swift in Sources */,
 				5233DD1324774EA800FCFF18 /* CaptureViewModel.swift in Sources */,
 				5233DD1724774EA800FCFF18 /* CoreDataListView.swift in Sources */,
+				5201587C24D8E22B008899C8 /* DiscoveredDeviceCell.swift in Sources */,
 				5233DD2B247DA3D500FCFF18 /* DeviceCollectionViewCell.swift in Sources */,
 				5233DD27247D80BA00FCFF18 /* UserListViewController.swift in Sources */,
 				528FBC69249D8F970048D016 /* CustomMembershipUser.swift in Sources */,
 				5233DD2324784AD900FCFF18 /* InfoStackView.swift in Sources */,
+				5201587A24D8E1F2008899C8 /* AutoDiscoveryResultsView.swift in Sources */,
 				5233DD2524784B5800FCFF18 /* UserCell.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				5233DD1824774EA800FCFF18 /* VerticalCaptureDevicesList.swift in Sources */,
