@@ -327,7 +327,7 @@ func getExportableURLForDataSource<T: MembershipUser>(ofType objectType: T.Type,
 The UserList file should only be used between two applications using ClubKit. It may be difficult opening it in other environments
 The CSV file (comma separated values) can be exported to other environments however.
 
-### Step 1/2 (Exporting)
+### Step 1/3 (Exporting)
 
 ```swift
 if let exportableURL = Club.shared.getExportableURLForDataSource(ofType: CustomMembershipUser.self, fileType: .userList) {
@@ -343,7 +343,7 @@ if let exportableURL = Club.shared.getExportableURLForDataSource(ofType: CustomM
 }
 ```
 
-### Step 2/2 (Importing)
+### Step 2/3 (Importing)
 
 Importing requires that the application "catches" incoming URLs and decodes user records from the URL
 
@@ -369,6 +369,102 @@ func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>)
     
     }
 }
+```
+
+### Step 3/3 (Info.plist)
+
+Lastly, you need to configure your application to import and export this custom exportable URL from Step 1. 
+To do so, you will need to add entries to your `Info.plist` file that let the application know how to handle the
+custom file types that ClubKit provides for exporting user records.
+
+The simplest method would be to follow these steps:
+- "Right+Click" on your `Info.plist` file
+- `Open as->`
+- `Source code`
+- Then paste these entries in between the `<dict>` tags
+
+```swift
+<key>CFBundleDocumentTypes</key>
+<array>
+    <dict>
+        <key>CFBundleTypeIconFiles</key>
+        <array/>
+        <key>CFBundleTypeName</key>
+        <string>Membership User List Document</string>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>LSHandlerRank</key>
+        <string>Owner</string>
+        <key>LSItemContentTypes</key>
+        <array>
+            <string>com.socketmobile.MemberPass.MembershipUserListDocument</string>
+        </array>
+    </dict>
+    <dict>
+        <key>CFBundleTypeIconFiles</key>
+        <array/>
+        <key>CFBundleTypeName</key>
+        <string>Membership User CSV Document</string>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>LSHandlerRank</key>
+        <string>Owner</string>
+        <key>LSItemContentTypes</key>
+        <array>
+            <string>com.socketmobile.MemberPass.MembershipUserCSVDocument</string>
+        </array>
+    </dict>
+</array>
+
+<key>LSSupportsOpeningDocumentsInPlace</key>
+<false/>
+
+<key>UISupportsDocumentBrowser</key>
+<false/>
+
+<key>UTExportedTypeDeclarations</key>
+<array>
+    <dict>
+        <key>UTTypeConformsTo</key>
+        <array>
+            <string>public.data</string>
+        </array>
+        <key>UTTypeDescription</key>
+        <string>Membership User List Document</string>
+        <key>UTTypeIconFiles</key>
+        <array/>
+        <key>UTTypeIdentifier</key>
+        <string>com.socketmobile.MemberPass.MembershipUserListDocument</string>
+        <key>UTTypeTagSpecification</key>
+        <dict>
+            <key>public.filename-extension</key>
+            <array>
+                <string>MUSRL</string>
+                <string>musrl</string>
+            </array>
+        </dict>
+    </dict>
+    <dict>
+        <key>UTTypeConformsTo</key>
+        <array>
+            <string>public.data</string>
+        </array>
+        <key>UTTypeDescription</key>
+        <string>Membership User CSV Document</string>
+        <key>UTTypeIconFiles</key>
+        <array/>
+        <key>UTTypeIdentifier</key>
+        <string>com.socketmobile.MemberPass.MembershipUserCSVDocument</string>
+        <key>UTTypeTagSpecification</key>
+        <dict>
+            <key>public.filename-extension</key>
+            <array>
+                <string>MUCSV</string>
+                <string>mucsv</string>
+            </array>
+        </dict>
+    </dict>
+</array>
 ```
 
 The next step is to implement a ClubKit [delegate](#import-users-delegate) which provides the opportunity to approve or deny merging the incoming user records with the local store.
