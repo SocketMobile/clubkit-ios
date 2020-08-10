@@ -467,6 +467,8 @@ The simplest method would be to follow these steps:
 </array>
 ```
 
+If you'd like a detailed description about this process, there's a good article on that [here](https://www.raywenderlich.com/8413525-universal-type-identifiers-tutorial-for-ios-importing-and-exporting-app-data)
+
 The next step is to implement a ClubKit [delegate](#import-users-delegate) which provides the opportunity to approve or deny merging the incoming user records with the local store.
 
 <a name="receiving-delegate-events"/>
