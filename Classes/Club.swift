@@ -27,7 +27,7 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol, ClubKitPr
     
     public private(set) weak var delegate: ClubMiddlewareDelegate?
     
-    
+    public static var Configuration: MembershipConfiguration = MembershipConfiguration.default
     
     
     
@@ -64,8 +64,8 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol, ClubKitPr
             
             updateVisits(for: existingUser)
         } else {
-            // This is a new user
-            createUser(with: captureDataInformation)
+            
+            handleUnrecognizedUser(with: captureDataInformation)
         }
         
         return nil
@@ -124,8 +124,50 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol, ClubKitPr
         }
         return captureLayer
     }
+    
+    private func handleUnrecognizedUser(with captureDataInformation: CaptureDataInformation) {
+        
+        switch Club.Configuration.userCreationStyle {
+        case .automaticallyOnScan:
+            
+            createUser(with: captureDataInformation)
+            
+        case .withPredicate(let condition):
+            
+            if condition() == true {
+                createUser(with: captureDataInformation)
+            }
+        }
+    }
 }
 
+
+public struct MembershipConfiguration {
+    
+    public enum UserCreation: Equatable {
+        public static func ==(lhs: UserCreation, rhs: UserCreation) -> Bool {
+            switch (lhs, rhs) {
+            case (let .withPredicate(booleanExpression1), let .withPredicate(booleanExpression2)):
+                return booleanExpression1() == booleanExpression2()
+            case (.automaticallyOnScan, .automaticallyOnScan):
+                return true
+            default:
+                return false
+            }
+        }
+        
+        case automaticallyOnScan
+        case withPredicate(_ condition: () -> (Bool))
+    }
+    
+    public var userCreationStyle: UserCreation = .automaticallyOnScan
+    
+    public static var `default`: MembershipConfiguration {
+        var config = MembershipConfiguration()
+        config.userCreationStyle = .automaticallyOnScan
+        return config
+    }
+}
 
 
 

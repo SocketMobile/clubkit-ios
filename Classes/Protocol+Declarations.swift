@@ -92,7 +92,9 @@ public protocol CaptureMembershipProtocol: CaptureMiddlewareProtocol {
     /// Custom User objects may be used only if they conform to this protocol
     associatedtype userType: IdentifiableUserProtocol
     
-    
+    /// Defines a set of rules that dictates how Club handles user membership
+    /// One such example is how Club handles scanning of user passes that have not been previously encountered.
+    static var Configuration: MembershipConfiguration  { get set }
     
     // CRUD
     
