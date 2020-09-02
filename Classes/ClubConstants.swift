@@ -27,11 +27,4 @@ internal struct ClubConstants {
         
         static let debugModeActivatedKey: String = "com.socketmobile.clubkit.userdefaultskey.debug-mode.is-activated"
     }
-    
-    struct RealmQueryConstants {
-        
-        private init() {}
-        
-        static let userId = "userId"
-    }
 }
