@@ -8,7 +8,6 @@
 
 import UIKit
 import ClubKit
-import RealmSwift
 import SwiftUI
 import SKTCapture
 
