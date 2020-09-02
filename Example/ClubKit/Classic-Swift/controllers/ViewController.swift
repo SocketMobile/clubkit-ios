@@ -141,7 +141,7 @@ class ViewController: UIViewController {
         let appID =         "ios:com.socketmobile.ClubKit-Example"
         let developerID =   "bb57d8e1-f911-47ba-b510-693be162686a"
         
-        Club.Configuration.userCreationStyle = .withPredicate({
+        Club.Configuration.userCreationStyle = .withSatisfied(condition: {
             // Only create new users when their passes are scanned
             // while on the appropriate screen
             // This is configurable to be any boolean expression

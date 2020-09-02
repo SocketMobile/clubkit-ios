@@ -53,18 +53,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
     
-    static func getTopViewController(base: UIViewController? = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.rootViewController) -> UIViewController? {
+    static func getTopViewController(baseController: UIViewController? = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.rootViewController) -> UIViewController? {
 
-        if let nav = base as? UINavigationController {
-            return getTopViewController(base: nav.visibleViewController)
+        if let navigationController = baseController as? UINavigationController {
+            return getTopViewController(baseController: navigationController.visibleViewController)
 
-        } else if let tab = base as? UITabBarController, let selected = tab.selectedViewController {
-            return getTopViewController(base: selected)
+        } else if let tabbarController = baseController as? UITabBarController,
+            let selectedController = tabbarController.selectedViewController {
+            return getTopViewController(baseController: selectedController)
 
-        } else if let presented = base?.presentedViewController {
-            return getTopViewController(base: presented)
+        } else if let presentedController = baseController?.presentedViewController {
+            return getTopViewController(baseController: presentedController)
         }
-        return base
+        return baseController
     }
 
     @available(iOS 13.0, *)
