@@ -52,6 +52,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window.makeKeyAndVisible()
         }
     }
+    
+    static func getTopViewController(baseController: UIViewController? = UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.rootViewController) -> UIViewController? {
+
+        if let navigationController = baseController as? UINavigationController {
+            return getTopViewController(baseController: navigationController.visibleViewController)
+
+        } else if let tabbarController = baseController as? UITabBarController,
+            let selectedController = tabbarController.selectedViewController {
+            return getTopViewController(baseController: selectedController)
+
+        } else if let presentedController = baseController?.presentedViewController {
+            return getTopViewController(baseController: presentedController)
+        }
+        return baseController
+    }
 
     @available(iOS 13.0, *)
     func sceneDidDisconnect(_ scene: UIScene) {
