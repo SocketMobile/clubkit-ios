@@ -77,6 +77,9 @@ public protocol CaptureMiddlewareProtocol: class {
     /// - Parameters:
     ///     - discoveredDeviceInfo: Struct containing identifiers used to set a BLE device as a favorite
     func setFavorite(discoveredDeviceInfo: DiscoveredDeviceInfo)
+    
+    /// Resets the favorite device. This does not disconnect the currently connected device however. To connect to a particular device, use `startAutoDiscovery(numSeconds:completion:)` and `setFavorite(discoveredDeviceInfo:)`
+    func resetFavorite()
 }
 
 

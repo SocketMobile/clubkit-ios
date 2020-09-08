@@ -142,12 +142,21 @@ public class CaptureMiddleware: NSObject, CaptureMiddlewareProtocol {
     }
     
     public func setFavorite(discoveredDeviceInfo discoveredDevice: DiscoveredDeviceInfo) {
-        
+        setFavoriteDevice(usingIdentifierUUID: discoveredDevice.identifierUUID)
+    }
+    
+    public func resetFavorite() {
+        setFavoriteDevice(usingIdentifierUUID: nil)
+    }
+    
+    private func setFavoriteDevice(usingIdentifierUUID identifier: String?) {
         guard let deviceManager = capture.getDeviceManagers().first else {
             return
         }
         
-        deviceManager.setFavoriteDevices(discoveredDevice.identifierUUID) { (result) in
+        let favoriteDeviceIdentifier = identifier ?? ""
+               
+        deviceManager.setFavoriteDevices(favoriteDeviceIdentifier) { (result) in
             if result != .E_NOERROR {
                 let debugMessage = "\(String(describing: type(of: self))) - Error with setting device favorite. Error code: \(result.rawValue)"
                 DebugLogger.shared.addDebugMessage(debugMessage)
