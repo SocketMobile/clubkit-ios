@@ -32,13 +32,14 @@ class UserCell: UITableViewCell {
     
     private var usernameInfoStackView = InfoStackView()
     private var userIdInfoStackView = InfoStackView()
+    private var passIdInfoStackView = InfoStackView()
     private var userCreationInfoStackView = InfoStackView()
     private var userLastVisitInfoStackView = InfoStackView()
     private var userNumVisitsInfoStackView = InfoStackView()
     private var emailAddressInfoStackView = InfoStackView()
     
     private lazy var containerStackView: UIStackView = {
-        let sv = UIStackView(arrangedSubviews: [usernameInfoStackView, userIdInfoStackView, userCreationInfoStackView, userLastVisitInfoStackView, userNumVisitsInfoStackView, emailAddressInfoStackView])
+        let sv = UIStackView(arrangedSubviews: [usernameInfoStackView, userIdInfoStackView, passIdInfoStackView, userCreationInfoStackView, userLastVisitInfoStackView, userNumVisitsInfoStackView, emailAddressInfoStackView])
         sv.translatesAutoresizingMaskIntoConstraints = false
         sv.axis = .vertical
         sv.alignment = .leading
@@ -101,9 +102,9 @@ class UserCell: UITableViewCell {
     
     public func setup(with user: CustomMembershipUser) {
         usernameInfoStackView.setText(title: "User name:", secondary: user.username)
-        userIdInfoStackView.setText(title: "User Unique Id:", secondary: user.userId)
+        userIdInfoStackView.setText(title: "User Unique Id:", secondary: user.memberId)
         
-        
+        passIdInfoStackView.setText(title: "User Pass Id:", secondary: user.passId)
         
         
         let creationDate = Date(timeIntervalSince1970: user.timeStampAdded)

@@ -37,13 +37,12 @@ internal class ExportableDataSourceContainer<T: MembershipUser>: Object, Codable
     }
     
     private func initializeUsers() {
-        do {
-            let realm = try Realm()
-            let allUsers = realm.objects(T.self)
-            users = Array<T>(allUsers)
-        } catch let error {
+        guard let allUsers = RealmLayer.shared.queryForUsers(ofType: T.self, predicate: nil) else {
+            let error = CKError.invalidRealmLayer("Failed to initialize Realm instance")
             DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error getting user: \(error)")
+            return
         }
+        users = Array<T>(allUsers)
     }
     
     
