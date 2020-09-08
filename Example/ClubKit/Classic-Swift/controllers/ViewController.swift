@@ -81,6 +81,15 @@ class ViewController: UIViewController {
         return btn
     }()
     
+    private lazy var resetFavoriteButton: UIBarButtonItem = {
+        let btn = UIBarButtonItem(title: "ResetFavorite",
+                                 style: UIBarButtonItemStyle.plain,
+                                 target: self,
+                                 action: #selector(resetFavoriteDevice))
+        btn.tintColor = Constants.ClassicSwiftConstants.AppTheme.primaryColor
+        return btn
+    }()
+    
     private let autoDiscoveryLoadingView = AutoDiscoveryLoadingView()
     private let autoDiscoveryResultsView = AutoDiscoveryResultsView()
     
@@ -163,7 +172,7 @@ class ViewController: UIViewController {
         
         self.title = "Membership Demo"
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.rightBarButtonItems = [menuButton, autoDiscoveryButton]
+        navigationItem.rightBarButtonItems = [menuButton, autoDiscoveryButton, resetFavoriteButton]
         view.backgroundColor = UIColor.systemBackground
         navigationController?.navigationBar.tintColor = Constants.ClassicSwiftConstants.AppTheme.primaryColor
         
@@ -217,6 +226,10 @@ class ViewController: UIViewController {
             self?.autoDiscoveryLoadingView.isHidden = true
             self?.autoDiscoveryResultsView.add(discoveredDevices: discoveredDevices)
         }
+    }
+    
+    @objc private func resetFavoriteDevice() {
+        Club.shared.resetFavorite()
     }
 
 }
