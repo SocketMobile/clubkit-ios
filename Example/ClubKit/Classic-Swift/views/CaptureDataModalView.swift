@@ -94,7 +94,7 @@ class CaptureDataModalView: UIView {
             return
         }
         
-        let user = Club.shared.getUser(with: captureDataInformation.userId)
+        let user = Club.shared.getUser(withPassId: captureDataInformation.passId)
         guard let username = user?.username else {
             return
         }

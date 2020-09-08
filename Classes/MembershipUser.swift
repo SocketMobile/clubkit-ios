@@ -10,13 +10,12 @@ import RealmSwift
 /// A default object which represents a user. May be subclassed
 @objcMembers open class MembershipUser: Object, Codable, IdentifiableUserProtocol, Identifiable {
     
-    /// Unique identifier for this user (Often supplied within the Mobile Pass)
-    public dynamic var userId: String?
+    public dynamic var memberId: String?
     
-    /// Username for the user (Often supplied within the Mobile Pass)
+    public dynamic var passId: String?
+    
     public dynamic var username: String?
     
-    /// Timestamp (in milliseconds since January 1, 1970) of this user's creation date
     public dynamic var timeStampAdded: Double = 0.0
     
     /// Number of times that the user has visited (or scanned their mobile pass)
@@ -32,7 +31,7 @@ import RealmSwift
 
     /// A RealmSwift - specific property for querying
     public override class func primaryKey() -> String? {
-        return ClubConstants.RealmQueryConstants.userId
+        return MembershipUser.CodingKeys.memberId.rawValue
     }
     
     /// Required initializer as part of conformance to Decodable protocol
@@ -41,7 +40,8 @@ import RealmSwift
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        userId = try container.decode(String.self, forKey: .userId)
+        memberId = try container.decode(String.self, forKey: .memberId)
+        passId = try container.decode(String.self, forKey: .passId)
         username = try container.decode(String.self, forKey: .username)
         
         // In the case where the decoded items are CSVs,
@@ -76,7 +76,8 @@ import RealmSwift
     open func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
-        try container.encode(userId, forKey: .userId)
+        try container.encode(memberId, forKey: .memberId)
+        try container.encode(passId, forKey: .passId)
         try container.encode(username, forKey: .username)
         try container.encode(timeStampAdded, forKey: .timeStampAdded)
         try container.encode(numVisits, forKey: .numVisits)
@@ -95,7 +96,8 @@ import RealmSwift
 
     /// enum for string representation of variable names. Used for Codable protocol
     internal enum CodingKeys: String, CodingKey, CaseIterable {
-        case userId
+        case memberId
+        case passId
         case username
         case timeStampAdded
         case numVisits
@@ -147,16 +149,15 @@ public class MembershipUserCollection<T: MembershipUser>: NSObject {
     /// - Parameters:
     ///   - completion: Provides all changes such as insertions, deletions, modifications and initial result of the collection of MembershipUser records. Use this to update UI (such as UITableView and UICollectionViews) with updated records.
     open func observeAllRecords(_ completion: @escaping (MembershipUserChanges<T>) -> ()) {
-        do {
-            let realm = try Realm()
-            users = realm.objects(T.self)
-            
-            usersToken = users.observe({ (changes) in
-                completion(changes)
-            })
-        } catch let error {
-            DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error getting realm reference: \(error)")
+        guard let allUsers = RealmLayer.shared.queryForUsers(ofType: T.self, predicate: nil) else {
+            let error = CKError.invalidRealmLayer("Failed to initialize Realm instance")
+            DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error getting user: \(error)")
+            return
         }
+        users = allUsers
+        usersToken = users.observe({ (changes) in
+            completion(changes)
+        })
     }
     
     open func stopObserving() {

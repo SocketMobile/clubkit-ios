@@ -6,7 +6,6 @@
 //
 
 import SKTCapture
-import RealmSwift
 
 // MARK: - IdentifiableUserProtocool
 
@@ -14,8 +13,11 @@ import RealmSwift
 /// conform to this protocol
 public protocol IdentifiableUserProtocol: class {
     
-    /// Unique identifier for this user (Often supplied within the Mobile Pass)
-    var userId: String? { get }
+    /// Unique identifier for this user
+    var memberId: String?  {get }
+    
+    /// Unique identifier associated with the user's mobile pass
+    var passId: String? { get }
     
     /// Username for the user (Often supplied within the Mobile Pass)
     var username: String? { get }
@@ -95,7 +97,9 @@ public protocol CaptureMembershipProtocol: CaptureMiddlewareProtocol {
     /// Custom User objects may be used only if they conform to this protocol
     associatedtype userType: IdentifiableUserProtocol
     
-    
+    /// Defines a set of rules that dictates how Club handles user membership
+    /// One such example is how Club handles scanning of user passes that have not been previously encountered.
+    static var Configuration: MembershipConfiguration  { get set }
     
     // CRUD
     
@@ -113,8 +117,13 @@ public protocol CaptureMembershipProtocol: CaptureMiddlewareProtocol {
     
     /// Queries and returns a User object from storage matching the properties within the decodedDataString
     /// - Parameters:
-    ///   - userId: Unique String (often alpha-numeric) that represents a single user
-    func getUser(with userId: String) -> userType?
+    ///   - memberId: Unique String that represents a single user. The memberId is a primary key
+    func getUser(withMemberId memberId: String) -> userType?
+    
+    /// Queries and returns a User object from storage matching the properties within the decodedDataString
+    /// - Parameters:
+    ///   - passId: Unique String that represents a user's mobile pass. The passId is not a primary key but can still be used to identify a single user.
+    func getUser(withPassId passId: String) -> userType?
     
     /// Updates a User object with new properties and re-saves it in storage
     /// - Parameters:
@@ -124,8 +133,13 @@ public protocol CaptureMembershipProtocol: CaptureMiddlewareProtocol {
     
     /// Queries and deletes a User object from storage matching the properties within the decodedDataString
     /// - Parameters:
-    ///   - userId: Unique String (often alpha-numeric) that represents a single user
-    func deleteUser(with userId: String)
+    ///   - memberId: Unique String that represents a single user. The memberId is a primary key
+    func deleteUser(withMemberId memberId: String)
+    
+    /// Queries and deletes a User object from storage matching the properties within the decodedDataString
+    /// - Parameters:
+    ///   - passId: Unique String that represents a user's mobile pass. The passId is not a primary key but can still be used to identify a single user.
+    func deleteUser(withPassId passId: String)
     
     /// Deletes a User object from storage
     /// - Parameters:
@@ -294,6 +308,11 @@ public enum CKError: Error {
     /// - Parameters:
     ///   - ErrorMessage: Detailed message of the error
     case invalidPassInformation(String)
+    
+    /// Could not initialize Realm object
+    /// - Parameters:
+    ///   - ErrorMessage: Detailed message of the error
+    case invalidRealmLayer(String)
 }
 
 
@@ -456,7 +475,7 @@ public typealias CaptureLayerDecodedData = SKTCaptureDecodedData
 // MARK: - CaptureDataUserInformation
 
 public protocol CaptureDataUserInformationProtocol {
-    var userId: String { get }
+    var passId: String { get }
     var username: String { get }
     var payloadNumber: String { get }
     var payload: String { get }
@@ -467,7 +486,7 @@ public protocol CaptureDataUserInformationProtocol {
 /// Struct for representing the user information obtained from scanning a mobile pass, RFID card, etc.
 public struct CaptureDataInformation: CaptureDataUserInformationProtocol {
     
-    public let userId: String
+    public let passId: String
     public let username: String
     public let payloadNumber: String
     public let payload: String
@@ -487,7 +506,7 @@ public struct CaptureDataInformation: CaptureDataUserInformationProtocol {
         }
         
         payloadNumber = components[0]
-        userId = components[1]
+        passId = components[1]
         payload = components[2]
         username = components[3]
     }

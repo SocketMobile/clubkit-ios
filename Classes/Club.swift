@@ -6,7 +6,6 @@
 //
 
 import SKTCapture
-import RealmSwift
 import SKTCapture
 
 public final class Club: CaptureMiddleware, CaptureMembershipProtocol, ClubKitProtocol {
@@ -27,7 +26,7 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol, ClubKitPr
     
     public private(set) weak var delegate: ClubMiddlewareDelegate?
     
-    
+    public static var Configuration: MembershipConfiguration = MembershipConfiguration.default
     
     
     
@@ -60,12 +59,12 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol, ClubKitPr
             return error
         }
         
-        if let existingUser = getUser(with: captureDataInformation.userId) {
+        if let existingUser = getUser(withPassId: captureDataInformation.passId) {
             
             updateVisits(for: existingUser)
         } else {
-            // This is a new user
-            createUser(with: captureDataInformation)
+            
+            handleUnrecognizedUser(with: captureDataInformation)
         }
         
         return nil
@@ -124,8 +123,60 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol, ClubKitPr
         }
         return captureLayer
     }
+    
+    private func handleUnrecognizedUser(with captureDataInformation: CaptureDataInformation) {
+        
+        switch Club.Configuration.userCreationStyle {
+        case .automaticallyOnScan:
+            
+            createUser(with: captureDataInformation)
+            
+        case .withSatisfied(let condition):
+            
+            if condition() == true {
+                createUser(with: captureDataInformation)
+            }
+        }
+    }
 }
 
+
+public struct MembershipConfiguration {
+    
+    public enum UserCreation: Equatable {
+        public static func ==(lhs: UserCreation, rhs: UserCreation) -> Bool {
+            switch (lhs, rhs) {
+            case (let .withSatisfied(booleanExpression1), let .withSatisfied(booleanExpression2)):
+                return booleanExpression1() == booleanExpression2()
+            case (.automaticallyOnScan, .automaticallyOnScan):
+                return true
+            default:
+                return false
+            }
+        }
+        
+        /// New users are automatically created when passes are scanned
+        case automaticallyOnScan
+        
+        /**
+         New users are only created after some boolean condition is satisfied
+         - Parameters:
+            - condition: Completion block expected to return a boolean expression. New users will only be created if and only if this condition is true at the time passes are scanned
+        */
+        case withSatisfied(condition: () -> (Bool))
+    }
+    
+    /// Enum for determining how users will be created
+    /// when passes are scanned.
+    public var userCreationStyle: UserCreation = .automaticallyOnScan
+    
+    /// Default configuration
+    public static var `default`: MembershipConfiguration {
+        var config = MembershipConfiguration()
+        config.userCreationStyle = .automaticallyOnScan
+        return config
+    }
+}
 
 
 
@@ -179,9 +230,9 @@ extension Club {
     
     public func createUser(with captureDataInformation: CaptureDataInformation) {
         
-        if let existingUser = getUser(with: captureDataInformation.userId) {
+        if let existingUser = getUser(withPassId: captureDataInformation.passId) {
             
-            let error = CKError.userExistsAlready("Attempted to create a new user but one exists with this userId: \(String(describing: existingUser.userId)) and username: \(String(describing: existingUser.username))")
+            let error = CKError.userExistsAlready("Attempted to create a new user but one already exists: \(existingUser)")
             
             delegate?.club?(self, didReceive: error)
             
@@ -190,7 +241,8 @@ extension Club {
             
             let user = OverridableMembershipUserClassType.init()
 
-            user.userId = captureDataInformation.userId
+            user.memberId = UUID().uuidString
+            user.passId = captureDataInformation.passId
             user.username = captureDataInformation.username
             
             let currentDateTimestamp = Date().timeIntervalSince1970
@@ -199,43 +251,43 @@ extension Club {
             user.timeStampOfLastVisit = currentDateTimestamp
             user.timeStampAdded = currentDateTimestamp
             
-            do {
-                let realm = try Realm()
-                try realm.write {
+            RealmLayer.shared.write { (realm, error) in
+                if let error = error {
+                    DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error writing to realm: \(error)")
+                    delegate?.club?(self, didReceive: error)
+                }
+                
+                if let realm = realm {
                     realm.add(user)
                     delegate?.club?(self, didCreateNewMembership: user)
                 }
-            } catch let error {
-                delegate?.club?(self, didReceive: error)
             }
         }
     }
     
     public func merge(importedUsers: [MembershipUser]) {
         
-        do {
-            let realm = try Realm()
-            try realm.write {
-                realm.add(importedUsers, update: Realm.UpdatePolicy.modified)
+        RealmLayer.shared.write { (realm, error) in
+            if let error = error {
+                delegate?.club?(self, didReceive: error)
+                DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error writing to realm: \(error)")
             }
-        } catch let error {
-            delegate?.club?(self, didReceive: error)
-            DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error getting user: \(error)")
+            
+            if let realm = realm {
+                realm.add(importedUsers, update: .modified)
+            }
         }
     }
     
-    public func getUser(with userId: String) -> MembershipUser? {
-        
-        do {
-            let realm = try Realm()
-            let user = realm.object(ofType: OverridableMembershipUserClassType.self, forPrimaryKey: userId)
-            return user
-        } catch let error {
-            delegate?.club?(self, didReceive: error)
-            DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error getting user: \(error)")
-        }
-        
-        return nil
+    public func getUser(withMemberId memberId: String) -> MembershipUser? {
+        return RealmLayer.shared.queryFor(userType: OverridableMembershipUserClassType.self, primaryKey: memberId)
+    }
+    
+    public func getUser(withPassId passId: String) -> MembershipUser? {
+        let predicate = NSPredicate(format: "\(MembershipUser.CodingKeys.passId.rawValue) = %@", passId)
+        let filteredResults = RealmLayer.shared.queryForUsers(ofType: OverridableMembershipUserClassType.self,
+                                          predicate: predicate)
+        return filteredResults?.first
     }
     
     private func updateVisits(for user: MembershipUser) {
@@ -251,20 +303,31 @@ extension Club {
     }
     
     public func update(user: MembershipUser, withChanges changes: () -> ()) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                
+        RealmLayer.shared.write { (realm, error) in
+            if let error = error {
+                delegate?.club?(self, didReceive: error)
+                DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error writing to realm: \(error)")
+            }
+            
+            if let _ = realm {
                 // Perform changes to user object and update in Realm
                 changes()
             }
-        } catch let error {
+        }
+    }
+    
+    public func deleteUser(withMemberId memberId: String) {
+        if let user = getUser(withMemberId: memberId) {
+            deleteUser(user)
+        } else {
+            
+            let error = CKError.nonexistentUser("No such user exists")
             delegate?.club?(self, didReceive: error)
         }
     }
     
-    public func deleteUser(with userId: String) {
-        if let user = getUser(with: userId) {
+    public func deleteUser(withPassId passId: String) {
+        if let user = getUser(withPassId: passId) {
             deleteUser(user)
         } else {
             
@@ -275,14 +338,16 @@ extension Club {
     
     public func deleteUser(_ user: MembershipUser) {
         
-        do {
-            let realm = try Realm()
-            try realm.write {
+        RealmLayer.shared.write { (realm, error) in
+            if let error = error {
+                delegate?.club?(self, didReceive: error)
+                DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error writing to realm: \(error)")
+            }
+            
+            if let realm = realm {
                 realm.delete(user)
                 delegate?.club?(self, didDeleteMembership: user)
             }
-        } catch let error {
-            delegate?.club?(self, didReceive: error)
         }
     }
 }
