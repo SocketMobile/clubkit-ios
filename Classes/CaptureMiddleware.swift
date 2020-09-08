@@ -154,9 +154,9 @@ public class CaptureMiddleware: NSObject, CaptureMiddlewareProtocol {
             return
         }
         
-        let value = identifier ?? ""
+        let favoriteDeviceIdentifier = identifier ?? ""
                
-        deviceManager.setFavoriteDevices(value) { (result) in
+        deviceManager.setFavoriteDevices(favoriteDeviceIdentifier) { (result) in
             if result != .E_NOERROR {
                 let debugMessage = "\(String(describing: type(of: self))) - Error with setting device favorite. Error code: \(result.rawValue)"
                 DebugLogger.shared.addDebugMessage(debugMessage)
