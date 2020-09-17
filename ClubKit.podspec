@@ -42,5 +42,5 @@ Pod::Spec.new do |s|
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   s.dependency 'SKTCapture', '~>1.2'
-  s.dependency 'RealmSwift', '~>4.4'
+  s.dependency 'RealmSwift', '~>5.4'
 end
