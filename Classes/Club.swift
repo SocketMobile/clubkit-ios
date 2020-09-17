@@ -6,7 +6,7 @@
 //
 
 import SKTCapture
-import SKTCapture
+import RealmSwift
 
 public final class Club: CaptureMiddleware, CaptureMembershipProtocol, ClubKitProtocol {
     
@@ -28,7 +28,9 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol, ClubKitPr
     
     public static var Configuration: MembershipConfiguration = MembershipConfiguration.default
     
+    private var realmLayer: RealmLayer!
     
+    private let versionMigrationIterator = VersionMigrationIterator()
     
     
     
@@ -40,6 +42,8 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol, ClubKitPr
     private init(capture: CaptureHelper) {
         super.init()
         super.setCapture(instance: capture)
+        
+        setupInternalMigrations()
     }
     
     public override func onDecodedData(decodedData: CaptureLayerDecodedData?, device: CaptureLayerDevice) -> Error? {
@@ -138,43 +142,25 @@ public final class Club: CaptureMiddleware, CaptureMembershipProtocol, ClubKitPr
             }
         }
     }
-}
-
-
-public struct MembershipConfiguration {
     
-    public enum UserCreation: Equatable {
-        public static func ==(lhs: UserCreation, rhs: UserCreation) -> Bool {
-            switch (lhs, rhs) {
-            case (let .withSatisfied(booleanExpression1), let .withSatisfied(booleanExpression2)):
-                return booleanExpression1() == booleanExpression2()
-            case (.automaticallyOnScan, .automaticallyOnScan):
-                return true
-            default:
-                return false
+    private func setupInternalMigrations() {
+        addVersionMigration { (migration) in
+            // At this version, the userId was split into memberId and passId
+            let membershipUserClass = Club.shared.OverridableMembershipUserClassType.className()
+            
+            // The enumerateObjects(ofType:_:) method iterates
+            // over every User object stored in the Realm file
+            migration.enumerateObjects(ofType: membershipUserClass) { oldObject, newObject in
+                newObject?[MembershipUser.CodingKeys.memberId.rawValue] = UUID().uuidString
+                newObject?[MembershipUser.CodingKeys.passId.rawValue] = oldObject?["userId"] as? String
             }
         }
-        
-        /// New users are automatically created when passes are scanned
-        case automaticallyOnScan
-        
-        /**
-         New users are only created after some boolean condition is satisfied
-         - Parameters:
-            - condition: Completion block expected to return a boolean expression. New users will only be created if and only if this condition is true at the time passes are scanned
-        */
-        case withSatisfied(condition: () -> (Bool))
     }
     
-    /// Enum for determining how users will be created
-    /// when passes are scanned.
-    public var userCreationStyle: UserCreation = .automaticallyOnScan
-    
-    /// Default configuration
-    public static var `default`: MembershipConfiguration {
-        var config = MembershipConfiguration()
-        config.userCreationStyle = .automaticallyOnScan
-        return config
+    public override func open(withAppKey appKey: String, appId: String, developerId: String, completion: ((CaptureLayerResult) -> ())? = nil) {
+        // Override to set up RealmLayer object just before opening Club/SKTCapture
+        realmLayer = RealmLayer(migrationChanges: Club.Configuration.migrationChanges)
+        super.open(withAppKey: appKey, appId: appId, developerId: developerId, completion: completion)
     }
 }
 
@@ -207,7 +193,15 @@ extension Club {
         return self
     }
     
+    @discardableResult
+    public func addVersionMigration(changeBlock: @escaping VersionMigrationChangeBlock) -> Club {
+        versionMigrationIterator.addVersionMigration(changeBlock: changeBlock)
+        return self
+    }
     
+    public func build() -> [MigrationChange] {
+        return versionMigrationIterator.build()
+    }
 }
 
 
@@ -251,7 +245,7 @@ extension Club {
             user.timeStampOfLastVisit = currentDateTimestamp
             user.timeStampAdded = currentDateTimestamp
             
-            RealmLayer.shared.write { (realm, error) in
+            realmLayer.write { (realm, error) in
                 if let error = error {
                     DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error writing to realm: \(error)")
                     delegate?.club?(self, didReceive: error)
@@ -267,7 +261,7 @@ extension Club {
     
     public func merge(importedUsers: [MembershipUser]) {
         
-        RealmLayer.shared.write { (realm, error) in
+        realmLayer.write { (realm, error) in
             if let error = error {
                 delegate?.club?(self, didReceive: error)
                 DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error writing to realm: \(error)")
@@ -280,14 +274,17 @@ extension Club {
     }
     
     public func getUser(withMemberId memberId: String) -> MembershipUser? {
-        return RealmLayer.shared.queryFor(userType: OverridableMembershipUserClassType.self, primaryKey: memberId)
+        return realmLayer.queryFor(userType: OverridableMembershipUserClassType.self, primaryKey: memberId)
     }
     
     public func getUser(withPassId passId: String) -> MembershipUser? {
         let predicate = NSPredicate(format: "\(MembershipUser.CodingKeys.passId.rawValue) = %@", passId)
-        let filteredResults = RealmLayer.shared.queryForUsers(ofType: OverridableMembershipUserClassType.self,
-                                          predicate: predicate)
+        let filteredResults = queryForUsers(ofType: OverridableMembershipUserClassType.self, predicate: predicate)
         return filteredResults?.first
+    }
+    
+    internal func queryForUsers<T: MembershipUser>(ofType userType: T.Type, predicate: NSPredicate?) -> Results<T>? {
+        return realmLayer.queryForUsers(ofType: T.self, predicate: nil)
     }
     
     private func updateVisits(for user: MembershipUser) {
@@ -303,7 +300,7 @@ extension Club {
     }
     
     public func update(user: MembershipUser, withChanges changes: () -> ()) {
-        RealmLayer.shared.write { (realm, error) in
+        realmLayer.write { (realm, error) in
             if let error = error {
                 delegate?.club?(self, didReceive: error)
                 DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error writing to realm: \(error)")
@@ -338,7 +335,7 @@ extension Club {
     
     public func deleteUser(_ user: MembershipUser) {
         
-        RealmLayer.shared.write { (realm, error) in
+        realmLayer.write { (realm, error) in
             if let error = error {
                 delegate?.club?(self, didReceive: error)
                 DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error writing to realm: \(error)")
