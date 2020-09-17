@@ -196,6 +196,37 @@ public protocol ClubKitProtocol {
     /// `classType` must be a subclass of `MembershipUser`
     @discardableResult func setCustomMembershipUser(classType: MembershipUser.Type) -> Club
     
+    /**
+     Provides Migration block for updating your custom MembershipUser class
+     In cases where you need to modify, add or delete variables from this MembershipUser object, a version
+     migration will be required. Migrations can be compounded (Performing multiple changes such as adding more than one variable).
+     However, for each new release of your app to users, if any changes were made to the MembershipUser object, you MUST add
+     a version migration block. Otherwise, the app may not display your user records, or crash in worse case scenarios.
+     
+     - Usage:
+        ```
+         addVersionMigration(changeBlock: { (migration) in
+     
+             // Rename field on all objects
+             migration.renameProperty(onType: YourCustomMembershipUserObject.className(), from: "name", to: "fullName")
+     
+             migration.enumerateObjects(ofType: YourCustomMembershipUserObject.className()) { (oldObject, newObject) in
+                 // Add new field to all objects
+                 newObject?["newField"] = "Default Value"
+             }
+     
+             // etc..
+         })
+        ```
+     
+     - Parameters:
+        - changeBlock: Completion block using provided `Migration` object. Use to provide migration changes
+     */
+    @discardableResult func addVersionMigration(changeBlock: @escaping VersionMigrationChangeBlock) -> Club
+    
+    /// Returns array of `MigrationChange` objects to be used in your `ClubConfiguration`
+    func build() -> [MigrationChange]
+    
     /// Re-assumes SKTCapture layer delegate
     func assumeCaptureDelegate()
     
