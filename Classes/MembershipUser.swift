@@ -149,7 +149,7 @@ public class MembershipUserCollection<T: MembershipUser>: NSObject {
     /// - Parameters:
     ///   - completion: Provides all changes such as insertions, deletions, modifications and initial result of the collection of MembershipUser records. Use this to update UI (such as UITableView and UICollectionViews) with updated records.
     open func observeAllRecords(_ completion: @escaping (MembershipUserChanges<T>) -> ()) {
-        guard let allUsers = RealmLayer.shared.queryForUsers(ofType: T.self, predicate: nil) else {
+        guard let allUsers = Club.shared.queryForUsers(ofType: T.self, predicate: nil) else {
             let error = CKError.invalidRealmLayer("Failed to initialize Realm instance")
             DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error getting user: \(error)")
             return
