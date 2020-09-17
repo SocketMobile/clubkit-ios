@@ -158,6 +158,73 @@ class ViewController: UIViewController {
             return topController is UserListViewController
         })
         
+        // NOTE
+        // These migrations were tested with 10,501 user records
+        
+        Club.Configuration.migrationChanges = Club.shared
+        .addVersionMigration(changeBlock: { (migration) in
+            // Testing adding a new field to the CustomMembershipUser object: greeting
+            migration.enumerateObjects(ofType: CustomMembershipUser.className()) { (_, newObject) in
+                newObject?[CustomMembershipUser.CodingKeys.greeting.rawValue] = "Some Greeting"
+            }
+        }).addVersionMigration(changeBlock: { (migration) in
+            // Testing adding a new field to the CustomMembershipUser object: age
+            // Provided a ranom number between 21 and 99
+            migration.enumerateObjects(ofType: CustomMembershipUser.className()) { (_, newObject) in
+                newObject?[CustomMembershipUser.CodingKeys.age.rawValue] = (21...99).randomElement() ?? 21
+            }
+        }).addVersionMigration(changeBlock: { (migration) in
+            // Testing adding a new field to the CustomMembershipUser object: field1
+            // Naming doesn't matter. Random number between 100 and 199
+            migration.enumerateObjects(ofType: CustomMembershipUser.className()) { (_, newObject) in
+                newObject?[CustomMembershipUser.CodingKeys.field1.rawValue] = (100...199).randomElement() ?? 100
+            }
+        }).addVersionMigration(changeBlock: { (migration) in
+            // Testing adding a new field to the CustomMembershipUser object: field2
+            // Naming doesn't matter. Random number between 200 and 299
+            migration.enumerateObjects(ofType: CustomMembershipUser.className()) { (_, newObject) in
+                newObject?[CustomMembershipUser.CodingKeys.field2.rawValue] = (200...299).randomElement() ?? 200
+            }
+        }).addVersionMigration(changeBlock: { (migration) in
+            // Testing adding a new field to the CustomMembershipUser object: field3
+            // Naming doesn't matter. Random String
+            migration.enumerateObjects(ofType: CustomMembershipUser.className()) { (_, newObject) in
+                newObject?["field3"] = "F3_\(UUID().uuidString)"
+            }
+        })
+        .addVersionMigration(changeBlock: { (migration) in
+            // Testing adding a new field to the CustomMembershipUser object: field4
+            // Naming doesn't matter. Random number between 400 and 499
+            migration.enumerateObjects(ofType: CustomMembershipUser.className()) { (_, newObject) in
+                newObject?[CustomMembershipUser.CodingKeys.field4.rawValue] = (400...499).randomElement() ?? 400
+            }
+        })
+        .addVersionMigration(changeBlock: { (migration) in
+            // Testing adding a new field to the CustomMembershipUser object: field5
+            // Naming doesn't matter. Random number between 500 and 599
+            migration.enumerateObjects(ofType: CustomMembershipUser.className()) { (_, newObject) in
+                newObject?[CustomMembershipUser.CodingKeys.field5.rawValue] = (500...599).randomElement() ?? 500
+            }
+        })
+        .addVersionMigration(changeBlock: { (migration) in
+            // Removed field5
+            // No changes required
+        })
+        .addVersionMigration(changeBlock: { (migration) in
+            // Removed field4
+            // No changes required
+        })
+        .addVersionMigration(changeBlock: { (migration) in
+            // Renamed field3 to countryCode
+            // Provided default randomized values:
+            // United States, United Kingdom, "Canada", "Mexico" "Germany", "France, "Greece"
+            migration.renameProperty(onType: CustomMembershipUser.className(), from: "field3", to: "countryCode")
+            migration.enumerateObjects(ofType: CustomMembershipUser.className()) { (_, newObject) in
+                newObject?["countryCode"] = ["US", "GB", "CA", "MX", "DE", "FR", "GR"].randomElement() ?? "US"
+            }
+        })
+        .build()
+        
         Club.shared.setDelegate(to: self)
             .setCustomMembershipUser(classType: CustomMembershipUser.self)
             .setDispatchQueue(DispatchQueue.main)

@@ -37,9 +37,30 @@ class UserCell: UITableViewCell {
     private var userLastVisitInfoStackView = InfoStackView()
     private var userNumVisitsInfoStackView = InfoStackView()
     private var emailAddressInfoStackView = InfoStackView()
+    private var greetingInfoStackView = InfoStackView()
+    private var ageInfoStackView = InfoStackView()
+    private var field1InfoStackView = InfoStackView()
+    private var field2InfoStackView = InfoStackView()
+    private var countryCodeInfoStackView = InfoStackView()
+//    private var field4InfoStackView = InfoStackView() // Removed in VersionMigration
+//    private var field5InfoStackView = InfoStackView() // Removed in VersionMigration
     
     private lazy var containerStackView: UIStackView = {
-        let sv = UIStackView(arrangedSubviews: [usernameInfoStackView, userIdInfoStackView, passIdInfoStackView, userCreationInfoStackView, userLastVisitInfoStackView, userNumVisitsInfoStackView, emailAddressInfoStackView])
+        let sv = UIStackView(arrangedSubviews: [usernameInfoStackView,
+                                                userIdInfoStackView,
+                                                passIdInfoStackView,
+                                                userCreationInfoStackView,
+                                                userLastVisitInfoStackView,
+                                                userNumVisitsInfoStackView,
+                                                emailAddressInfoStackView,
+                                                greetingInfoStackView,
+                                                ageInfoStackView,
+                                                field1InfoStackView,
+                                                field2InfoStackView,
+                                                countryCodeInfoStackView,
+//                                                field4InfoStackView,
+//                                                field5InfoStackView
+        ])
         sv.translatesAutoresizingMaskIntoConstraints = false
         sv.axis = .vertical
         sv.alignment = .leading
@@ -118,6 +139,20 @@ class UserCell: UITableViewCell {
         userNumVisitsInfoStackView.setText(title: "Number of visits:", secondary: String(describing: user.numVisits))
         
         emailAddressInfoStackView.setText(title: "Email Address", secondary: user.emailAddress)
+        
+        greetingInfoStackView.setText(title: "Greeting", secondary: user.greeting ?? "Unknown greeting")
+        
+        ageInfoStackView.setText(title: "Age", secondary: String(describing: user.age))
+        
+        field1InfoStackView.setText(title: "Field1", secondary: String(describing: user.field1))
+        
+        field2InfoStackView.setText(title: "Field2", secondary: String(describing: user.field2))
+        
+        countryCodeInfoStackView.setText(title: "Country Code", secondary: String(describing: user.countryCode))
+        
+//        field4InfoStackView.setText(title: "Field4", secondary: String(describing: user.field4))
+        
+//        field5InfoStackView.setText(title: "Field5", secondary: String(describing: user.field5))
     }
     
 }
