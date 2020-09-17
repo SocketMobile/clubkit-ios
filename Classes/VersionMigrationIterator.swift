@@ -33,7 +33,7 @@ internal class VersionMigrationIterator: NSObject {
             version = UInt64(migrationChanges.count + 1)
         }
         
-        UserDefaults.standard.set(version, forKey: RealmLayer.versionUserDefaultsKey)
+        UserDefaults.standard.set(version, forKey: ClubConstants.RealmLayer.versionUserDefaultsKey)
         
         let migrationChange = MigrationChange(version: version, changeBlock: changeBlock)
         
