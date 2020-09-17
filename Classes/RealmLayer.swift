@@ -10,24 +10,50 @@ import RealmSwift
 /// Provides abstraction layer for performing Realm operations
 class RealmLayer: NSObject {
     
-    static let shared = RealmLayer()
-    
-    private(set) var realm: Realm?
+    private var realm: Realm?
     
     /// Error for if the do-try-catch block fails when initializing realm instance
     private var realmInitializationError: Error?
     
-    private override init() {
+    private var migrationChanges: [MigrationChange] = []
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // MARK: - Initializers
+    
+    init(migrationChanges: [MigrationChange]) {
         super.init()
-        
-        Realm.Configuration.defaultConfiguration = setupRealmConfiguration()
-        
+        self.migrationChanges = migrationChanges
+        initializeRealmInstance()
+    }
+    
+    
+    
+    private func initializeRealmInstance() {
         do {
-            try realm = Realm()
+            let realmConfiguration = setupRealmConfiguration()
+            try realm = Realm(configuration: realmConfiguration)
         } catch let error {
+            DebugLogger.shared.addDebugMessage("\(String(describing: type(of: self))) - Error initializing Realm instance: \(error)")
             realmInitializationError = error
         }
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     internal func queryFor<T: MembershipUser>(userType: T.Type, primaryKey: String) -> MembershipUser? {
         guard let realm = realm else {
@@ -75,46 +101,92 @@ class RealmLayer: NSObject {
     
     /// Handles migrations for when the structure of the MembershipUser core object changes
     private func setupRealmConfiguration() -> Realm.Configuration {
-        
-        // Needs to be incremented whenever the structure
-        // of a Realm object is modified
-        let currentRealmSchemaVersion: UInt64 = RealmSchemaVersions.currentVersion
-        
+    
         let config = Realm.Configuration(
-        schemaVersion: currentRealmSchemaVersion,
-        migrationBlock: { migration, oldSchemaVersion in
+        schemaVersion: currentRealmSchemaVersion(),
+        migrationBlock: { [unowned self] (migration: Migration, oldSchemaVersion: UInt64) in
             
-            // At this version, the userId was split into memberId and passId
-            if (oldSchemaVersion < RealmSchemaVersions.MigrationChanges.splitUserId.rawValue) {
-                
-                let membershipUserClass = Club.shared.OverridableMembershipUserClassType.className()
-                
-                // The enumerateObjects(ofType:_:) method iterates
-                // over every User object stored in the Realm file
-                migration.enumerateObjects(ofType: membershipUserClass) { oldObject, newObject in
-                    newObject?[MembershipUser.CodingKeys.memberId.rawValue] = UUID().uuidString
-                    newObject?[MembershipUser.CodingKeys.passId.rawValue] = oldObject?["userId"] as? String
-                }
+            let migrationChanges = self.getAllVersions(startingAfter: oldSchemaVersion)
+            
+            migrationChanges.forEach { (migrationChange) in
+                migrationChange.changeBlock(migration)
             }
-            
-            // Pending further changes...
         })
         
         return config
     }
-}
-
-/// Provides internal descriptions/comments for major changes
-/// made to the Realm MembershipUser schema at each particular version
-/// Purpose is to handle migrations due to such changes
-fileprivate struct RealmSchemaVersions {
     
-    static let currentVersion: UInt64 = MigrationChanges.splitUserId.rawValue
     
-    enum MigrationChanges: UInt64 {
-        case firstVersion = 0
-        // Split the MembershipUser.userId property into
-        // the memberId and passId
-        case splitUserId
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /// Returns the current schema version stored to UserDefaults. 0 if no migrations have been performed
+    private func currentRealmSchemaVersion() -> UInt64 {
+        if let storedVersion = UserDefaults.standard.value(forKey: ClubConstants.RealmLayer.versionUserDefaultsKey) as? UInt64 {
+            return storedVersion
+        }
+        return 0
+    }
+    
+    /**
+     Creates a subset of array of all MigrationChange objects starting after
+     the designated version
+     
+     Example:
+     oldSchemaVersion: 3
+     
+     all MigrationChange objects (Using their version UInt64 variable as the array value. Not their index position within the array):
+     [1, 2, 3, 4, 5, 6, 7]
+     
+     By adding 1 to the `oldSchemaVersion`, create subset starting from 4 through 7
+     
+     - Parameters:
+        - oldSchemaVersion: The outdated chema version used for the Realm configuration. This version is supplied when a migration is required due to modifying a Realm Object
+     */
+    internal func getAllVersions(startingAfter oldSchemaVersion: UInt64) -> [MigrationChange] {
+        
+        guard let latestVersionMigration = migrationChanges.last else {
+            return []
+        }
+        
+        // Add 1 to oldSchemaVersion.
+        var startingVersionIndex = Int(oldSchemaVersion + 1)
+        
+        let latestVersionIndex = Int(latestVersionMigration.version)
+        
+        // Avoid out-of-bounds range such as: 3...2
+        // The lower bound (left) must be less than the upper bound (right)
+        // If the lower bound is greater than the upper bound, re-set it to maximum possible value, which changes to range to: 2...2
+        // In other words, the range will consist of only the last item.
+        if startingVersionIndex > latestVersionIndex {
+            startingVersionIndex = latestVersionIndex
+        }
+        
+        let range: ClosedRange<Int> = (startingVersionIndex...latestVersionIndex)
+        
+        
+        
+        
+        var migrationChanges: [MigrationChange] = []
+        
+        for version in range {
+            guard let migrationChange = self.migrationChanges.filter({ $0.version == version }).first else {
+                // May never happen
+                continue
+            }
+            migrationChanges.append(migrationChange)
+        }
+        
+        return migrationChanges
     }
 }
