@@ -41,7 +41,7 @@ public protocol CaptureMiddlewareProtocol: class {
     
     func setCapture(instance: CaptureHelper)
     
-    var numberOfFailedOpenCaptureAttempts: Int { get }
+    var remainingOpenCaptureRetries: Int { get }
     
     /// Open the SKTCapture layer with credentials.
     /// This is required for proper use of BLE devices in the desired app.
