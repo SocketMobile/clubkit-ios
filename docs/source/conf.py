@@ -26,8 +26,6 @@ from datetime import date
 # If your documentation needs a minimal Sphinx version, state it here.
 #needs_sphinx = '1.0'
 
-swift_search_path = [ "../../CaptureHelper/CaptureHelper.swift" ]
-
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
@@ -38,25 +36,6 @@ extensions = [
     # 'breathe'
 ]
 
-# breathe_default_project = "CaptureHelper"
-
-# breathe_projects_source = {
-#     "CaptureHelperObjectiveC": ("../../CaptureHelperObjectiveC/", ["SktCaptureHelper.h"]),
-#     "CaptureApi": ("../../CaptureService/", [""])
-# }
-#
-# breathe_doxygen_config_options = {
-#     'FILE_PATTERNS': '*.h',
-#     'EXCLUDE_PATTERNS': '*/bin/* */obj/* */Properties/*',
-#     'HIDE_SCOPE_NAMES': 'YES',
-#     'SHOW_FILES': 'YES',
-#     # 'EXTENSION_MAPPING': '"h=Objective-C"',
-#     'ENABLE_PREPROCESSING': 'YES',
-#     'MACRO_EXPANSION': 'YES',
-#     'EXPAND_ONLY_PREDEF': 'YES',
-#     'PREDEFINED': '"NS_ENUM(x,y)=enum y" \\ "NS_OPTIONS(x,y)=enum y"',
-# }
-#
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -73,7 +52,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Rumba Documentation'
+project = u'ClubKit Documentation'
 copyright = str(date.today().year) + u', Socket Mobile, Inc'
 author = u'Socket Mobile, Inc.'
 
@@ -230,7 +209,7 @@ html_last_updated_fmt = '%b %d, %Y'
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'CaptureSDKdoc'
+htmlhelp_basename = 'ClubKitdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -252,7 +231,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'CaptureSDK.tex', u'Capture SDK Documentation',
+    (master_doc, 'ClubKit.tex', u'ClubKit SDK Documentation',
      u'Socket Mobile, Inc.', 'manual'),
 ]
 
@@ -282,7 +261,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'capturesdk', u'Capture SDK Documentation',
+    (master_doc, 'clubkitsdk', u'ClubKit SDK Documentation',
      [author], 1)
 ]
 
@@ -296,8 +275,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'CaptureSDK', u'Capture SDK Documentation',
-     author, 'CaptureSDK', 'One line description of project.',
+    (master_doc, 'ClubKitSDK', u'ClubKit SDK Documentation',
+     author, 'ClubKitSDK', 'ClubKit manages membership with Check in Check out.',
      'Miscellaneous'),
 ]
 
