@@ -15,7 +15,7 @@ public class CaptureMiddleware: NSObject, CaptureMiddlewareProtocol {
     
     internal var captureLayer: SKTCaptureLayer!
     
-    public private(set) var numberOfFailedOpenCaptureAttempts: Int = 0
+    public private(set) var remainingOpenCaptureRetries: Int = 2
     
     /// Enum for different formats by which the decodedData will be parsed
     public enum DecodedDataParseFormat: Int {
@@ -51,8 +51,7 @@ public class CaptureMiddleware: NSObject, CaptureMiddlewareProtocol {
                 completion?(result)
                 
             } else {
-
-                if strongSelf.numberOfFailedOpenCaptureAttempts == 2 {
+                if strongSelf.remainingOpenCaptureRetries == 0 {
 
                     // Display an alert to the user to restart the app
                     // if attempts to open capture have failed twice
@@ -64,9 +63,9 @@ public class CaptureMiddleware: NSObject, CaptureMiddlewareProtocol {
                 } else {
 
                     // Attempt to open capture again
-                    DebugLogger.shared.addDebugMessage("\(String(describing: type(of: strongSelf))) - \n--- Failed to open capture. attempting again...\n")
-                    strongSelf.numberOfFailedOpenCaptureAttempts += 1
-                    strongSelf.open(withAppKey: appKey, appId: appId, developerId: developerId)
+                    DebugLogger.shared.addDebugMessage("\(String(describing: type(of: strongSelf))) - Failed to open capture. attempting again...\n")
+                    strongSelf.remainingOpenCaptureRetries -= 1
+                    strongSelf.open(withAppKey: appKey, appId: appId, developerId: developerId, completion: completion)
                 }
             }
         }
